@@ -1,0 +1,51 @@
+
+<table id="activities_name_custom_table" style="heigth: auto;"></table>
+
+<div id="activities_name_custom_div" class="easyui-window" title="活动名称定制"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="activities_name_custom_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+$('#activities_name_custom_table').datagrid({
+	url : '/tjsc/fightOrderCategory/list',
+	//toolbar : '#visit_level_toolbar',
+	//pageSize:20,
+	//queryParams:{"type":0},
+	pagination : true,
+	singleSelect : true,
+	rownumbers : true,
+	autoRowHeight : true,
+	fitColumns:true,
+	fit:true,
+	columns : [ [
+				
+				{
+					field : 'name',
+					title : '特价拼单活动分类'
+				},
+				{
+					field : 'operate',
+					title : '操作',
+					formatter : function(value, row, index) {
+						return outPutFunction("activitiesNameCustomEdit", row.id,"编辑");
+					}
+				}
+			] ]
+});
+
+function activitiesNameCustomEdit(id) {
+	var parentDivId = "activities_name_custom_div";
+	var parentTableId = "activities_name_custom_table";
+	var url = "/tjsc/fightOrderCategory/update?fightOrderCategoryId=" + id
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#activities_name_custom_div_ifr").attr('src', url);
+	$('#activities_name_custom_div').window('open');
+}
+
+	
+</script>

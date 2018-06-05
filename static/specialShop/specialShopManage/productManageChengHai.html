@@ -1,0 +1,156 @@
+<style type="text/css">
+</style>
+
+<!-- 搜索Div -->
+<div id="specialProductChengHaiSearchFormToolbar" style="padding: 5px; height: auto">
+	<div style="margin-bottom: 5px">
+		<a href="#" onclick="specialSaveChengHaiProduct(0)" class="easyui-linkbutton"
+			iconCls="icon-add" plain="true">新增商品</a>
+	</div>
+	<div>
+		<form id="specialQueryProductChengHaiForm">
+			商品分类：<select id="specialProductChengHaiClassify" name="categoryId"
+				class="easyui-combobox" style="width: 90px;"
+				data-options="	valueField:'id',
+								textField:'name',
+								url:'tjsc/productCategory/getCategoryTree',required:false"></select>
+			商品标签：<select id="specialProductChengHaiTag" class="easyui-combobox" name="productTag" style="width: 80px;">
+						<option value=""></option>
+						<option value="爆款">爆款</option>
+						<option value="3C条码">3C条码</option>
+						<option value="视频">视频</option>
+						<option value="图片">图片</option>
+					</select>
+			商品名称：<input id="specialProductChengHaiName" class="easyui-validatebox" name="name" style="width:100px;">
+			商品货号：<input id="specialProductChengHaiNo" class="easyui-validatebox" name="productNo" style="width:100px;">
+			
+			<a href="javascript:searchSpecialProductChengHai();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+
+<table id="special_product_cheng_hai_table" style="heigth: auto;"></table>
+
+<!-- 新增/编辑商品-->
+<div id="special_save_product_cheng_hai_div" class="easyui-window" title="商品管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:900px; height:550px; padding: 10px;">
+	<iframe src="#" id="special_save_product_cheng_hai_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<div id="config_product_cheng_hai_div" class="easyui-window" title="商品配置"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:1200px; height:550px; padding: 10px;">
+	<iframe src="#" id="config_product_cheng_hai_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#special_product_cheng_hai_table').datagrid(
+			{
+				url : '/tjsc/productChengHai/list',
+				toolbar : '#specialProductChengHaiSearchFormToolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+				         	{
+								field : 'name',
+								title : '商品名称'
+							},
+							{
+								field : 'categoryName',
+								title : '所属分类',
+								sortable : true
+							},
+							{
+								field : 'productNo',
+								title : '商品货号',
+								sortable : true
+							},
+							{
+								field : 'color',
+								title : '商品颜色',
+							},
+							{
+								field : 'packageNum',
+								title : '装箱数量',
+								sortable : true
+							},
+							{
+								field : 'productStandard',
+								title : '包装尺寸',
+								sortable : true
+							},
+							{
+								field : 'productTag',
+								title : '商品标签',
+								sortable : true
+							},
+							{
+								field : 'createTime',
+								title : '上传时间',
+								sortable : true
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("specialSaveChengHaiProduct", row.id,"修改") +  outPutFunction("specialRemoveProduct",row.id, "删除");
+								}
+							}
+						] ]
+			});
+	function specialSaveChengHaiProduct(tjscProductChengHaiId) {
+		var parentDivId = "special_save_product_cheng_hai_div";
+		var parentTableId = "special_product_cheng_hai_table";
+		var url = "/tjsc/productChengHai/input?tjscProductChengHaiId=" + tjscProductChengHaiId
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_product_cheng_hai_div_ifr").attr('src', url);
+		$('#special_save_product_cheng_hai_div').window('open');
+	}
+	
+	//删除商品 
+	function specialRemoveProduct(rid) {
+		$.messager.confirm('商品管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/productChengHai/delete", {
+					"tjscProductChengHaiId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_product_cheng_hai_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+	
+	
+	function searchSpecialProductChengHai() {
+		$("#special_product_cheng_hai_table").datagrid(
+				'reload',
+				{
+					"categoryId" : $("#specialProductChengHaiClassify").combotree("getValue"),
+					"productTag" : $("#specialProductChengHaiTag").combotree("getValue"),
+					"name" : $("#specialProductChengHaiName").val(),
+					"productNo" : $("#specialProductChengHaiNo").val(),
+		});
+	}
+	
+</script>
+

@@ -1,0 +1,221 @@
+<style>
+	#dealOverveiwMonth{
+		margin: 30px;
+	}
+	
+	#dealOverveiwMonth p{
+		font-size: 22px;
+	}
+	
+	#dealOverveiwMonth span{
+		font-size: 20px;
+		color: red;
+	}
+	#dealOverveiwTableMonth{
+     	border-left: 1px solid #000;
+    	border-top: 1px solid #000;
+     	border-collapse: collapse;
+     	text-align: center;
+     	margin: 17px;
+	}
+	#dealOverveiwTableMonth td,table th{
+		border-right: 1px solid #000;     
+		border-bottom: 1px solid #000;
+		width: 100px;
+    	height: 40px;
+	}
+</style>
+<!-- 搜索Div -->
+<div style="padding: 10px; height: auto">
+	商品分类：<select id="getOverviewProductCategoryMonth" style="width: 100px;">
+				<option value="99999">全部</option>
+		   </select>
+	指定月份：<select id="overviewMonth" style="width: 100px;"></select>
+	价格区间：<select id="overviewPriceSectionMonth" class="easyui-combobox" style="width: 100px;">
+				<option value="99999">全部</option>
+				<option value="1">0-5</option>
+				<option value="2">5-10</option>
+				<option value="3">10-50</option>
+				<option value="4">50-100</option>
+				<option value="5">100以上</option>
+			</select>
+	 
+	<a	href="javascript:searchDealOverviewMonth();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+</div>
+
+<table id="dealOverveiwTableMonth">
+     <thead>
+         <tr>
+             <th></th>
+             <th>总量</th>
+             <th>新访客</th>
+             <th>新访客占率</th>
+             <th>老访客</th>
+             <th>老访客占率</th>
+         </tr>
+     </thead>
+     <tbody>
+        <tr>
+            <td>支付订单（总）</td>
+            <td class="orderNum">0</td>
+            <td class="newOrderNum">0</td>
+            <td class="newOrderNumPercent">0</td>
+            <td class="oldOrderNum">0</td>
+            <td class="oldOrderNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>支付订单交易额</td>
+            <td class="gmv">0</td>
+            <td class="newGmv">0</td>
+            <td class="newGmvPercent">0</td>
+            <td class="oldGmv">0</td>
+            <td class="oldGmvPercent">0</td>
+        </tr>
+        <tr>
+            <td>整拼</td>
+            <td class="wholeBoxNum">0</td>
+            <td class="newWholeBoxNum">0</td>
+            <td class="newWholeBoxNumPercent">0</td>
+            <td class="oldWholeBoxNum">0</td>
+            <td class="oldWholeBoxNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>整拼交易额</td>
+            <td class="wholeBoxAmount">0</td>
+            <td class="newWholeBoxAmount">0</td>
+            <td class="newWholeBoxAmountPercent">0</td>
+            <td class="oldWholeBoxAmount">0</td>
+            <td class="oldWholeBoxAmountPercent">0</td>
+        </tr>
+        <tr>
+            <td>混拼</td>
+            <td class="mixFightNum">0</td>
+            <td class="newMixFightNum">0</td>
+            <td class="newMixFightNumPercent">0</td>
+            <td class="oldMixFightNum">0</td>
+            <td class="oldMixFightNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>混拼交易额</td>
+            <td class="mixFightAmount">0</td>
+            <td class="newMixFightAmount">0</td>
+            <td class="newMixFightAmountPercent">0</td>
+            <td class="oldMixFightAmount">0</td>
+            <td class="oldMixFightAmountPercent">0</td>
+        </tr>
+    </tbody>
+</table>
+
+<div id="dealOverveiwMonth">
+	<p>下单数量：<span class="allOrderNum"></span></p>
+	<p>下单-支付转化率：<span class="orderPaymentConversionRate"></span></p>
+	<p>独立访客数：<span class="memberVisitTimes"></span></p>
+	<p>下单买家数：<span class="orderTimes"></span></p>
+	<p>支付买家数：<span class="payTimes"></span></p>
+	<p>下单买家占比：<span class="orderVisitPercent"></span></p>
+	<p>支付买家占比：<span class="payVisitPercent"></span></p>
+</div>
+
+<script>
+
+function addTableMonth(list){
+	$("#dealOverveiwTableMonth .orderNum").html(list.orderNum);
+	$("#dealOverveiwTableMonth .newOrderNum").html(list.newOrderNum);
+	$("#dealOverveiwTableMonth .newOrderNumPercent").html(list.newOrderNumPercent);
+	$("#dealOverveiwTableMonth .oldOrderNum").html(list.oldOrderNum);
+	$("#dealOverveiwTableMonth .oldOrderNumPercent").html(list.oldOrderNumPercent);
+	
+	$("#dealOverveiwTableMonth .gmv").html(list.gmv);
+	$("#dealOverveiwTableMonth .newGmv").html(list.newGmv);
+	$("#dealOverveiwTableMonth .newGmvPercent").html(list.newGmvPercent);
+	$("#dealOverveiwTableMonth .oldGmv").html(list.oldGmv);
+	$("#dealOverveiwTableMonth .oldGmvPercent").html(list.oldGmvPercent);
+	
+	$("#dealOverveiwTableMonth .wholeBoxNum").html(list.wholeBoxNum);
+	$("#dealOverveiwTableMonth .newWholeBoxNum").html(list.newWholeBoxNum);
+	$("#dealOverveiwTableMonth .newWholeBoxNumPercent").html(list.newWholeBoxNumPercent);
+	$("#dealOverveiwTableMonth .oldWholeBoxNum").html(list.oldWholeBoxNum);
+	$("#dealOverveiwTableMonth .oldWholeBoxNumPercent").html(list.oldWholeBoxNumPercent);
+	
+	$("#dealOverveiwTableMonth .wholeBoxAmount").html(list.wholeBoxAmount);
+	$("#dealOverveiwTableMonth .newWholeBoxAmount").html(list.newWholeBoxAmount);
+	$("#dealOverveiwTableMonth .newWholeBoxAmountPercent").html(list.newWholeBoxAmountPercent);
+	$("#dealOverveiwTableMonth .oldWholeBoxAmount").html(list.oldWholeBoxAmount);
+	$("#dealOverveiwTableMonth .oldWholeBoxAmountPercent").html(list.oldWholeBoxAmountPercent);
+	
+	$("#dealOverveiwTableMonth .mixFightNum").html(list.mixFightNum);
+	$("#dealOverveiwTableMonth .newMixFightNum").html(list.newMixFightNum);
+	$("#dealOverveiwTableMonth .newMixFightNumPercent").html(list.newMixFightNumPercent);
+	$("#dealOverveiwTableMonth .oldMixFightNum").html(list.oldMixFightNum);
+	$("#dealOverveiwTableMonth .oldMixFightNumPercent").html(list.oldMixFightNumPercent);
+	
+	$("#dealOverveiwTableMonth .mixFightAmount").html(list.mixFightAmount);
+	$("#dealOverveiwTableMonth .newMixFightAmount").html(list.newMixFightAmount);
+	$("#dealOverveiwTableMonth .newMixFightAmountPercent").html(list.newMixFightAmountPercent);
+	$("#dealOverveiwTableMonth .oldMixFightAmount").html(list.oldMixFightAmount);
+	$("#dealOverveiwTableMonth .oldMixFightAmountPercent").html(list.oldMixFightAmountPercent);
+	
+	$("#dealOverveiwMonth .allOrderNumMonth").html(list.allOrderNum);
+	$("#dealOverveiwMonth .orderPaymentConversionRateMonth").html(list.orderPaymentConversionRate);
+	
+	$("#dealOverveiwMonth .memberVisitTimes").html(list.memberVisitTimes);
+	$("#dealOverveiwMonth .orderTimes").html(list.orderTimes);
+	$("#dealOverveiwMonth .payTimes").html(list.payTimes);
+	$("#dealOverveiwMonth .orderVisitPercent").html(list.orderVisitPercent);
+	$("#dealOverveiwMonth .payVisitPercent").html(list.payVisitPercent);
+	
+	//overviewFilterMonth();
+}
+
+getOverviewProductCategoryMonth();
+function getOverviewProductCategoryMonth(){
+	var getOverviewProductCategoryMonth = $('#getOverviewProductCategoryMonth');
+	$.get('/tjsc/productCategory/categoryList', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+			$(option).appendTo(getOverviewProductCategoryMonth);
+		})
+	})
+}
+
+getoverviewMonths();
+function getoverviewMonths(){
+	var month = $('#overviewMonth');
+	$.get('/tjsc/transactionStatistics/getMonths', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value +'>'+ value +'</option>';
+			$(option).appendTo(month);
+		})
+		requestMonth(data[0],'99999','99999');
+	})
+}
+
+function searchDealOverviewMonth(){
+	var categoryId = $("#getOverviewProductCategoryMonth").val();
+	var priceSection = $('#overviewPriceSectionMonth').combobox('getValue');
+	var month = $("#overviewMonth option:selected").text();
+	requestMonth(month,categoryId,priceSection);
+}
+
+function requestMonth(month,categoryId,priceSection){
+	$.get('/tjsc/orderAnalyzing/specifyMonth/orderAnalyzing?limitMonth='+month+'&categoryId='+categoryId+'&priceSection='+priceSection, function (response){
+		addTableMonth(response);
+	})
+}
+
+function overviewFilterMonth(){
+	$('#dealOverveiwTableMonth td').each(function(index,element){
+		if(!$(element).html() || $(element).html() == '0'){
+			$(element).html('-');
+		}
+	})
+	
+	$('#dealOverveiwTableMonth span').each(function(index,element){
+		if(!$(element).html()){
+			$(element).html('-');
+		}
+	})
+}
+	
+</script>
+

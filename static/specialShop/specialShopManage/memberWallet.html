@@ -1,0 +1,39 @@
+<style type="text/css">
+</style>
+
+<table id="special_member_wallet_table" style="heigth: auto;"></table>
+
+<script>
+$('#special_member_wallet_table').datagrid(
+		{
+			url : '/tjsc/memberAccount/list',
+			//pageSize:20,
+			//queryParams:{"type":0},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			remoteSort:true,
+			//sortName:'createTime',
+				//sortOrder:'DESC',
+			columns : [ [
+			         	{
+							field : 'memberName',
+							title : '用户'
+						},
+						{
+							field : 'restMoney',
+							title : '余额',
+							sortable : true
+						},
+						{
+							field : 'totalDepositMoney',
+							title : '累计充值',
+							sortable : true
+						}
+					] ]
+});
+</script>
+

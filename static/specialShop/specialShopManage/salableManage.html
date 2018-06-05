@@ -1,0 +1,101 @@
+<style type="text/css">
+</style>
+<div id="salable_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="saveSalable(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增畅销板块活动</a>
+</div>
+<table id="salable_table" style="heigth: auto;"></table>
+<!-- 新增/编辑活动-->
+<div id="save_salable_div" class="easyui-window" title="活动管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="save_salable_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 配置商品 -->
+<div id="salable_config_product_div" class="easyui-window" title="配置商品"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1500px; height:800px; padding: 10px;">
+	<iframe src="#" id="salable_config_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#salable_table').datagrid(
+			{
+				url : '/tjsc/cxActivity/list',
+				toolbar : '#salable_toolbar',
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				columns : [ [
+							{
+								field : 'name',
+								title : '活动名'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									//return outPutFunction("salableConfigMergeProduct", row.id,"配置商品") + outPutFunction("saveSalable", row.id,"修改") + outPutFunction("salableRemove",row.id, "删除");
+									return outPutFunction("salableConfigMergeProduct", row.id,"配置商品") + outPutFunction("saveSalable", row.id,"修改");
+								}
+							}
+						] ]
+	});
+	
+	//打开特价拼单活动编辑页
+	function saveSalable(id) {
+		var parentDivId = "save_salable_div";
+		var parentTableId = "salable_table";
+		var url = "/tjsc/cxActivity/input?tjscCXActivityId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#save_salable_div_ifr").attr('src', url);
+		$('#save_salable_div').window('open');
+	}
+	//配置商品
+	function salableConfigMergeProduct(id) {
+		var parentDivId = "salable_config_product_div";
+		var parentTableId = "salable_table";
+		var url = "/tjsc/cxActivity/openAdd?tjscCXActivityId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#salable_config_product_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#salable_config_product_div').window({
+			    width: 900,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 900) * 0.5
+			})
+		}
+		$('#salable_config_product_div').window('open');
+	}
+/* 	//删除
+	function salableRemove(rid) {
+		$.messager.confirm('活动管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/fightOrder/delete", {
+					"fightOrderId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#salable_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	} */
+
+	
+</script>

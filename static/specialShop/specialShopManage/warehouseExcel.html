@@ -1,0 +1,103 @@
+
+<div style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a style="margin-bottom: 15px;" href="#" onclick="downloadWarehouseExcel()" class="easyui-linkbutton" iconCls="icon-add" plain="true">下载商品excel模板</a>
+		<div style="margin-bottom: 15px;display: inline-block;margin-left: 41px;">
+			<span style="color: red;">选择仓库：</span>
+			<select id="excelWareHouseList" style="width: 100px;"></select>
+		</div>
+		<form id="warehouseExcelorderForm" method="post" enctype="multipart/form-data">
+			<table style="display: inline-block;text-align:end;">
+				<tr>
+					<td>选择excel文件</td>
+					<td>
+						<input type="file" name="file" class="easyui-validatebox" data-options="required:true">
+					</td>
+				</tr>
+				<tr>
+					<td style="text-align: left;">商品导入</td>
+					<td style="text-align: left;">
+						<a href="#" onclick="warehouseImport()" class="easyui-linkbutton" iconCls="icon-add" plain="true">确定导入</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	
+	
+</div>
+
+<script>				
+
+function downloadWarehouseExcel(){
+	$.messager.progress();
+	$.ajax({
+        type: "GET",
+        url:"/xlcl/excel/outExcelWarehouseProductTemplate",
+        async:false,
+        success: function(data){
+        	$.messager.progress("close");
+			if (data != 'fail') {
+				window.location = data;
+			} else {
+				alert("模板下载失败,请联系管理员!!!");
+			}
+        },
+        error: function(error){
+        	$.messager.progress("close");
+        	jQuery.messager.alert('Info', error, 'info');
+        }
+	});
+	
+}
+
+function warehouseImport(){
+	var warehouseId = $("#excelWareHouseList").val();
+	if(!warehouseId) {
+		alert('仓库有误！！！');
+		return;
+	}
+	$.messager.confirm('商城管理', "确定要导入商品吗?", function(r) {
+		
+		$.messager.progress();
+		$('#warehouseExcelorderForm').form('submit',{
+			url:"/xlcl/excel/importWarehouseProductExcel?warehouseId="+warehouseId,
+			onSubmit: function(){			
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+				}
+				return isValid;	// 返回false终止表单提交
+			},
+			success : function(data) {
+				if(data == 'success') {
+					$.messager.progress('close');
+					alert("商品导入成功!");
+				} else {
+					alert(data);
+					$.messager.progress('close');
+				}
+			},
+			error : function(resp){
+				$.messager.progress('close');
+				alert(resp);
+			} 
+		});
+		
+	});
+}
+
+
+getExcelWareHouse();
+function getExcelWareHouse(){
+	var month = $('#excelWareHouseList');
+	$.get('/tjsc/wareHouse/getWarehouseList', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+			$(option).appendTo(month);
+		})
+	})
+}
+		
+		
+</script>	

@@ -1,0 +1,166 @@
+<!-- 搜索Div -->
+<div id="salesmanSearchFromToolbar" style="padding: 5px; height: auto">
+	<div>
+		<form id="salesmanQueryMemberForm">
+			</select>
+			<!-- 用户ID:<input
+				class="easyui-validatebox" name="id" style="width: 100px;"> -->
+			 账户名称:<input class="easyui-validatebox" name="username"
+				style="width: 100px;"> 
+			 用户名称:<input class="easyui-validatebox" name="name"
+				style="width: 100px;"> 
+				联系电话:<input
+				class="easyui-validatebox" name="mobi" style="width: 100px;">
+			<!-- 商品分类名称:<input class="easyui-validatebox" name="productSeries.parent.name" > -->
+			<!-- 加入时间：<input id="salesmanSearchCreateTimeStart" type="text"
+				class="easyui-datebox" name="createTimeStart" style="width: 100px;">至：
+			<input type="text" id="salesmanSearchCreateTimeEnd" class="easyui-datebox"
+				name="createTimeEnd" style="width: 100px;"> --> 
+				<a
+				href="javascript:salesmanSearchXlclMember();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+
+<!-- 关联会员 -->
+<div id="salesman_linkMember_div" class="easyui-window" title="关联会员"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1500px; height:800px; padding: 10px;">
+	<iframe src="#" id="salesman_linkMember_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<table id="xlclSalesmanMemberTable" style="heigth: auto;"></table>
+
+<script>
+	$('#xlclSalesmanMemberTable')
+			.datagrid(
+					{
+						url : '/tjsc/memberRelationForSalesman/salesmanList',
+						toolbar : '#salesmanSearchFromToolbar',
+						//pageSize:20,
+						pagination : true,
+						singleSelect : true,
+						rownumbers : true,
+						autoRowHeight : true,
+						fitColumns:true,
+						fit:true,
+						queryParams : {
+							"sortField" : "createTime",
+							"sortOrder" : "DESC"
+						}, //加入排序字段
+						columns : [ [
+								{
+									field : 'username',
+									title : '账户名称',
+									sortable : true
+								},
+								{
+									field : 'name',
+									title : '用户名称',
+									sortable : true
+								},
+								{
+									field : 'mobi',
+									title : '手机号',
+									sortable : true
+								},
+								{
+									field : 'deptName',
+									title : '部门',
+									sortable : true
+								},
+								{
+									field : 'postName',
+									title : '职务',
+									sortable : true
+								},
+								{
+									field : 'operate',
+									title : '操作',
+									formatter : function(value, row, index) {
+										return outPutFunction("linkMember", row.id,"关联会员");
+									}
+								}
+							] ]
+					});
+	
+	function linkMember(id){
+		var parentDivId = "salesman_linkMember_div";
+		var parentTableId = "xlclSalesmanMemberTable";
+		var url = "/tjsc/memberRelationForSalesman/openConfigurationMember?userId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#salesman_linkMember_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#salesman_linkMember_div').window({
+			    width: 900,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 900) * 0.5
+			})
+		}
+		$('#salesman_linkMember_div').window('open');
+	}
+	
+	function saveMemberCharge(){
+		var member =$("#xlclSalesmanMemberTable").datagrid("getSelected");
+		$("#xlcl_member_charge_window_form").form("load",{
+			'memberId':member.id,
+			'districtPerson':member.districtPerson,
+			'districtManagementArea':member.districtManagementArea
+		});
+		$("#xlcl_member_charge_window").window("open");
+	}
+	
+	function memberChargeSubmit(){
+		
+		$.messager.progress();
+		$('#xlcl_member_charge_window_form').form('submit',{
+			url:"/tjsc/member/addPartitionedManagementData",
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+				}
+				return isValid;	// 返回false终止表单提交
+			},
+			success : function(data) {
+				$.messager.progress('close');
+				if (data == 'success') {
+					$("#xlcl_member_charge_window").window("close");
+					$("#xlclSalesmanMemberTable").datagrid("reload");
+				} else {
+					jQuery.messager.alert('Info', data, 'info');
+				}
+			}
+		});
+		
+		
+	}
+
+	function salesmanSearchXlclMember(sort, order) {
+
+		if((sort == undefined || sort == "undefined") || (order == undefined || order == "undefined")){
+			$("#xlclSalesmanMemberTable").datagrid('reload', {
+				"username" : $("#salesmanQueryMemberForm input[name='username']").val(),
+				"name" : $("#salesmanQueryMemberForm input[name='name']").val(),
+				"mobi" : $("#salesmanQueryMemberForm input[name='mobi']").val(),
+				"sortField" : "createTime", //加入排序字段
+				"sortOrder" : "desc"
+			});
+		}else{
+			$("#xlclSalesmanMemberTable").datagrid('reload', {
+				"username" : $("#salesmanQueryMemberForm input[name='username']").val(),
+				"name" : $("#salesmanQueryMemberForm input[name='name']").val(),
+				"mobi" : $("#salesmanQueryMemberForm input[name='mobi']").val(),
+				"sortField" : sort, //加入排序字段
+				"sortOrder" : order
+			});
+		}
+	}
+	
+</script>
+

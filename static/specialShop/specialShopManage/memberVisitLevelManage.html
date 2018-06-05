@@ -1,0 +1,127 @@
+<style type="text/css">
+</style>
+
+<div id="member_visit_level_toolbar" style="padding:5px;height:auto">
+		
+<!-- 	时间范围：<select id="limitTime" class="easyui-combobox" style="width:100px;"> -->
+<!-- 		<option value="30">近1个月</option> -->
+<!-- 	    <option value="1">近1天</option> -->
+<!-- 	    <option value="2">近2天</option>   -->
+<!-- 	    <option value="3">近3天</option> -->
+<!-- 	    <option value="4">近4天</option> -->
+<!-- 	    <option value="5">近5天</option> -->
+<!-- 	    <option value="6">近6天</option> -->
+<!-- 	    <option value="7">近7天</option> -->
+<!-- 	    <option value="8">近8天</option> -->
+<!-- 	    <option value="9">近9天</option> -->
+<!-- 	    <option value="10">近10天</option> -->
+	    
+<!-- 	    <option value="15">近15天</option> -->
+<!-- 	    <option value="30">近1个月</option> -->
+<!-- 	    <option value="60">近2个月</option> -->
+<!-- 	    <option value="90">近3个月</option>  -->
+<!-- 	</select> -->
+<!-- 	<a href="javascript:limitTimeSearch()" class="easyui-linkbutton" iconCls="icon-search">搜索</a> -->
+			
+</div>
+
+<table id="member_visit_level_table" style="heigth: auto;"></table>
+<!-- 新增/编辑用户访问等级-->
+<div id="member_visit_level_save_div" class="easyui-window" title="用户访问等级管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="member_visit_level_save_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#member_visit_level_table').datagrid(
+			{
+				url : '/tjsc/memberVisitLevel/list',
+				toolbar : '#member_visit_level_toolbar',
+				//pageSize:20,
+				queryParams:{"searchDay":30},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'memberName',
+								title : '用户名称'
+							},
+							{
+								field : 'phone',
+								title : '联系电话',
+								sortable : true
+							},
+// 							{
+// 								field : 'searchVisitTimes',
+// 								title : '限时访问次数',
+// 								sortable : true
+// 							},
+// 							{
+// 								field : 'searchPayTimes',
+// 								title : '限时付款次数',
+// 								sortable : true
+// 							},
+							{
+								field : 'visitTimes',
+								title : '访问主页总次数',
+								sortable : true
+							},
+							{
+								field : 'payTimes',
+								title : '付款总次数',
+								sortable : true
+							},
+							{
+								field : 'historyTotalMoney',
+								title : '付款总金额',
+								sortable : true
+							},
+							{
+								field : 'levelStr',
+								title : '访问权限等级及描述'
+							},
+							{
+								field : 'manualFlagStr',
+								title : '是否手动修改过'
+							},
+							{
+								field : 'isValidateStr',
+								title : '是否手机验证过'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("memberVisitLevelSave", row.id,"修改访问权限");
+								}
+							}
+						] ]
+			});
+	function memberVisitLevelSave(id) {
+		var parentDivId = "member_visit_level_save_div";
+		var parentTableId = "member_visit_level_table";
+		var url = "/tjsc/memberVisitLevel/input?memberVisitLevelId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#member_visit_level_save_div_ifr").attr('src', url);
+		$('#member_visit_level_save_div').window('open');
+	}
+	
+	function limitTimeSearch(){
+		var limitTime = $('#limitTime').combobox('getValue');
+		$("#member_visit_level_table").datagrid('reload',{
+		  "searchDay":limitTime
+		});
+	}
+	
+</script>

@@ -1,0 +1,62 @@
+
+<style type="text/css">
+
+.xlcl_xlcl_excelproduct_window_form_talble {padding:5px}
+.xlcl_xlcl_excelproduct_window_form_talble tbody tr{padding-bottom:20px;padding-top:20px;}
+.xlcl_xlcl_excelproduct_window_form_talble tbody tr td{width:250px}
+.xlcl_xlcl_excelproduct_window_form_talble tbody tr td input{ width:200px;}
+</style> 
+<!-- 搜索Div -->
+<div id="xlcl_excelStorageProduct_search_window" style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a href="#" onclick="excelStorageProduct_out_product()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出库存商品</a>
+	</div>
+</div>
+
+<table id="xlcl_excelStorageProduct_table" style="heigth:auto"></table>
+ 
+<!-- 导出库存商品DIV -->
+<div id="excelStorageProduct_product_div" class="easyui-window" title="导出库存商品" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:950px; height: 450px; padding: 10px;">
+	<iframe src="#" id="excelStorageProduct_product_div_ifr" marginwidth="0" marginheight="0" width="950px" height="450px" frameborder="0" scrolling="false" allowtransparency="true"></iframe>	
+</div>
+<script>				
+
+	$('#xlcl_excelStorageProduct_table').datagrid({   
+		url:'/xlcl/excel/select?sortField=-createTime&type=7',   
+		//queryParams:{"userType":"between,1,2","isAccount":true},
+		pagination:true,
+		signleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		toolbar: '#xlcl_excelStorageProduct_search_window',
+		columns:[[   
+			{field : 'name',title : '文件名称',width:200},
+			{field : 'typeStr',title : '类型',width:80},
+			{field : 'excelTime',title : '导出时间',width:120}, 
+			{field : 'operate',title : '操作',width:250,
+				formatter : function(value, row, index) {
+				return '[<a target="_blank" href="'+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelStorageProduct('+row.id+')">删除记录</a>]';
+						//return '[<a target="_blank" href="'+$!{staticRoot}+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelRecord('+row.id+')">删除记录</a>]';
+				}
+			}
+		]]
+	});
+	
+	function deleteExcelStorageProduct(excelId){
+		jQuery.post("/xlcl/excel/delete", {'excelId':excelId}, function(data) {
+			if (data == 'success') {
+				$("#xlcl_excelStorageProduct_table").datagrid('reload');
+			} else {
+				$.messager.alert('Info', "删除失败", 'info');
+			}
+		});
+	}
+	
+	function excelStorageProduct_out_product(){
+		$("#excelStorageProduct_product_div_ifr").attr('src',"/xlcl/excel/openRepertoryProductExcel");
+		$('#excelStorageProduct_product_div').window('open');
+	}
+		
+</script>	

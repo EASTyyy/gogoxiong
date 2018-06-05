@@ -1,0 +1,95 @@
+<style>
+.progress{
+	display: block;
+	position: relative;
+	text-align: center;
+}
+
+.progress span{
+	display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: red;
+    opacity: 0.2;
+}
+</style>
+<!-- 搜索Div -->
+<div id="buyerAddressToolbar" style="padding: 10px; height: auto">
+	商品分类：<select id="getProductCategory" style="width: 100px;">
+				<option value="99999">全部</option>
+		   </select>
+	价格区间：<select id="priceSection" class="easyui-combobox" style="width: 100px;">
+			<option value="99999">全部</option>
+			<option value="1">0-5</option>
+			<option value="2">5-10</option>
+			<option value="3">10-50</option>
+			<option value="4">50-100</option>
+			<option value="5">100以上</option>
+		</select>
+	统计范围：<select id="buyerAddressLimit" class="easyui-combobox" style="width: 100px;">
+				<option value="1">近一天</option>
+				<option value="7">近一周</option>
+				<option value="30">近一个月</option>
+			</select>
+	<a	href="javascript:searchBuyerAddress();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+</div>
+
+<table id="buyerAddress" style="heigth: auto;"></table>
+
+<script>
+getProductCategory();
+function getProductCategory(){
+	var getProductCategory = $('#getProductCategory');
+	$.get('/tjsc/productCategory/categoryList', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+			$(option).appendTo(getProductCategory);
+		})
+	})
+}
+
+
+	$('#buyerAddress').datagrid({
+ 		url : '/tjsc/memberArealDistribution/buyerAddressDistributionList',
+		toolbar : '#buyerAddressToolbar',
+		//pageSize:20,
+		pagination : false,
+		singleSelect : true,
+		rownumbers : true,
+		autoRowHeight : true,
+		fitColumns:true,
+		fit:true,
+		queryParams : {
+			"limitTime" : "1",
+			"categoryId" : "99999",
+			"priceSection" : "99999"
+		}, 
+		columns : [ [
+				{
+					field : 'name',
+					title : '城市名称'
+				},
+				{
+					field : 'value',
+					title : '用户分布数',
+					formatter : function(value, row, index) {
+						return '<div class="progress">'+ value +'<span style="width:'+ (value/row.maxValue)*64 +'px;height:18px;"></span></div>';
+					}
+				}
+			] ]
+	});
+
+	function searchBuyerAddress() {
+		var limitTime = $('#buyerAddressLimit').combobox('getValue');
+		var categoryId = $("#getProductCategory").val();
+		var priceSection = $('#priceSection').combobox('getValue');
+		$("#buyerAddress").datagrid('reload', {
+			"limitTime" : limitTime,
+			"categoryId" : categoryId,
+			"priceSection" : priceSection
+		});
+	}
+	
+</script>
+

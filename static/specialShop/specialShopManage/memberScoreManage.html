@@ -1,0 +1,87 @@
+<style type="text/css">
+</style>
+
+<!-- 搜索Div -->
+<div id="specialMemberScoreTableToolbar" style="padding: 5px; height: auto">
+	<div>
+		用户昵称：<input id="specialMemberName" class="easyui-validatebox" name="name" style="width:100px;">
+		
+		<a href="javascript:searchMemberScore();" class="easyui-linkbutton"
+			iconCls="icon-search">搜索</a>
+	</div>
+</div>
+
+<table id="member_score__table" style="heigth: auto;"></table>
+<div id="member_score_div" class="easyui-window" title="会员积分管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="member_score_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#member_score__table').datagrid(
+			{
+				url : '/tjsc/memberScore/list',
+				toolbar : '#specialMemberScoreTableToolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'nickName',
+								title : '用户昵称'
+							},
+							{
+								field : 'presentScore',
+								title : '当前积分',
+								sortable : true
+							},
+							{
+								field : 'totalScore',
+								title : '累计积分',
+								sortable : true
+							},
+							{
+								field : 'levelName',
+								title : '会员等级'
+							},
+							{
+								field : 'discountsRatio',
+								title : '优惠比例'
+							},
+							{
+								field : 'levelChangeTime',
+								title : '会员等级升级时间'
+							}	
+				/* 			{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("scoreVisitSaveLevel", row.id,"修改") ;
+								}
+							} */
+						] ]
+			});
+
+	function searchMemberScore() {
+		
+		$("#member_score__table").datagrid(
+				'reload',
+				{
+					"name" : $("#specialMemberName").val()
+				}
+		);
+		
+	}
+	
+</script>

@@ -1,0 +1,51 @@
+<style type="text/css">
+</style>
+<table id="mix_fight_start_table" style="heigth: auto;"></table>
+<!-- 修改混拼起拼金额-->
+<div id="mix_fight_start_div" class="easyui-window" title="混拼管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="mix_fight_start_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#mix_fight_start_table').datagrid(
+			{
+				url : '/tjsc/mixFightCash/index',
+				toolbar : '#special_merge_order_toolbar',
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				columns : [ [	
+							{
+								field : 'mixFightCash',
+								title : '混拼起拼金额'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("specialMixSaveMergeOrder", row.id,"修改");
+								}
+							}
+						] ]
+	});
+	//打开特价拼单活动编辑页
+	function specialMixSaveMergeOrder(id) {
+		var parentDivId = "mix_fight_start_div";
+		var parentTableId = "mix_fight_start_table";
+		var url = "/tjsc/mixFightCash/input?mixFightCashId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#mix_fight_start_div_ifr").attr('src', url);
+		$('#mix_fight_start_div').window('open');
+	}
+	
+</script>

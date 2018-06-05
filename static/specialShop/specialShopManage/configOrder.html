@@ -1,0 +1,306 @@
+<style>
+#configOrderSelectId{
+	padding: 10px 0;
+	display: none;
+}
+
+#configOrderSearchFromToolbar #configOrderSelectId a{
+	padding-right: 7px;
+    font-size: 14px;
+    color: red;
+    cursor:pointer;
+}
+
+#configOrderSearchFromToolbar a.cancel{
+	display: none;
+}
+
+#configOrderSearchFromToolbar a.save{
+	display: none;
+}
+
+#configOrderSelectId .first i{
+	color: red;
+	padding:0 3px ;
+	font-size: 16px;
+}
+
+</style>
+
+<!-- 搜索Div -->
+<div id="configOrderSearchFromToolbar" style="padding: 5px; height: auto">
+	<div>
+		<form id="configOrderQueryMemberForm">
+			 客户名称:<input class="easyui-validatebox" name="remark" style="width: 100px;">
+			 会员ID:<input class="easyui-validatebox" name="memberId" style="width: 100px;">  
+			<!--  用户名称:<input class="easyui-validatebox" name="name" style="width: 100px;"> 
+			 联系电话:<input class="easyui-validatebox" name="mobi" style="width: 100px;"> -->
+				<a href="javascript:configOrderSearchXlclMember();" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+<!-- 				<a href="javascript:multipleConfigOrder();" class="easyui-linkbutton config" iconCls="icon-add">批量配置订货单</a> -->
+				<a href="javascript:multipleConfigOrder2();" class="easyui-linkbutton config" iconCls="icon-add">批量配置订货单</a>
+				<a href="javascript:saveMultipleConfigOrder();" class="easyui-linkbutton save" iconCls="icon-save">确定</a>
+				<a href="javascript:cancelMultipleConfigOrder();" class="easyui-linkbutton cancel" iconCls="icon-remove">取消</a>
+				<div id="configOrderSelectId">
+					<span class="first">已选择<i>0</i>个会员：</span>
+				</div>
+		</form>
+	</div>
+</div>
+
+<!-- 配置订货单 -->
+<div id="config_member_order_div" class="easyui-window" title="配置订货单"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1350px; height:800px; padding: 10px;">
+	<iframe src="#" id="config_member_order_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 批量配置订货单 -->
+<div id="multiple_config_member_order_div" class="easyui-window" title="批量配置订货单"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1350px; height:800px; padding: 10px;">
+	<iframe src="#" id="multiple_config_member_order_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 历史记录 -->
+<div id="config_member_order_history_div" class="easyui-window" title="配置历史"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1100px; height:800px; padding: 10px;">
+	<iframe src="#" id="config_member_order_history_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<table id="configMemberOrderTable" style="heigth: auto;"></table>
+
+<script>
+	$('#configMemberOrderTable')
+			.datagrid(
+					{
+						url : '/tjsc/memberRelationForSalesman/memberList',
+						toolbar : '#configOrderSearchFromToolbar',
+						//pageSize:20,
+						pagination : true,
+						singleSelect : false,
+						rownumbers : true,
+						autoRowHeight : true,
+						fitColumns:true,
+						fit:true,
+						queryParams:{"type":1},
+						onCheck : configMemberOrderTableOnCheck,
+						onUncheck : configMemberOrderTableOnUncheck,
+						columns : [ [
+// 								{	field : 'id',
+// 									checkbox : true
+// 									//hidden : true
+// 								},
+								{
+									field : 'memberId',
+									title : '会员ID'
+								},
+								{
+									field : 'remark',
+									title : '客户名称'
+								},
+								{
+									field : 'name',
+									title : '用户昵称'
+								},
+								{
+									field : 'phone',
+									title : '联系电话'
+								},
+								{
+									field : 'phoneName',
+									title : '联系人'
+								},
+								{
+									field : 'fullAddress',
+									title : '联系地址'
+								},
+								{
+									field : 'discountsRatio',
+									title : '后台设置优惠比例'
+								},
+								{
+									field : 'baoLongPermissionsStr',
+									title : '是否为暴龙用户'
+								},
+								{
+									field : 'warehouseName',
+									title : '仓库权限'
+								},
+								{
+									field : 'operate',
+									title : '操作',
+									formatter : function(value, row, index) {
+										return outPutFunction("configMemberOrder", row.memberId,"配置订货单") + outPutFunction("memberOrderHistory", row.memberId,"历史记录");
+									}
+								}
+								
+							] ]
+					});
+	
+	
+	function multipleConfigOrder2(){
+		var parentDivId = "multiple_config_member_order_div";
+		var parentTableId = "configMemberOrderTable";
+		var url = "/tjsc/salesmanBatchOrder/openConfigurationSalesmanOrder?"
+		+ "&parentDivId=" + parentDivId + "&parentTableId="
+		+ parentTableId;
+		
+		$("#multiple_config_member_order_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#multiple_config_member_order_div').window({
+			    width: 1200,
+			    height: 640,
+			    top: ($(window).height() - 640) * 0.5,
+			    left: ($(window).width() - 1200) * 0.5
+			})
+		}
+		$('#multiple_config_member_order_div').window('open');
+	}
+	
+	
+	
+	function configMemberOrder(memberId){
+		var parentDivId = "config_member_order_div";
+		var parentTableId = "configMemberOrderTable";
+		var url = "/tjsc/salesmanOrder/openConfigurationSalesmanOrder?memberId=" + memberId
+		+ "&parentDivId=" + parentDivId + "&parentTableId="
+		+ parentTableId;
+		
+		$("#config_member_order_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#config_member_order_div').window({
+			    width: 1200,
+			    height: 640,
+			    top: ($(window).height() - 640) * 0.5,
+			    left: ($(window).width() - 1200) * 0.5
+			})
+		}
+		$('#config_member_order_div').window('open');
+	}
+	
+	function memberOrderHistory(memberId){
+		var parentDivId = "config_member_order_history_div";
+		var parentTableId = "configMemberOrderTable";
+		var url = "/tjsc/salesmanOrder/openSalesmanOrderHistory?memberId=" + memberId
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#config_member_order_history_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#config_member_order_history_div').window({
+			    width: 1100,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 1100) * 0.5
+			})
+		}
+		$('#config_member_order_history_div').window('open');
+	}
+
+	function configOrderSearchXlclMember() {
+		$("#configMemberOrderTable").datagrid('reload', {
+			"memberId" : $("#configOrderQueryMemberForm input[name='memberId']").val(),
+			"remark" : $("#configOrderQueryMemberForm input[name='remark']").val(),
+			/* "name" : $("#configOrderQueryMemberForm input[name='name']").val(),
+			"mobi" : $("#configOrderQueryMemberForm input[name='mobi']").val() */
+			"type":1
+		});
+	}
+	
+	
+	
+	/* 开始 */
+	
+	//勾选选择
+	function configMemberOrderTableOnCheck(rowIndex, rowData){
+		var isAbleSelect = $('#configOrderSelectId').css('display') == 'none' ? false : true;
+		if(!isAbleSelect){return}
+		var selectArr = getConfigMemberOrderCalcSeletArr();
+		if(selectArr.indexOf(rowData.memberId) != -1){return}
+		configMemberOrderAddId(rowData.memberId,rowData.remark);
+	}
+	
+	//取消勾选
+	function configMemberOrderTableOnUncheck(rowIndex, rowData){
+		var isAbleSelect = $('#configOrderSelectId').css('display') == 'none' ? false : true;
+		if(!isAbleSelect){return}
+		configMemberOrderRemoveId(rowData.memberId);
+	}
+	
+	//添加到显示列表
+	function configMemberOrderAddId(id,remark){
+		var a = '<a id=configMemberOrder'+ id +' data-id='+ id +' href="javascript:configMemberOrderRemoveId('+ id +');" >'+ remark +',</a>'
+		$(a).insertAfter($('#configOrderSelectId span.first'));
+		configMemberOrderCalcSeletNum();
+	}
+	
+	//显示列表中删除
+	function configMemberOrderRemoveId(id){
+		$('#configMemberOrder'+id).remove();
+		configMemberOrderCalcSeletNum();
+	}
+	
+	//取消多选模式
+	function cancelMultipleConfigOrder(){
+		$('#configOrderSearchFromToolbar a.cancel').css('display','none');
+		$('#configOrderSearchFromToolbar a.save').css('display','none');
+		$('#configOrderSearchFromToolbar a.config ').css('display','inline-block');
+		$('#configOrderSelectId').css('display','none');
+		$('#configOrderSelectId a').remove();
+		$("#configMemberOrderTable").datagrid('reload', {
+			"memberId" : $("#configOrderQueryMemberForm input[name='memberId']").val(),
+			"type":1
+		});
+	}
+	
+	//开启多选模式
+	function multipleConfigOrder(){
+		$('#configOrderSearchFromToolbar a.cancel').css('display','inline-block');
+		$('#configOrderSearchFromToolbar a.save').css('display','inline-block');
+		$('#configOrderSearchFromToolbar a.config ').css('display','none');
+		$('#configOrderSelectId').css('display','block');
+		$("#configMemberOrderTable").datagrid('reload', {
+			"memberId" : $("#configOrderQueryMemberForm input[name='memberId']").val(),
+			"type":1
+		});
+		configMemberOrderCalcSeletNum();
+	}
+	
+	//保存多选结果
+	function saveMultipleConfigOrder(){
+		if(!getConfigMemberOrderCalcSeletArr().length){
+			alert('请选择用户！');
+			return;
+		}
+		var seletStr = getConfigMemberOrderCalcSeletArr().join(",");
+		configMemberOrder(seletStr, 2);
+		cancelMultipleConfigOrder();
+	}
+	
+	//获取显示列表的数组
+	function getConfigMemberOrderCalcSeletArr(){
+		var result = [];
+		$('#configOrderSelectId>a').each(function(index,element){
+			var str = parseFloat($(element).attr('data-id'));
+			result.push(str);
+			
+		})
+		return result;
+	}
+	
+	//计算已选数量
+	function configMemberOrderCalcSeletNum(){
+		var selectNum = $('#configOrderSelectId>a').size();
+		$('#configOrderSelectId .first i').html(selectNum);
+	}
+	
+	/* 结束 */
+	
+</script>
+

@@ -1,0 +1,170 @@
+<style type="text/css">
+.productFormTable tbody tr {
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+
+.productFormTable tbody tr td {
+	width: 300px
+}
+
+.productFormTable tbody tr td input {
+	width: 200px;
+}
+</style>
+<!-- 搜索Div -->
+<div id="memberCreditSearchFromToolbar" style="padding: 5px; height: auto">
+	<div>
+		<form id="queryMemberCreditForm">
+			</select> 
+			用户ID:<input
+				class="easyui-validatebox" name="id" style="width: 100px;">
+			用户昵称:<input class="easyui-validatebox" name="name"
+				style="width: 100px;"> 联系电话:<input
+				class="easyui-validatebox" name="phone" style="width: 100px;">
+			<!-- 商品分类名称:<input class="easyui-validatebox" name="productSeries.parent.name" > -->
+			<!-- 加入时间：<input id="searchCreateTimeStart" type="text"
+				class="easyui-datebox" name="createTimeStart" style="width: 100px;">至：
+			<input type="text" id="searchCreateTimeEnd" class="easyui-datebox"
+				name="createTimeEnd" style="width: 100px;"> --> <a
+				href="javascript:searchMemberCredit();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+			<!-- <a href="javascript:resetXlclProduct();" class="easyui-linkbutton" iconCls="icon-clear">清空</a> -->
+
+		</form>
+	</div>
+</div>
+
+<!-- 充值 -->
+<div id="special_member_credit_recharge_div" class="easyui-window" title="充值"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="special_member_credit_recharge_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 充值记录 -->
+<div id="special_member_credit_recharge_record_div" class="easyui-window" title="充值历史记录"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1000px; height:800px; padding: 10px;">
+	<iframe src="#" id="special_member_credit_recharge_record_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+<table id="memberCreditTable" style="heigth: auto;"></table>
+
+<script>
+	$('#memberCreditTable')
+			.datagrid(
+					{
+						url : '/xlcl/member/list',
+						toolbar : '#memberCreditSearchFromToolbar',
+						//pageSize:20,
+						pagination : true,
+						singleSelect : true,
+						rownumbers : true,
+						autoRowHeight : true,
+						fitColumns:true,
+						fit:true,
+						queryParams : {
+							"sortField" : "createTime",
+							"sortOrder" : "DESC"
+						}, //加入排序字段
+						columns : [ [
+								{
+									field : 'id',
+									title : '用户ID',
+									sortable : true
+								},
+								{
+									field : 'name',
+									title : '用户昵称',
+									sortable : true
+								},
+								{
+									field : 'phone',
+									title : '联系电话',
+									sortable : true
+								},
+								{
+									field : 'phoneName',
+									title : '联系人',
+									sortable : true
+								},
+								{
+									field : 'fullAddress',
+									title : '联系地址',
+									sortable : true
+								},
+								{
+									field : 'createTime',
+									title : '加入时间',
+									sortable : true
+								},
+								{
+									field : 'operate',
+									title : '操作',
+									formatter : function(value, row, index) {
+										return outPutFunction("MemberRechargeRecord", row.id,"查看历史记录")+outPutFunction("MemberRecharge", row.id,"信用额度充值")+outPutFunction("MemberRecharge2", row.id,"转账充值");
+									}
+								}
+							] ]
+					});
+	
+	/* 充值 */
+	function MemberRecharge(id){
+		var type = 'credit';
+		var parentDivId = "special_member_credit_recharge_div";
+		var parentTableId = "memberCreditTable";
+		var url = "/tjsc/memberDepositHistory/openRecharge?memberId=" + id + "&type=" + type
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_member_credit_recharge_div_ifr").attr('src', url);
+		$('#special_member_credit_recharge_div').window('open');
+	}
+	
+	function MemberRecharge2(id){
+		var type = 'transfer';
+		var parentDivId = "special_member_credit_recharge_div";
+		var parentTableId = "memberCreditTable";
+		var url = "/tjsc/memberDepositHistory/openRecharge?memberId=" + id + "&type=" + type
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_member_credit_recharge_div_ifr").attr('src', url);
+		$('#special_member_credit_recharge_div').window('open');
+	}
+	
+	/* 充值记录 */
+	function MemberRechargeRecord(id){
+		var parentDivId = "special_member_credit_recharge_record_div";
+		var parentTableId = "memberCreditTable";
+		var url = "/tjsc/memberDepositHistory/openRechargeQueryHistory?memberId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_member_credit_recharge_record_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#special_member_credit_recharge_record_div').window({
+			    width: 600,
+			    height: 400,
+			    top: ($(window).height() - 400) * 0.5,
+			    left: ($(window).width() - 600) * 0.5
+			})
+		}
+		
+		$('#special_member_credit_recharge_record_div').window('open');
+	}
+
+	function searchMemberCredit() {
+/* 		var strStart = $("#searchCreateTimeStart").datebox("getValue");
+		var strEnd = $("#searchCreateTimeEnd").datebox("getValue"); */
+
+		$("#memberCreditTable").datagrid('reload', {
+			"id" : $("#queryMemberCreditForm input[name='id']").val(),
+			"name" : $("#queryMemberCreditForm input[name='name']").val(),
+			"phone":$("#queryMemberCreditForm input[name='phone']").val()
+		});
+	}
+	
+</script>
+

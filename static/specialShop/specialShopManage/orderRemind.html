@@ -1,0 +1,59 @@
+<style type="text/css">
+#orderRemindForm{
+	margin: 30px;
+}
+</style>
+
+<form id="orderRemindForm">
+	<input id="id" name="id" value="1" type="hidden">
+	提醒人手机号：<input id="orderRemindPhone" class="easyui-validatebox" name="phone" style="width:200px;" >
+	<a href="javascript:orderRemindFormSubmit();" class="easyui-linkbutton"
+		iconCls="icon-save">确定</a>
+</form>
+
+<script>
+
+init();
+
+function init(){
+	$.ajax({
+        type: "GET",
+        url:"/tjsc/orderRemind/findDefultData",
+        async:false,
+        success: function(data){
+        	$('#orderRemindPhone').val(data);
+        },
+        error: function(error){
+        	jQuery.messager.alert('Info', error, 'info');
+        }
+	});
+}
+
+function orderRemindFormSubmit(){
+	var phoneReg = /^1[34578]\d{9}$/;
+	if( !phoneReg.test( $('#orderRemindPhone').val() ) ){
+		alert('手机号有误！')
+		return;
+	}
+	$.messager.progress();
+	$('#orderRemindForm').form('submit',{
+		url:"/tjsc/orderRemind/save",
+		onSubmit: function(){
+			var isValid = $(this).form('validate');
+			if (!isValid){
+				$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+			}
+			return isValid;	// 返回false终止表单提交
+		},
+		success : function(data) {
+			$.messager.progress('close');
+			if (data == 'success') {
+				jQuery.messager.alert('Info','保存成功', 'info');
+			} else {
+				jQuery.messager.alert('Info', data, 'info');
+			}
+		}
+	});
+	
+}
+</script>

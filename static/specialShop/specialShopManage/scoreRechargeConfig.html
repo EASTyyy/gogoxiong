@@ -1,0 +1,88 @@
+<style type="text/css">
+</style>
+<div id="score_recharge_config_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="scoreRechargeSave(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">添加积分等级</a>
+</div>
+<table id="score_recharge_table" style="heigth: auto;"></table>
+<div id="score_recharge_save_div" class="easyui-window" title="访问积分管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="score_recharge_save_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#score_recharge_table').datagrid(
+			{
+				url : '/tjsc/score/recharge/config/list',
+				toolbar : '#score_recharge_config_toolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'typeName',
+								title : '类型名称 '
+							},
+							{
+								field : 'type',
+								title : '类型'
+							},
+							{
+								field : 'denomination',
+								title : '充值卡面额'
+							},
+							{
+								field : 'giveScore',
+								title : '赠送积分'
+							},
+							
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("scoreRechargeSave", row.id,"修改") + outPutFunction("scoreRemove",row.id, "删除");
+								}
+							}
+						] ]
+			});
+	function scoreRechargeSave(id) {
+		var parentDivId = "score_recharge_save_div";
+		var parentTableId = "score_recharge_table";
+		var url = "/tjsc/score/recharge/input?configId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#score_recharge_save_div_ifr").attr('src', url);
+		$('#score_recharge_save_div').window('open');
+	}
+
+
+	//删除
+	function scoreRemove(rid) {
+		$.messager.confirm('积分配置', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/score/recharge/delete", {
+					"configId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#score_recharge_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

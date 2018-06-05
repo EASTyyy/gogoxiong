@@ -1,0 +1,93 @@
+
+<div style="margin: 24px 10px;">
+	统计类型：<select id="dealTrendType" class="easyui-combobox" style="width: 100px;">
+				<option value="1">订单量</option>
+				<option value="2">商品量</option>
+				<option value="3">交易额</option>
+			</select>
+	
+	时间范围：<select id="dealTrendTimeLimit" class="easyui-combobox" style="width: 100px;">
+				<option value="1">近一天</option>
+				<option value="7">近一周</option>
+				<option value="30">近一个月</option>
+			</select>
+		<a href="javascript:dealTrendConfirm();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+		<span style="color: red; margin-left: 77px;font-size: 18px;">默认统计近一天订单量</span>
+</div>
+
+
+<div id="dealTrend" style="width: 800px;height:600px;"></div>
+
+<script>
+
+var data=[["2000-06-05",116],["2000-06-06",129],["2000-06-07",135],["2000-06-08",86]]
+
+var dealTrendChart = echarts.init(document.getElementById('dealTrend'));
+
+//setDealTrendChart('');
+
+function setDealTrendChart(type,limitTime,text){
+	
+	$.get('/tjsc/transactionStatistics/tradeTrendChart?statisticalType='+type+'&type='+limitTime, function (data) {
+	    
+			dealTrendChart.setOption(option = {
+			    title: {
+			        text: '统计'+text
+			    },
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    xAxis: {
+			    	axisLabel:{
+                    	interval:2,
+	                    textStyle:{
+	                        color:"#c23531"
+	                    }
+                  	},
+			    	boundaryGap:false,
+			        data: data.map(function (item) {
+			            return item[0];
+			        })
+			    },
+			    yAxis: {
+			        splitLine: {
+			            show: true
+			        }
+			    },
+			    toolbox: {
+			        left: 'center',
+			        feature: {
+			            saveAsImage: {}
+			        }
+			    },
+			    series: {
+			        name: text,
+			        type: 'line',
+			        data: data.map(function (item) {
+			            return item[1];
+			        }),
+			        itemStyle : {  
+	                    normal : {  
+	                        lineStyle:{  
+	                            color:'#95B8E7'  
+	                        }  
+	                    }  
+	                }
+			    }
+			});
+		
+	});
+	
+	
+	
+}
+
+function dealTrendConfirm() {
+	var type = $('#dealTrendType').combobox('getValue');
+	var limitTime = $("#dealTrendTimeLimit").combobox("getValue");
+	var text = $('#dealTrendType').combobox('getText');
+	setDealTrendChart(type,limitTime,text);
+}
+
+</script>
+

@@ -1,0 +1,93 @@
+<style>
+.progress{
+	display: block;
+	position: relative;
+	text-align: center;
+}
+
+.progress span{
+	display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: red;
+    opacity: 0.2;
+}
+</style>
+<!-- 搜索Div -->
+<div id="monthsBuyerAddressToolbar" style="padding: 10px; height: auto">
+	 指定月份：<select id="buyerAddressMonth" style="width: 100px;"></select>
+	 商品分类：<select id="getProductCategoryMonth" style="width: 100px;">
+				<option value="99999">全部</option>
+		   </select>
+	价格区间：<select id="priceSectionMonth" class="easyui-combobox" style="width: 100px;">
+			<option value="99999">全部</option>
+			<option value="1">0-5</option>
+			<option value="2">5-10</option>
+			<option value="3">10-50</option>
+			<option value="4">50-100</option>
+			<option value="5">100以上</option>
+		</select>
+	<a	href="javascript:searchMonthsBuyerAddress();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+</div>
+
+<table id="monthsBuyerAddress" style="heigth: auto;"></table>
+
+<script>
+
+getMonths();
+function getMonths(){
+	var dealTrendMonth = $('#buyerAddressMonth');
+	$.get('/tjsc/transactionStatistics/getMonths', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value +'>'+ value +'</option>';
+			$(option).appendTo(dealTrendMonth);
+		})
+	})
+}
+
+getProductCategoryMonth();
+function getProductCategoryMonth(){
+	var getProductCategoryMonth = $('#getProductCategoryMonth');
+	$.get('/tjsc/productCategory/categoryList', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+			$(option).appendTo(getProductCategoryMonth);
+		})
+	})
+}
+
+function searchMonthsBuyerAddress(){
+	
+	var month = $("#buyerAddressMonth option:selected").text();
+	var categoryId = $("#getProductCategoryMonth").val();
+	var priceSection = $('#priceSectionMonth').combobox('getValue');
+	$('#monthsBuyerAddress').datagrid({
+ 		url : '/tjsc/memberArealDistribution/specifyMonth/buyerAddressDistributionList?limitMonth='+month+'&categoryId='+categoryId+'&priceSection='+priceSection,
+		toolbar : '#monthsBuyerAddressToolbar',
+		//pageSize:20,
+		pagination : false,
+		singleSelect : true,
+		rownumbers : true,
+		autoRowHeight : true,
+		fitColumns:true,
+		fit:true,
+		columns : [ [
+				{
+					field : 'name',
+					title : '城市名称'
+				},
+				{
+					field : 'value',
+					title : '用户分布数',
+					formatter : function(value, row, index) {
+						return '<div class="progress">'+ value +'<span style="width:'+ (value/row.maxValue)*64 +'px;height:18px;"></span></div>';
+					}
+				}
+			] ]
+	});
+	$('#monthsBuyerAddress').datagrid('loadData', { total: 0, rows: [] });
+}
+
+</script>
+

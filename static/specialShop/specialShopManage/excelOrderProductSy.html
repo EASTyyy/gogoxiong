@@ -1,0 +1,56 @@
+
+<style type="text/css">
+</style> 
+<div id="xlcl_excelorderproduct_sy_window" style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a href="#" onclick="excelorderproduct_out_sy_orderProduct()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出订单商品</a>
+	</div>
+</div>
+
+ <table id="xlcl_excelorderproduct_sy_table" style="heigth:auto"></table> 
+
+<div id="excelorderproduct_orderProduct_sy_div" class="easyui-window" title="导出订单商品" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:950px; height: 450px; padding: 10px;">
+	<iframe src="#" id="excelorderproduct_orderProduct_sy_div_ifr" marginwidth="0" marginheight="0" width="950px" height="450px" frameborder="0" scrolling="false" allowtransparency="true"></iframe>	
+</div>
+<script>				
+
+	$('#xlcl_excelorderproduct_sy_table').datagrid({   
+		url:'/xlcl/excel/select?sortField=-createTime&type=34',   
+		//queryParams:{"userType":"between,1,2","isAccount":true},
+		pagination:true,
+		signleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		toolbar: '#xlcl_excelorderproduct_sy_window',
+		columns:[[   
+			{field : 'name',title : '文件名称',width:200},
+			{field : 'typeStr',title : '类型',width:80},
+			{field : 'excelTime',title : '导出时间',width:120}, 
+			{field : 'operate',title : '操作',width:250,
+				formatter : function(value, row, index) {
+				return '[<a target="_blank" href="'+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelOrderProductSy('+row.id+')">删除记录</a>]';
+				}
+			}
+		]]
+	});
+	
+	function deleteExcelOrderProductSy(excelId){
+		jQuery.post("/xlcl/excel/delete", {'excelId':excelId}, function(data) {
+			if (data == 'success') {
+				$("#xlcl_excelorderproduct_sy_table").datagrid('reload');
+			} else {
+				$.messager.alert('Info', "删除失败", 'info');
+			}
+		});
+	}
+	function excelorderproduct_out_sy_orderProduct(){
+		var parentDivId = "excelorderproduct_orderProduct_sy_div";
+		var parentTableId = "xlcl_excelorderproduct_sy_table";
+		$("#excelorderproduct_orderProduct_sy_div_ifr").attr('src',"/xlcl/excel/openOrderProductExcelForWarehouse?parentDivId="+parentDivId +"&parentTableId=" + parentTableId +"&warehouseId=34");
+
+		$('#excelorderproduct_orderProduct_sy_div').window('open');
+	}
+		
+</script>	

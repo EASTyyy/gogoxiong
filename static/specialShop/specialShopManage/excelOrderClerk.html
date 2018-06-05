@@ -1,0 +1,55 @@
+
+<style type="text/css">
+</style> 
+<div id="xlcl_excelorder_clerk_window" style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a href="#" onclick="excelorder_clerk_out_order()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出订单</a>
+	</div>
+	
+</div>
+ <table id="xlcl_excelorder_clerk_table" style="heigth:auto"></table> 
+
+<div id="excelorder_clerk_order_div" class="easyui-window" title="导出订单" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:750px; height: 650px; padding: 10px;">
+	<iframe src="#" id="excelorder_clerk_order_div_ifr" marginwidth="0" marginheight="0" width="100%" height="100%" frameborder="0" scrolling="false" allowtransparency="true"></iframe>	
+</div>
+<script>				
+
+	$('#xlcl_excelorder_clerk_table').datagrid({   
+		url:'/xlcl/excel/select?sortField=-createTime&type=3',   
+		//queryParams:{"userType":"between,1,2","isAccount":true},
+		pagination:true,
+		signleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		toolbar: '#xlcl_excelorder_clerk_window',
+		columns:[[   
+			{field : 'name',title : '文件名称',width:200},
+			{field : 'typeStr',title : '类型',width:80},
+			{field : 'excelTime',title : '导出时间',width:120}, 
+			{field : 'operate',title : '操作',width:250,
+				formatter : function(value, row, index) {
+				return '[<a target="_blank" href="'+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteClerkExcelOrder('+row.id+')">删除记录</a>]';
+						//return '[<a target="_blank" href="'+$!{staticRoot}+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelRecord('+row.id+')">删除记录</a>]';
+				}
+			}
+		]]
+	});
+	
+	function deleteClerkExcelOrder(excelId){
+		jQuery.post("/xlcl/excel/delete", {'excelId':excelId}, function(data) {
+			if (data == 'success') {
+				$("#xlcl_excelorder_clerk_table").datagrid('reload');
+			} else {
+				$.messager.alert('Info', "删除失败", 'info');
+			}
+		});
+	}
+	function excelorder_clerk_out_order(){
+		$("#excelorder_clerk_order_div_ifr").attr('src',"/xlcl/excel/openOrderExcel");
+		$('#excelorder_clerk_order_div').window('open');
+	}
+		
+		
+</script>	

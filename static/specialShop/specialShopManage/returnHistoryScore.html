@@ -1,0 +1,26 @@
+<style type="text/css">
+</style>
+<div style="padding: 40px;">
+	<a href="#" onclick="returnHistoryScore()" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">返还历史积分</a>
+</div>
+
+<script>
+
+	//删除
+	function returnHistoryScore() {
+		$.messager.confirm('返还历史积分', "确定要返还历史积分吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/memberScore/giveOrderHistoryScore",function(data) {
+					if (data == 'success') {
+						$.messager.alert('Info', '返还成功', 'info');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

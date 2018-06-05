@@ -1,0 +1,159 @@
+
+<!-- 搜索Div -->
+<div id="productAnalyzeToolbar" style="padding: 10px; height: auto">
+	<div>
+	商品分类：<select id="getProductCategoryAnalyze" style="width: 100px;">
+				<option value="">全部</option>
+		   </select>
+	价格区间：<select id="priceSectionAnalyze" class="easyui-combobox" style="width: 100px;">
+				<option value="">全部</option>
+				<option value="0,5">0-5</option>
+				<option value="5,10">5-10</option>
+				<option value="10,50">10-50</option>
+				<option value="50,100">50-100</option>
+				<option value="100,">100以上</option>
+		</select>
+		访问时间：<input id="productAnalyzeStartTime" type="text" class="easyui-datebox" style="width: 100px;">
+			 至： <input type="text" id="productAnalyzeEndTime" class="easyui-datebox" style="width: 100px;"> 
+			 <a	href="javascript:searchProductAnalyze();" class="easyui-linkbutton" iconCls="icon-search">有访问量搜索</a>
+			 <a	href="javascript:searchNoVisitProductAnalyze();" class="easyui-linkbutton" iconCls="icon-search">无访问量搜索</a>
+			 <a	href="javascript:analyzeOutData();" class="easyui-linkbutton">导出</a>
+	</div>
+</div>
+
+<table id="productAnalyzeTable" style="heigth: auto;"></table>
+
+<script>
+	var isNotVisitList = 1;
+	function analyzeOutData(){
+		if(confirm("是否导出？")){
+			var startDate = $("#productAnalyzeStartTime").datebox("getValue");
+			var endDate = $("#productAnalyzeEndTime").datebox("getValue");
+			var priceSectionAnalyze = $('#priceSectionAnalyze').combobox('getValue');
+			var categoryId = $("#getProductCategoryAnalyze").val();
+			$.get('/xlcl/excel/outExcelProductVisitBuyHistory?visitTimeStart='+startDate+'&visitTimeEnd='+endDate+'&price='+priceSectionAnalyze+'&categoryId='+categoryId+'&searchType='+isNotVisitList, function (data) {
+				if (data != 'fail') {
+					window.location = data;
+				} else {
+					alert("下载失败,请联系管理员!!!");
+				}
+		 	})
+		}
+		
+	}
+	
+	getProductCategoryAnalyze();
+	function getProductCategoryAnalyze(){
+		var getProductCategoryAnalyze = $('#getProductCategoryAnalyze');
+		$.get('/tjsc/productCategory/categoryList', function (data) {
+			$.each(data,function(i,value){
+				var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+				$(option).appendTo(getProductCategoryAnalyze);
+			})
+		})
+	}
+	$('#productAnalyzeTable').datagrid({
+ 		url : '/tjsc/productVisitBuyHistory/list',
+		toolbar : '#productAnalyzeToolbar',
+		//pageSize:20,
+		pagination : true,
+		singleSelect : true,
+		rownumbers : true,
+		autoRowHeight : true,
+		fitColumns:true,
+		fit:true,
+		queryParams : {
+			"sortField" : "createTime",
+			"sortOrder" : "DESC",
+			"priceSection" : '',
+			"categoryId" : ''
+		}, //加入排序字段
+		columns : [ [
+				{
+					field : 'productName',
+					title : '商品名称'
+				},
+				{
+					field : 'productNo',
+					title : '货号'
+				},
+			
+				{
+					field : 'visitTimes',
+					title : '访问量',
+					sortable : true
+				},
+				{
+					field : 'payTimes',
+					title : '交易量',
+					sortable : true
+				},
+				{
+					field : 'memberNum',
+					title : '访客数',
+					sortable : true
+				},
+				{
+					field : 'wholeBoxDealNum',
+					title : '整拼成交数(箱)',
+					sortable : true
+				},
+				{
+					field : 'mixFightDealBum',
+					title : '混拼成交数(个)',
+					sortable : true
+				},
+				{
+					field : 'dealVolume',
+					title : '交易总金额',
+					sortable : true
+				},
+				{
+					field : 'profit',
+					title : '商品总利润',
+					sortable : true
+				},
+				{
+					field : 'orderPaymentConversionRate',
+					title : '下单支付转化率',
+					sortable : true
+				},
+			] ]
+	});
+
+	function searchProductAnalyze() {
+		isNotVisitList = 1;
+		
+		var startDate = $("#productAnalyzeStartTime").datebox("getValue");
+		var endDate = $("#productAnalyzeEndTime").datebox("getValue");
+		var priceSectionAnalyze = $('#priceSectionAnalyze').combobox('getValue');
+		var categoryId = $("#getProductCategoryAnalyze").val();
+		var url = '/tjsc/productVisitBuyHistory/list';
+		$('#productAnalyzeTable').datagrid('options').url=url;
+		$("#productAnalyzeTable").datagrid('reload', {
+			"visitTimeStart" : startDate,
+			"visitTimeEnd" : endDate,
+			"price" : priceSectionAnalyze,
+			"categoryId" : categoryId
+		});
+	}
+	
+	function searchNoVisitProductAnalyze() {
+		isNotVisitList = 2;
+		
+		var startDate = $("#productAnalyzeStartTime").datebox("getValue");
+		var endDate = $("#productAnalyzeEndTime").datebox("getValue");
+		var priceSectionAnalyze = $('#priceSectionAnalyze').combobox('getValue');
+		var categoryId = $("#getProductCategoryAnalyze").val();
+		var url = '/tjsc/productVisitBuyHistory/notVisitList';
+		$('#productAnalyzeTable').datagrid('options').url=url;
+		$("#productAnalyzeTable").datagrid('reload', {
+			"visitTimeStart" : startDate,
+			"visitTimeEnd" : endDate,
+			"price" : priceSectionAnalyze,
+			"categoryId" : categoryId
+		});
+	}
+	
+</script>
+

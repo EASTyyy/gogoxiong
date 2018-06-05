@@ -1,0 +1,181 @@
+<style type="text/css">
+</style>
+<div id="special_merge_order_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="specialSaveMergeOrder(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增特价拼单活动</a>
+</div>
+<table id="special_merge_order_table" style="heigth: auto;"></table>
+<!-- 新增/编辑拼单活动-->
+<div id="special_save_merge_order_div" class="easyui-window" title="活动管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="special_save_merge_order_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 编辑推送-->
+<div id="special_save_push_message_div" class="easyui-window" title="活动管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="special_save_push_message_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 配置商品 -->
+<div id="special_merge_order_config_product_div" class="easyui-window" title="配置商品"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1500px; height:800px; padding: 10px;">
+	<iframe src="#" id="special_merge_order_config_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#special_merge_order_table').datagrid(
+			{
+				url : '/tjsc/fightOrder/list',
+				toolbar : '#special_merge_order_toolbar',
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				columns : [ [
+							{
+								field : 'name',
+								title : '活动名'
+							},
+							{
+								field : 'startTime',
+								title : '开始时间'
+							},
+							{
+								field : 'endTime',
+								title : '结束时间'
+							},
+							{
+								field : 'tillTime',
+								title : '持续时间'
+							},
+							{
+								field : 'activityStatusStr',
+								title : '活动状态'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									if(row.activityStatus == 2) {
+										return outPutFunction("specialConfigMergeProduct", row.id,"配置商品") + outPutFunction("specialSaveMergeOrder", row.id,"修改") + outPutFunction("specialRemoveMergeOrder",row.id, "删除")+ outPutFunction("specialMidifyStatus",row.id, "修改活动状态");
+
+									} else {
+										if(!row.tjscSendActivityMessage.isSend){
+											return outPutFunction("specialConfigMergeProduct", row.id,"配置商品") + outPutFunction("specialSaveMergeOrder", row.id,"修改") + outPutFunction("specialRemoveMergeOrder",row.id, "删除")+ outPutFunction("specialMidifyStatus",row.id, "修改活动状态") + outPutFunction("specialSavePushMessage",row.id, "编辑推送");
+										}
+										else if(row.tjscSendActivityMessage.isSend == 1){
+											return outPutFunction("specialConfigMergeProduct", row.id,"配置商品") + outPutFunction("specialSaveMergeOrder", row.id,"修改") + outPutFunction("specialRemoveMergeOrder",row.id, "删除")+ outPutFunction("specialMidifyStatus",row.id, "修改活动状态") + outPutFunction("specialSavePushMessage",row.id, "编辑推送")+outPutFunction("specialSendPushMessage",row.tjscSendActivityMessage.id, "发送推送");
+										}
+										else{
+											return outPutFunction("specialConfigMergeProduct", row.id,"配置商品") + outPutFunction("specialSaveMergeOrder", row.id,"修改") + outPutFunction("specialRemoveMergeOrder",row.id, "删除")+ outPutFunction("specialMidifyStatus",row.id, "修改活动状态");
+										}
+									}
+								}
+							}
+						] ]
+	});
+	
+	
+	
+	//发送推送
+	function specialSendPushMessage(id){
+		$.messager.confirm('后台管理', "确定要发送吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/sendActivityMessage/sendMessage", {
+					"messageId" : id
+				}, 
+				function(data){
+					if (data == 'success') {
+						alert("活动消息推送成功!!!");
+						$("#special_merge_order_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+	
+	//打开推送编辑编辑页
+	function specialSavePushMessage(id) {
+		var parentDivId = "special_save_push_message_div";
+		var parentTableId = "special_merge_order_table";
+		var url = "/tjsc/sendActivityMessage/openSendMessage?fightOrderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_push_message_div_ifr").attr('src', url);
+		$('#special_save_push_message_div').window('open');
+	}
+	
+	//打开特价拼单活动编辑页
+	function specialSaveMergeOrder(id) {
+		var parentDivId = "special_save_merge_order_div";
+		var parentTableId = "special_merge_order_table";
+		var url = "/tjsc/fightOrder/input?fightOrderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_merge_order_div_ifr").attr('src', url);
+		$('#special_save_merge_order_div').window('open');
+	}
+	//配置商品
+	function specialConfigMergeProduct(id) {
+		var parentDivId = "special_merge_order_config_product_div";
+		var parentTableId = "special_merge_order_table";
+		var url = "/tjsc/fightOrder/fightOrder/select?fightOrderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_merge_order_config_product_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#special_merge_order_config_product_div').window({
+			    width: 900,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 900) * 0.5
+			})
+		}
+		$('#special_merge_order_config_product_div').window('open');
+	}
+	//修改活动状态
+	function specialMidifyStatus(id) {
+		var parentDivId = "special_merge_order_config_product_div";
+		var parentTableId = "special_merge_order_table";
+		var url = "/tjsc/fightOrder/fightOrder/modifyState?fightOrderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_merge_order_config_product_div_ifr").attr('src', url);
+		$('#special_merge_order_config_product_div').window('open');
+	}
+
+	//删除
+	function specialRemoveMergeOrder(rid) {
+		$.messager.confirm('拼单管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/fightOrder/delete", {
+					"fightOrderId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_merge_order_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

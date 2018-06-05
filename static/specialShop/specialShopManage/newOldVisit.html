@@ -1,0 +1,58 @@
+
+<table id="special_newoldvisit_table" style="heigth: auto;"></table>
+
+
+<script>
+$('#special_newoldvisit_table').datagrid(
+	{
+		url : '/tjsc/memberArealDistribution/memberList',
+		//toolbar : '#specialProductSearchFormToolbar',
+		//pageSize:20,
+		//queryParams:{"type":0},
+		pagination : true,
+		singleSelect : true,
+		rownumbers : true,
+		autoRowHeight : true,
+		fitColumns:true,
+		fit:true,
+		remoteSort:true,
+		columns : [ [
+		         	{
+						field : 'id',
+						title : '用户id'
+					},
+					{
+						field : 'name',
+						title : '用户昵称',
+						sortable : true
+					},
+					{
+						field : 'phone',
+						title : '手机号',
+						sortable : true
+					},
+					{
+						field : 'provinceName',
+						title : '省份',
+						sortable : true
+					},
+					{
+						field : 'cityName',
+						title : '城市',
+						sortable : true
+					},
+					{
+						field : 'districtName',
+						title : '区域',
+						sortable : true
+					},
+					{
+						field : 'createTime',
+						title : '创建时间',
+						sortable : true
+					}
+			] ]
+});
+
+</script>
+

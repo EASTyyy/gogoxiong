@@ -1,0 +1,216 @@
+<style>
+	#dealOverveiw{
+		margin: 30px;
+	}
+	
+	#dealOverveiw p{
+		font-size: 22px;
+	}
+	
+	#dealOverveiw span{
+		font-size: 20px;
+		color: red;
+	}
+	#dealOverveiwTable{
+     	border-left: 1px solid #000;
+    	border-top: 1px solid #000;
+     	border-collapse: collapse;
+     	text-align: center;
+     	margin: 17px;
+	}
+	#dealOverveiwTable td,table th{
+		border-right: 1px solid #000;     
+		border-bottom: 1px solid #000;
+		width: 100px;
+    	height: 40px;
+	}
+</style>
+<!-- 搜索Div -->
+<div style="padding: 10px; height: auto">
+	商品分类：<select id="getOverviewProductCategory" style="width: 100px;">
+				<option value="99999">全部</option>
+		   </select>
+	价格区间：<select id="overviewPriceSection" class="easyui-combobox" style="width: 100px;">
+				<option value="99999">全部</option>
+				<option value="1">0-5</option>
+				<option value="2">5-10</option>
+				<option value="3">10-50</option>
+				<option value="4">50-100</option>
+				<option value="5">100以上</option>
+			</select>
+	统计范围：<select id="dealOverviewLimit" class="easyui-combobox" style="width: 100px;">
+				<option value="1">近一天</option>
+				<option value="7">近一周</option>
+				<option value="30">近一个月</option>
+				<option value="60">近两个月</option>
+				<option value="90">近三个月</option>
+			</select>
+	<a	href="javascript:searchDealOverview();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+</div>
+
+<table id="dealOverveiwTable">
+     <thead>
+         <tr>
+             <th></th>
+             <th>总量</th>
+             <th>新访客</th>
+             <th>新访客占率</th>
+             <th>老访客</th>
+             <th>老访客占率</th>
+         </tr>
+     </thead>
+     <tbody>
+        <tr>
+            <td>支付订单（总）</td>
+            <td class="orderNum">0</td>
+            <td class="newOrderNum">0</td>
+            <td class="newOrderNumPercent">0</td>
+            <td class="oldOrderNum">0</td>
+            <td class="oldOrderNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>支付订单交易额</td>
+            <td class="gmv">0</td>
+            <td class="newGmv">0</td>
+            <td class="newGmvPercent">0</td>
+            <td class="oldGmv">0</td>
+            <td class="oldGmvPercent">0</td>
+        </tr>
+        <tr>
+            <td>整拼</td>
+            <td class="wholeBoxNum">0</td>
+            <td class="newWholeBoxNum">0</td>
+            <td class="newWholeBoxNumPercent">0</td>
+            <td class="oldWholeBoxNum">0</td>
+            <td class="oldWholeBoxNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>整拼交易额</td>
+            <td class="wholeBoxAmount">0</td>
+            <td class="newWholeBoxAmount">0</td>
+            <td class="newWholeBoxAmountPercent">0</td>
+            <td class="oldWholeBoxAmount">0</td>
+            <td class="oldWholeBoxAmountPercent">0</td>
+        </tr>
+        <tr>
+            <td>混拼</td>
+            <td class="mixFightNum">0</td>
+            <td class="newMixFightNum">0</td>
+            <td class="newMixFightNumPercent">0</td>
+            <td class="oldMixFightNum">0</td>
+            <td class="oldMixFightNumPercent">0</td>
+        </tr>
+        <tr>
+            <td>混拼交易额</td>
+            <td class="mixFightAmount">0</td>
+            <td class="newMixFightAmount">0</td>
+            <td class="newMixFightAmountPercent">0</td>
+            <td class="oldMixFightAmount">0</td>
+            <td class="oldMixFightAmountPercent">0</td>
+        </tr>
+    </tbody>
+</table>
+
+<div id="dealOverveiw">
+	<p>下单数量：<span class="allOrderNum"></span></p>
+	<p>下单-支付转化率：<span class="orderPaymentConversionRate"></span></p>
+	<p>独立访客数：<span class="memberVisitTimes"></span></p>
+	<p>下单买家数：<span class="orderTimes"></span></p>
+	<p>支付买家数：<span class="payTimes"></span></p>
+	<p>下单买家占比：<span class="orderVisitPercent"></span></p>
+	<p>支付买家占比：<span class="payVisitPercent"></span></p>
+</div>
+
+<script>
+
+function addTable(list){
+	$("#dealOverveiwTable .orderNum").html(list.orderNum);
+	$("#dealOverveiwTable .newOrderNum").html(list.newOrderNum);
+	$("#dealOverveiwTable .newOrderNumPercent").html(list.newOrderNumPercent);
+	$("#dealOverveiwTable .oldOrderNum").html(list.oldOrderNum);
+	$("#dealOverveiwTable .oldOrderNumPercent").html(list.oldOrderNumPercent);
+	
+	$("#dealOverveiwTable .gmv").html(list.gmv);
+	$("#dealOverveiwTable .newGmv").html(list.newGmv);
+	$("#dealOverveiwTable .newGmvPercent").html(list.newGmvPercent);
+	$("#dealOverveiwTable .oldGmv").html(list.oldGmv);
+	$("#dealOverveiwTable .oldGmvPercent").html(list.oldGmvPercent);
+	
+	$("#dealOverveiwTable .wholeBoxNum").html(list.wholeBoxNum);
+	$("#dealOverveiwTable .newWholeBoxNum").html(list.newWholeBoxNum);
+	$("#dealOverveiwTable .newWholeBoxNumPercent").html(list.newWholeBoxNumPercent);
+	$("#dealOverveiwTable .oldWholeBoxNum").html(list.oldWholeBoxNum);
+	$("#dealOverveiwTable .oldWholeBoxNumPercent").html(list.oldWholeBoxNumPercent);
+	
+	$("#dealOverveiwTable .wholeBoxAmount").html(list.wholeBoxAmount);
+	$("#dealOverveiwTable .newWholeBoxAmount").html(list.newWholeBoxAmount);
+	$("#dealOverveiwTable .newWholeBoxAmountPercent").html(list.newWholeBoxAmountPercent);
+	$("#dealOverveiwTable .oldWholeBoxAmount").html(list.oldWholeBoxAmount);
+	$("#dealOverveiwTable .oldWholeBoxAmountPercent").html(list.oldWholeBoxAmountPercent);
+	
+	$("#dealOverveiwTable .mixFightNum").html(list.mixFightNum);
+	$("#dealOverveiwTable .newMixFightNum").html(list.newMixFightNum);
+	$("#dealOverveiwTable .newMixFightNumPercent").html(list.newMixFightNumPercent);
+	$("#dealOverveiwTable .oldMixFightNum").html(list.oldMixFightNum);
+	$("#dealOverveiwTable .oldMixFightNumPercent").html(list.oldMixFightNumPercent);
+	
+	$("#dealOverveiwTable .mixFightAmount").html(list.mixFightAmount);
+	$("#dealOverveiwTable .newMixFightAmount").html(list.newMixFightAmount);
+	$("#dealOverveiwTable .newMixFightAmountPercent").html(list.newMixFightAmountPercent);
+	$("#dealOverveiwTable .oldMixFightAmount").html(list.oldMixFightAmount);
+	$("#dealOverveiwTable .oldMixFightAmountPercent").html(list.oldMixFightAmountPercent);
+	
+	$("#dealOverveiw .allOrderNum").html(list.allOrderNum);
+	$("#dealOverveiw .orderPaymentConversionRate").html(list.orderPaymentConversionRate);
+	
+	$("#dealOverveiw .memberVisitTimes").html(list.memberVisitTimes);
+	$("#dealOverveiw .orderTimes").html(list.orderTimes);
+	$("#dealOverveiw .payTimes").html(list.payTimes);
+	$("#dealOverveiw .orderVisitPercent").html(list.orderVisitPercent);
+	$("#dealOverveiw .payVisitPercent").html(list.payVisitPercent);
+	
+	//overviewFilter();
+}
+
+getOverviewProductCategory();
+function getOverviewProductCategory(){
+	var getOverviewProductCategory = $('#getOverviewProductCategory');
+	$.get('/tjsc/productCategory/categoryList', function (data) {
+		$.each(data,function(i,value){
+			var option = '<option value='+ value.id +'>'+ value.name +'</option>';
+			$(option).appendTo(getOverviewProductCategory);
+		})
+	})
+}
+
+request(1,'99999','99999');
+
+function searchDealOverview(){
+	var limitTime = $('#dealOverviewLimit').combobox('getValue');
+	var categoryId = $("#getOverviewProductCategory").val();
+	var priceSection = $('#overviewPriceSection').combobox('getValue');
+	request(limitTime,categoryId,priceSection);
+}
+
+function request(limitTime,categoryId,priceSection){
+	$.get('/tjsc/orderAnalyzing/limitTime/orderAnalyzing?limitTime='+limitTime+'&categoryId='+categoryId+'&priceSection='+priceSection, function (response){
+		addTable(response);
+	})
+}
+
+function overviewFilter(){
+	$('#dealOverveiwTable td').each(function(index,element){
+		if(!$(element).html() || $(element).html() == '0'){
+			$(element).html('-');
+		}
+	})
+	
+	$('#dealOverveiw span').each(function(index,element){
+		if(!$(element).html()){
+			$(element).html('-');
+		}
+	})
+}
+
+</script>
+

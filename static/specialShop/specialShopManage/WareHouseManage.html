@@ -1,0 +1,220 @@
+<style type="text/css">
+</style>
+<div id="special_WareHouse_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="specialSaveWareHouse(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增仓库</a>
+</div>
+<table id="special_WareHouse_table" style="heigth: auto;"></table>
+<!-- 新增/编辑仓库-->
+<div id="special_save_WareHouse_div" class="easyui-window" title="仓库管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="special_save_WareHouse_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 代理商管理权限 -->
+<div id="edit_area_permission_windom" class="easyui-dialog" title="分配代理商管理区域"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width: 400px; height: 500px">
+	<div style="padding: 10px 50px 10px 50px">
+		<form>
+			<input id="area_agentId" type="hidden" />
+			<a href="javascript:checkAll(true);" style="margin-right:20px;margin-left:10px;">全选</a>
+			<a href="javascript:checkAll(false);">清空</a>
+			<table>
+
+				<tr>
+					<td><ul id="agentAreaPermissionTree" class="ztree"></ul></td>
+
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+
+<script>
+	$('#special_WareHouse_table').datagrid(
+			{
+				url : '/tjsc/wareHouse/list',
+				toolbar : '#special_WareHouse_toolbar',
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				columns : [ [
+							{
+								field : 'name',
+								title : '仓库名'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+										return  outPutFunction("specialSaveWareHouse", row.id,"修改") + outPutFunction("editAreaPermission", row.id,"配置发货区域") + outPutFunction("specialRemoveSecondsKill",row.id, "删除");
+									
+								}
+							}
+						] ]
+	});
+	
+	$("#special_WareHouse_table").datagrid('reload');
+	
+	
+	//打开整点秒杀活动编辑页
+	function specialSaveWareHouse(id) {
+		var parentDivId = "special_save_WareHouse_div";
+		var parentTableId = "special_WareHouse_table";
+		var url = "/tjsc/wareHouse/input?wareHouseId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_WareHouse_div_ifr").attr('src', url);
+		$('#special_save_WareHouse_div').window('open');
+	}
+
+	//删除
+	function specialRemoveSecondsKill(rid) {
+		$.messager.confirm('仓库管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/wareHouse/delete", {
+					"wareHouseId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_WareHouse_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+	
+	//配置区域
+	 function editAreaPermission(agentId){
+		
+		var setting = {		
+				open:false,
+				expandAll:false,
+			 check: {
+					enable: true,
+					chkStyle: "checkbox",
+					chkboxType: { "Y": "ps", "N": "ps" }
+				},
+			 data: {
+					key: {
+						children: "children",
+						name: "name"
+					}
+				},
+				async: {
+					enable: true,
+					url: "/tjsc/area/getAreaTreeJson?isDistrict=false",
+				},
+				callback: {
+					onAsyncSuccess: areaPermissionCallback
+				}
+			};	
+		
+		$.fn.zTree.init($("#agentAreaPermissionTree"),setting);
+		$("#area_agentId").val(agentId);
+		$('#edit_area_permission_windom').dialog({
+			buttons: [{    
+				text: '确定', 
+				iconCls: 'icon-ok', 
+				handler: function() { 
+					saveAreaPermission()
+				} 
+			}]
+		});
+		 $('#edit_area_permission_windom').window('open');
+	}
+	
+	//地区回掉函数
+	function areaPermissionCallback(event, treeId, treeNode, msg){
+		var areaPerTree = $.fn.zTree.getZTreeObj("agentAreaPermissionTree");
+		
+		$.ajax({  
+           url:'/tjsc/wareHouse/getProductDeliverRegion',  
+           data:{'warehouseId':$("#area_agentId").val()},
+           cache:false,  
+          // method:post
+           dataType:'text',  
+           success:function(data){
+          	data=eval(data);
+              if(data.length==0)return;
+              for(var i=0;i<data.length;i++){  
+                if(data[i].grade !=null 
+              		  &&
+              		  data[i].grade != 0
+              			  &&
+                  		  data[i].grade != 1){
+               	
+                
+					 var node = areaPerTree.getNodeByParam("id",data[i].areaId,null);
+					 areaPerTree.checkNode(node, true, true);
+            		//展开父节点
+            		//var provinceNote = node.getParentNode();
+            		//areaPerTree.expandNode(provinceNote, true, true, true);
+                } 
+              }  
+           }  
+       });
+	
+	}
+	//点击保存
+	function saveAreaPermission(){
+		  	//获取选中的区域
+		   var treeObj = $.fn.zTree.getZTreeObj("agentAreaPermissionTree");
+		   var nodes = treeObj.getCheckedNodes(true);
+		   var areaIds ="";
+		   var areaGradeIds ="";
+		    for(var i =0;i<nodes.length;i++){
+				 areaIds+=nodes[i].id+",";
+				 areaGradeIds+=nodes[i].grade+",";
+			 }
+			 areaIds = areaIds.substring(0,areaIds.length-1);
+			 areaGradeIds = areaGradeIds.substring(0,areaGradeIds.length-1);
+			 
+			 $.messager.confirm('确认',"是否确认",function(r){    
+				    if (r){    
+				    	savaNewAreaPermisson(areaIds,areaGradeIds);   
+				    }    
+				});   
+			 
+	}
+	
+	//保存
+	function savaNewAreaPermisson(areaIds,areaGradeIds){
+          
+		 $.messager.progress();
+		$.post("/tjsc/wareHouse/saveDeliverRegion",
+				 {"areaIds":areaIds,"areaGradeIds":areaGradeIds,"warehouseId":$("#area_agentId").val()},
+				 function(data){
+					 $.messager.progress('close');
+					 if(data=='success'){
+						 $('#edit_area_permission_windom').window('close');
+						 $("#agentTable").datagrid('reload'); 
+						}else{
+							$.messager.alert('Info', data, 'info');
+						}
+				 }); 
+	}
+	
+	function checkAll(flag){
+		var zTree = $.fn.zTree.getZTreeObj("agentAreaPermissionTree");
+		if(flag){
+			zTree.checkAllNodes(true);
+		}
+		else{
+			zTree.checkAllNodes(false);
+		}
+		
+	}
+
+	
+</script>

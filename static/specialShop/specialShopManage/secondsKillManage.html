@@ -1,0 +1,178 @@
+<style type="text/css">
+</style>
+<div id="special_seconds_kill_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="specialSaveSecondsKill(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增整点秒杀活动</a>
+</div>
+<table id="special_seconds_kill_table" style="heigth: auto;"></table>
+<!-- 新增/编辑秒杀活动-->
+<div id="special_save_seconds_kill_div" class="easyui-window" title="活动管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="special_save_seconds_kill_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 编辑推送-->
+<div id="special_seconds_kill_save_push_message_div" class="easyui-window" title="活动管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:600px; padding: 10px;">
+	<iframe src="#" id="special_seconds_kill_save_push_message_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 配置商品 -->
+<div id="special_seconds_kill_config_product_div" class="easyui-window" title="配置商品"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:1400px; height:900px; padding: 10px;">
+	<iframe src="#" id="special_seconds_kill_config_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#special_seconds_kill_table').datagrid(
+			{
+				url : '/tjsc/seckill/list',
+				toolbar : '#special_seconds_kill_toolbar',
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+				columns : [ [
+							{
+								field : 'dateStr',
+								title : '日期'
+							},
+							{
+								field : 'startTimeStr',
+								title : '开始时间'
+							},
+							{
+								field : 'endTimeStr',
+								title : '结束时间'
+							},
+							{
+								field : 'activityStatusStr',
+								title : '活动状态'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									/*已结束状态不可推送消息*/
+									if(row.activityStatus == 2) {
+										return outPutFunction("specialConfigSecondsKillProduct", row.id,"配置商品") + outPutFunction("specialSaveSecondsKill", row.id,"修改") + outPutFunction("specialRemoveSecondsKill",row.id, "删除")+ outPutFunction("specialModifyState",row.id, "修改活动状态");
+									} else {
+										if(!row.tjscSendActivityMessage.isSend){
+											return outPutFunction("specialConfigSecondsKillProduct", row.id,"配置商品") + outPutFunction("specialSaveSecondsKill", row.id,"修改") + outPutFunction("specialRemoveSecondsKill",row.id, "删除")+ outPutFunction("specialModifyState",row.id, "修改活动状态") + outPutFunction("specialSecondsKillSavePushMessage",row.id, "编辑推送");
+										}
+										else if(row.tjscSendActivityMessage.isSend == 1){
+											return outPutFunction("specialConfigSecondsKillProduct", row.id,"配置商品") + outPutFunction("specialSaveSecondsKill", row.id,"修改") + outPutFunction("specialRemoveSecondsKill",row.id, "删除")+ outPutFunction("specialModifyState",row.id, "修改活动状态") + outPutFunction("specialSecondsKillSavePushMessage",row.id, "编辑推送")+outPutFunction("sendPushMessage",row.tjscSendActivityMessage.id, "发送推送");
+										}
+										else{
+											return outPutFunction("specialConfigSecondsKillProduct", row.id,"配置商品") + outPutFunction("specialSaveSecondsKill", row.id,"修改") + outPutFunction("specialRemoveSecondsKill",row.id, "删除")+ outPutFunction("specialModifyState",row.id, "修改活动状态");
+										}
+									}
+								}
+							}
+						] ]
+	});
+	
+	$("#special_seconds_kill_table").datagrid('reload');
+	
+	//发送推送
+	function sendPushMessage(id){
+		$.messager.confirm('后台管理', "确定要发送吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/sendActivityMessage/sendMessage", {
+					"messageId" : id
+				}, 
+				function(data){
+					if (data == 'success') {
+						alert("活动消息推送成功!!!");
+						$("#special_seconds_kill_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+	
+	//打开推送编辑编辑页
+	function specialSecondsKillSavePushMessage(id) {
+		var parentDivId = "special_seconds_kill_save_push_message_div";
+		var parentTableId = "special_seconds_kill_table";
+		var url = "/tjsc/sendActivityMessage/openSendMessage?seckillId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_seconds_kill_save_push_message_div_ifr").attr('src', url);
+		$('#special_seconds_kill_save_push_message_div').window('open');
+	}
+	
+	//打开整点秒杀活动编辑页
+	function specialSaveSecondsKill(id) {
+		var parentDivId = "special_save_seconds_kill_div";
+		var parentTableId = "special_seconds_kill_table";
+		var url = "/tjsc/seckill/input?seckillId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_seconds_kill_div_ifr").attr('src', url);
+		$('#special_save_seconds_kill_div').window('open');
+	}
+	//配置商品
+	function specialConfigSecondsKillProduct(id) {
+		var parentDivId = "special_seconds_kill_config_product_div";
+		var parentTableId = "special_seconds_kill_table";
+		var url = "/tjsc/seckill/seckill/select?seckillId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_seconds_kill_config_product_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#special_seconds_kill_config_product_div').window({
+			    width: 900,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 900) * 0.5
+			})
+		}
+		$('#special_seconds_kill_config_product_div').window('open');
+	}
+	//后台修改活动状态
+	function specialModifyState(id) {
+		var parentDivId = "special_seconds_kill_config_product_div";
+		var parentTableId = "special_seconds_kill_table";
+		var url = "/tjsc/seckill/seckill/modifyState?seckillId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_seconds_kill_config_product_div_ifr").attr('src', url);
+		$('#special_seconds_kill_config_product_div').window('open');
+	}
+
+	//删除
+	function specialRemoveSecondsKill(rid) {
+		$.messager.confirm('秒杀管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/seckill/delete", {
+					"seckillId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_seconds_kill_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+				
+			}
+		});
+	}
+
+	
+</script>

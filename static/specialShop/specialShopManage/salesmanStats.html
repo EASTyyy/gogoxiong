@@ -1,0 +1,96 @@
+<!-- 搜索Div -->
+<div id="salesmanStatsSearchFromToolbar" style="padding: 5px; height: auto">
+	<div>
+		<form id="salesmanStatsQueryMemberForm">
+			</select>
+			<!-- 用户ID:<input
+				class="easyui-validatebox" name="id" style="width: 100px;"> -->
+			 账户名称:<input class="easyui-validatebox" name="username"
+				style="width: 100px;"> 
+			 用户名称:<input class="easyui-validatebox" name="name"
+				style="width: 100px;"> 
+				联系电话:<input
+				class="easyui-validatebox" name="mobi" style="width: 100px;">
+			 时间范围：<input id="salesmanStatsSearchCreateTimeStart" type="text"
+				class="easyui-datebox" name="createTimeStart" style="width: 100px;">至：
+			<input type="text" id="salesmanStatsSearchCreateTimeEnd" class="easyui-datebox"
+				name="createTimeEnd" style="width: 100px;"> 
+				<a
+				href="javascript:salesmanStatsSearchXlclMember();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+</div>
+
+<table id="xlclsalesmanStatsMemberTable" style="heigth: auto;"></table>
+
+<script>
+	$('#xlclsalesmanStatsMemberTable')
+			.datagrid(
+					{
+						url : '/tjsc/memberRelationForSalesman/salesmanStatisticalData',
+						toolbar : '#salesmanStatsSearchFromToolbar',
+						//pageSize:20,
+						pagination : true,
+						singleSelect : true,
+						rownumbers : true,
+						autoRowHeight : true,
+						fitColumns:true,
+						fit:true,
+						queryParams : {
+							"sortField" : "createTime",
+							"sortOrder" : "DESC"
+						}, //加入排序字段
+						columns : [ [
+								{
+									field : 'username',
+									title : '账户名称',
+									sortable : true
+								},
+								{
+									field : 'name',
+									title : '用户名称',
+									sortable : true
+								},
+								{
+									field : 'mobi',
+									title : '手机号',
+									sortable : true
+								},
+								{
+									field : 'deptName',
+									title : '部门',
+									sortable : true
+								},
+								{
+									field : 'postName',
+									title : '职务',
+									sortable : true
+								},
+								{
+									field : 'salesmanOrderPushTimes',
+									title : '业务员推单次数'
+								},
+								{
+									field : 'memberBuyTimes',
+									title : '用户购买次数',
+								}
+							] ]
+					});
+	
+	function salesmanStatsSearchXlclMember() {
+
+		$("#xlclsalesmanStatsMemberTable").datagrid('reload', {
+			"username" : $("#salesmanStatsQueryMemberForm input[name='username']").val(),
+			"name" : $("#salesmanStatsQueryMemberForm input[name='name']").val(),
+			"mobi" : $("#salesmanStatsQueryMemberForm input[name='mobi']").val(),
+			"startTime"	: $("#salesmanStatsSearchCreateTimeStart").datebox("getValue"),
+			"endTime"	: $("#salesmanStatsSearchCreateTimeEnd").datebox("getValue"),
+			"sortField" : "createTime",
+			"sortOrder" : "desc"
+		});
+		
+	}
+	
+</script>
+

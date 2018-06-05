@@ -1,0 +1,87 @@
+<style type="text/css">
+</style>
+<div id="special_content_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="specialSaveContent(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">添加内容</a>
+</div>
+<table id="special_content_table" style="heigth: auto;"></table>
+<!-- 新增/编辑-->
+<div id="special_save_content_div" class="easyui-window" title="内容管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="special_save_content_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#special_content_table').datagrid(
+			{
+				url : '/tjsc/messageManage/list',
+				toolbar : '#special_content_toolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'modeId',
+								title : '模板Id'
+							},
+							{
+								field : 'fightOrderProductTypeStr',
+								title : '特价活动拼单类型'
+							},
+							{
+								field : 'position_description',
+								title : '提示内容具体位置'
+							},
+							{
+								field : 'content',
+								title : '内容',
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("specialSaveContent", row.id,"编辑") + outPutFunction("specialRemoveContent",row.id, "删除");
+								}
+							}
+						] ]
+			});
+	function specialSaveContent(id) {
+		var parentDivId = "special_save_content_div";
+		var parentTableId = "special_content_table";
+		var url = "tjsc/messageManage/input?messageManageId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_content_div_ifr").attr('src', url);
+		$('#special_save_content_div').window('open');
+	}
+
+	//删除
+	function specialRemoveContent(rid) {
+		$.messager.confirm('分类管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/messageManage/delete", {
+					"messageManageId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_content_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

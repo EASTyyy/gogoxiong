@@ -1,0 +1,274 @@
+<style type="text/css">
+.productFormTable tbody tr {
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+
+.productFormTable tbody tr td {
+	width: 300px
+}
+
+.productFormTable tbody tr td input {
+	width: 200px;
+}
+</style>
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ </head>
+<!-- 搜索Div -->
+<div id="memberSearchFromToolbar" style="padding: 5px; height: auto">
+	<div>
+		<form id="queryMemberForm">
+			</select>
+			用户ID:<input
+				class="easyui-validatebox" name="id" style="width: 100px;">
+			 用户昵称:<input class="easyui-validatebox" name="name"
+				style="width: 100px;"> 联系电话:<input
+				class="easyui-validatebox" name="phone" style="width: 100px;">
+			<!-- 商品分类名称:<input class="easyui-validatebox" name="productSeries.parent.name" > -->
+			加入时间：<input id="searchCreateTimeStart" type="text"
+				class="easyui-datebox" name="createTimeStart" style="width: 100px;">至：
+			<input type="text" id="searchCreateTimeEnd" class="easyui-datebox"
+				name="createTimeEnd" style="width: 100px;"> <a
+				href="javascript:searchXlclMember();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+			<!-- <a href="javascript:resetXlclProduct();" class="easyui-linkbutton" iconCls="icon-clear">清空</a> -->
+
+		</form>
+	</div>
+</div>
+
+<div id="special_save_member_wareHouse_div" class="easyui-window" title="仓库"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="special_save_member_wareHouse_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+<table id="xlclMemberTable" style="heigth: auto;"></table>
+
+<div id="xlcl_member_recommender_list_window" class="easyui-window"
+	title="所属会员管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,top:50"
+	style="width: 600px; padding: 10px;height:500px;">
+		<!-- 
+		<div id="xlcl_weixin_message_list_window_config">
+			<a href="#" onclick="addWeixinMessage()" class="easyui-linkbutton" iconCls="icon-add" plain="true">新增微信消息</a>
+		</div> -->
+		<table id="xlcl_member_recommender_list_window_table"
+			style="height:500px;"></table>
+</div>
+
+<!-- 责任人、分管区域 -->
+<div id="xlcl_member_charge_window" class="easyui-dialog" title="修改责任人、分管区域" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:400px;padding:10px;">
+    <form id="xlcl_member_charge_window_form" >
+    	<input name="memberId" type="hidden"/>
+    	<table>
+    		<tr>
+				<td>备注信息：</td>
+				<td><input type="text" class="easyui-validatebox" id="remark" name="remark" style="width:200px;"></td>
+			</tr>
+			<tr>
+					<td></td>
+	            	<td>
+						<center>
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="memberChargeSubmit()">确定</a>
+						</center>
+	           		</td>
+				</tr>
+    	 </table>
+    	 
+    </form>
+</div>
+
+
+<script>
+	$('#xlclMemberTable')
+			.datagrid(
+					{
+						url : '/xlcl/member/list',
+						toolbar : '#memberSearchFromToolbar',
+						//pageSize:20,
+						pagination : true,
+						singleSelect : true,
+						rownumbers : true,
+						autoRowHeight : true,
+						fitColumns:true,
+						fit:true,
+						queryParams : {
+							"sortField" : "createTime",
+							"sortOrder" : "DESC"
+						}, //加入排序字段
+						columns : [ [
+								{
+									field : 'id',
+									title : '会员ID',
+									sortable : true
+								},
+								{
+									field : 'name',
+									title : '用户昵称',
+									sortable : true
+								},
+								{
+									field : 'phone',
+									title : '联系电话',
+									sortable : true
+								},
+								{
+									field : 'phoneName',
+									title : '联系人',
+									sortable : true
+								},
+								{
+									field : 'fullAddress',
+									title : '联系地址',
+									sortable : true
+								},
+								{
+									field : 'createTime',
+									title : '加入时间',
+									sortable : true
+								},
+					/* 			{
+									field : 'districtPerson',
+									title : '分管责任人',
+									sortable : true
+								},
+								{
+									field : 'districtManagementArea',
+									title : '分管区域',
+									sortable : true
+								}, */
+								{
+									field : 'discountsRatio',
+									title : '后台设置优惠比例',
+									sortable : true
+								},
+								{
+									field : 'baoLongPermissionsStr',
+									title : '是否为暴龙用户',
+									sortable : true
+								},
+								{
+									field : 'salesmanNameStr',
+									title : '所属业务员',
+								},
+								{
+									field : 'remark',
+									title : '客户名称',
+								},
+								{
+									field : 'operate',
+									title : '操作',
+									formatter : function(value, row, index) {
+										return  outPutFunction("saveMemberCharge", row.id,"配置用户备注信息")+ outPutFunction("saveMemberWarehouse", row.id,"配置仓库权限及折扣信息");
+									}
+								}
+							] ]
+					});
+	
+	function saveMemberWarehouse(id){
+		var parentDivId = "special_save_member_wareHouse_div";
+		var parentTableId = "xlclMemberTable";
+		var url = "/xlcl/member/configurationMemberWarehousePermissions?memberId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_member_wareHouse_div_ifr").attr('src', url);
+		$('#special_save_member_wareHouse_div').window('open');
+	}
+	
+	function saveMemberCharge(){
+		var member =$("#xlclMemberTable").datagrid("getSelected");
+		$("#xlcl_member_charge_window_form").form("load",{
+			'memberId':member.id,
+			'remark':member.remark,
+		});
+		$("#xlcl_member_charge_window").window("open");
+	}
+	
+	function memberChargeSubmit(){
+		
+		$.messager.progress();
+		$('#xlcl_member_charge_window_form').form('submit',{
+			url:"/tjsc/member/addPartitionedManagementData",
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+				}
+				return isValid;	// 返回false终止表单提交
+			},
+			success : function(data) {
+				$.messager.progress('close');
+				if (data == 'success') {
+					$("#xlcl_member_charge_window").window("close");
+					$("#xlclMemberTable").datagrid("reload");
+				} else {
+					jQuery.messager.alert('Info', data, 'info');
+				}
+			}
+		});
+		
+		
+	}
+
+	function searchXlclMember(sort, order) {
+		var strStart = $("#searchCreateTimeStart").datebox("getValue");
+		var strEnd = $("#searchCreateTimeEnd").datebox("getValue");
+
+		if((sort == undefined || sort == "undefined") || (order == undefined || order == "undefined")){
+			$("#xlclMemberTable").datagrid('reload', {
+				"id" : $("#queryMemberForm input[name='id']").val(),
+				"name" : $("#queryMemberForm input[name='name']").val(),
+				"sortField" : "createTime", //加入排序字段
+				"sortOrder" : "desc",
+				"createTimeStart" : "GTE," + strStart,
+				"createTimeEnd" : "LTE," + strEnd,
+				"phone":$("#queryMemberForm input[name='phone']").val()
+			});
+		}else{
+			$("#xlclMemberTable").datagrid('reload', {
+				"id" : $("#queryMemberForm input[name='id']").val(),
+				"name" : $("#queryMemberForm input[name='name']").val(),
+				"sortField" : sort, //加入排序字段
+				"sortOrder" : order,
+				"createTimeStart" : "GTE," + strStart,
+				"createTimeEnd" : "LTE," + strEnd,
+				"phone":$("#queryMemberForm input[name='phone']").val()
+			});
+		}
+	}
+	function viewItmeMembers(recommenderId) {
+		$('#xlcl_member_recommender_list_window_table').datagrid({
+			url : '/xlcl/member/list',
+			//toolbar: '#memberSearchFromToolbar',
+			//pageSize:20,
+			queryParams : {
+				"recommenderId" : recommenderId,
+				"userType" : 0
+			},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			columns : [ [ {
+				field : 'name',
+				title : '用户昵称',
+				width : 250,
+				sortable : true
+			}, {
+				field : 'createTime',
+				title : '加入时间',
+				width : 150,
+				sortable : true
+			}
+
+			] ]
+		});
+		$("#xlcl_member_recommender_list_window").window("open");
+	}
+</script>
+

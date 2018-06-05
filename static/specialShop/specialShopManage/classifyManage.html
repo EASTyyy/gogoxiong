@@ -1,0 +1,89 @@
+<style type="text/css">
+</style>
+<div id="special_classify_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="specialSaveClassify(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">添加分类</a>
+</div>
+<table id="special_classify_table" style="heigth: auto;"></table>
+<!-- 新增/编辑分类-->
+<div id="special_save_classify_div" class="easyui-window" title="分类管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="special_save_classify_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#special_classify_table').datagrid(
+			{
+				url : '/tjsc/productCategory/list',
+				toolbar : '#special_classify_toolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'name',
+								title : '分类名'
+							},
+							{
+								field : 'sequence',
+								title : '排序'
+							},
+							{
+								field : 'logo',
+								title : '分类logo',
+								formatter : function(value, row, index) {
+									if(value != null && value !=''){
+										return '<img style="width:100px; height:100px" src="'+ value +'" />';
+									}
+									
+								}
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("specialSaveClassify", row.id,"编辑") + outPutFunction("specialRemoveClassify",row.id, "删除");
+								}
+							}
+						] ]
+			});
+	function specialSaveClassify(id) {
+		var parentDivId = "special_save_classify_div";
+		var parentTableId = "special_classify_table";
+		var url = "tjsc/productCategory/input?categoryId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_save_classify_div_ifr").attr('src', url);
+		$('#special_save_classify_div').window('open');
+	}
+
+	//删除
+	function specialRemoveClassify(rid) {
+		$.messager.confirm('分类管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/productCategory/delete", {
+					"categoryId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#special_classify_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

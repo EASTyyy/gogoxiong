@@ -1,0 +1,463 @@
+<style type="text/css">
+.xlcl_order_view_window_form_table  tbody tr td input[readonly=readonly]{ width:200px;}
+.xlcl_order_depart_window_form_table  tbody tr td input[readonly=readonly]{ width:180px;}
+
+</style> 
+<!-- 搜索Div -->
+	<div id="order_search_window" style="padding:5px;height:auto">
+		<div style="margin-bottom:5px">
+			<form id="order_search_window_form">
+<!-- 				订单状态：<select id="orderStatus" name="orderStatus" class="easyui-combobox"  style="width:100px;">    -->
+<!-- 				 	<option value="90911">全部</option>   -->
+<!-- 				    <option value="0">待付款</option>  -->
+<!-- 				    <option value="1">待发货</option>   -->
+<!-- 				    <option value="2">已发货</option>  -->
+<!-- 				    <option value="3">已退款</option> -->
+<!-- 				    <option value="4">已取消</option> -->
+<!-- 				    <option value="5">已收货</option>  -->
+<!-- 				</select>    -->
+				
+				待付款:<input name="orderStatuses" type="checkbox" value="0" style="position: relative;top: 2px;margin-right: 15px;"/>
+				待发货:<input name="orderStatuses" type="checkbox" value="1" style="position: relative;top: 2px;margin-right: 15px;"/>
+				已发货:<input name="orderStatuses" type="checkbox" value="2" style="position: relative;top: 2px;margin-right: 15px;"/>
+				已退款:<input name="orderStatuses" type="checkbox" value="3" style="position: relative;top: 2px;margin-right: 15px;"/>
+				已取消:<input name="orderStatuses" type="checkbox" value="4" style="position: relative;top: 2px;margin-right: 15px;"/>
+				已收货:<input name="orderStatuses" type="checkbox" value="5" style="position: relative;top: 2px;margin-right: 15px;"/>
+				超时未付款:<input name="orderStatuses" type="checkbox" value="6" style="position: relative;top: 2px;margin-right: 15px;"/>
+				
+				
+				订单编号：<input class="easyui-textbox" name="orderNo" style="width:100px"/>
+				用户Id：<input id="memberId" type="text"  name="memberId" style="width:100px;">
+				收货人：<input id="orderSearchAddressName" type="text"  name="orderSearchAddressName" style="width:100px;">
+				联系电话：<input id="orderSearchAddressPhone" type="text"  name="orderSearchAddressPhone" style="width:100px;">
+				商品名称：<input id="productName" type="text"  name="productName" style="width:100px;">
+				商品编号：<input id="productNo" type="text"  name="productNo" style="width:100px;">
+				<br>
+			        创建时间：<input id="orderSearchCreateTimeStart" type="text" class="easyui-datebox" name="orderCreateTimeStart" style="width:100px;">
+			        至：<input type="text" id="orderSearchCreateTimeEnd" class="easyui-datebox" name="createTimeEnd" style="width:100px;">
+				<a href="javascript:orderSearch()" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+				<a href="javascript:batchSendOut()" class="easyui-linkbutton" iconCls="icon-add">批量发货</a>
+				<a href="javascript:batchEdit()" class="easyui-linkbutton" iconCls="icon-add">批量修改</a>
+			</form>
+		</div>
+	</div>
+	<!--选择代理商-->
+	<div id="select_agent_window" class="easyui-window" title="选择代理商" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,top:50" style="width:900px;height:400px;padding:10px;">
+		
+		    <div id="select_agent_window_search" style="padding:5px;height:auto">
+				<div style="margin-bottom:5px">
+					<form id="select_agent_window_search_form">
+						省：<select id="agentPronviceId" name="provinceId"  style="width:100px;">   </select>  
+						市：<select id="agentCityId" name="cityId" style="width:100px;">   </select>  
+						区：<select id="agentDistrictId" name="districtId"   style="width:100px;">   </select>  
+						<a href="javascript:selectAgentSearch()" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+					</form>
+				</div>
+			</div>
+	    	<table id="select_agent_window_table" style="heigth:auto;"></table>
+	</div>
+	<!---->
+	<div id="select_agent_msg_window" class="easyui-window" title="分配失败" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,top:50" style="width:400px;padding:10px;">
+			<table></table>
+	</div>
+	<!-- 查看订单 -->
+	 <div id="xlcl_order_view_window" class="easyui-dialog" title="查看订单" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false,top:100" style="width:1100px;padding:10px;">
+	    <form id="xlcl_order_view_window_form" >
+	    	<table class="xlcl_order_view_window_form_table">
+	    	   <tr>
+					<td>订单编号：</td>
+					<td><input name="orderNo"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>交易时间：</td>
+					<td><input name="createTime"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>交易状态：</td>
+					<td><input name="orderStatusStr"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				 <tr>
+				    <td>订单总额（元）：</td>
+					<td><input name="totalAmount"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				 <tr>
+				    <td>折扣比例 ：</td>
+					<td><input name="discountsRatio"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				 <tr>
+				    <td>折扣金额 ：</td>
+					<td><input name="discountsAmount"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				 <tr>
+				    <td>实付金额（元）：</td>
+					<td><input name="realityAmount"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				<tr>	
+        	  		 <td style="color:red;">会员昵称：</td>
+					 <td><input name="memberName"  class="easyui-textbox" readonly="readonly" /> </td>
+					 <td style="color:red;">买家留言信息：</td>
+					 <td><input name="leaveMessage"  class="easyui-textbox" readonly="readonly" /> </td>
+        	   </tr>
+				
+					<tr>
+					<td>购买人姓名：</td>
+					<td><input name="name"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>购买人电话：</td>
+					<td><input name="phone"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>购买人地址：</td>
+					<td><input name="address"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				<tr>
+					<td>创建时间：</td>
+					<td><input name="createTime"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>付款时间：</td>
+					<td><input name="payTime"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>收货时间：</td>
+					<td><input name="receiveTime"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				<tr>
+					<td>订单备注：</td>
+					<td><input name="remark"  class="easyui-textbox" readonly="readonly" /> </td>
+					<td>发货时间：</td>
+					<td><input name="sendTime"  class="easyui-textbox" readonly="readonly" /> </td>
+				</tr>
+				<tr><th>物流信息</th></tr>
+				<tr><td colspan="6"><table  id="xlcl_order_view_logistics_window_form_table" style="heigth:auto;"></table></td></tr>
+				<tr><th>订单商品</th></tr>
+				<tr><td colspan="6"><table  id="xlcl_order_view_window_form_table" style="heigth:auto;"></table></td></tr>
+	    	</table>
+	    </form>
+	    
+	</div>
+	
+	<!--发货-->
+	<div id="special_order_send_div" class="easyui-window" title="发货"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+		style="width:400px; height:600px; padding: 10px;">
+		<iframe src="#" id="special_order_send_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+	
+	<!--拆单-->
+	<div id="special_order_split_div" class="easyui-window" title="发货"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+		style="width:1000px; height:850px; padding: 10px">
+		<iframe src="#" id="special_order_split_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+	
+	<!--修改为已退款-->
+	<div id="special_update_order_status_to_refunds_div" class="easyui-window" title="填写退款金额"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+		style="width:400px; height:200px; padding: 10px;">
+		<iframe src="#" id="special_update_order_status_to_refunds_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+	
+	<!--批量发货-->
+	<div id="special_order_batch_send_div" class="easyui-window" title="批量发货"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+		style="width:1200px; height:800px; padding: 10px;">
+		<iframe src="#" id="special_order_batch_send_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+	
+	<!--批量修改-->
+	<div id="special_order_batch_edit_div" class="easyui-window" title="批量修改"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+		style="width:1200px; height:800px; padding: 10px;">
+		<iframe src="#" id="special_order_batch_edit_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+	
+	<div id="special_order_note_div" class="easyui-window" title="备注"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+		style="width:400px; height:600px; padding: 10px;">
+		<iframe src="#" id="special_order_note_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+   
+<table id="xlclOrderTable" style="heigth:auto;"></table>
+<script>				
+
+		$('#xlclOrderTable').datagrid({   
+		url:'/tjsc/order/getOrders',   
+		toolbar: '#order_search_window',
+	//	queryParams:{"agentIsZore":"1"},
+		pagination:true,
+		singleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		//checkOnSelect:false,
+		columns:[[   
+				{field:'separate',title:'',
+					formatter: function(value,row,index){
+						if(value == 1) {
+							return "<strong style='color:red'>拆</strong>";
+						} else {
+							return "<strong style='color:red'></strong>";
+						}
+						
+					}
+				},
+				{field:'memberId',title:'会员ID',hidden:false},
+				{field:'memberName',title:'会员',hidden:false},
+				{field:'createTime',title:'创建时间',sortable:true},
+				{field:'payTime',title:'付款时间',sortable:true},
+ 				{field:'orderNo',title:'订单编号'},
+ 				{field:'totalAmount',title:'订单金额',
+ 					formatter: function(value,row,index){
+						return "<span style='color:red'>"+value+" 元"+"</span>";
+ 					}
+				},
+				{field:'discountsRatioStr',title:'折扣比例'},
+				{field:'discountsAmount',title:'折扣金额'},
+ 				{field:'realityAmount',title:'实付金额',
+ 					formatter: function(value,row,index){
+						return "<span style='color:red'>"+value+" 元"+"</span>";
+					}
+ 				},
+ 				{field:'name',title:'收货人'},
+ 				{field:'phone',title:'联系电话'},
+//  				{field:'address',title:'收货地址'	},
+ 			
+				{field:'orderStatusStr',title:'订单状态'},
+				{field:'allProductSendAddress',title:'所购商品仓库'},
+				{
+					field:'operate',title:'操作',
+					formatter: function(value,row,index){
+					 if(row.orderStatus==1){
+						return '[<a href="javascript:sendOut('+row.id+')">发货</a>]'+ '[<a href="javascript:splitOrder('+row.id+')">拆单</a>]' +'[<a href="javascript:updateOrderStatusToRefunds('+row.id+')">修改为已退款</a>]'+'[<a href="javascript:viewOrder('+row.id+')">查看订单</a>]'+'[<a href="javascript:note('+row.id+')">备注</a>]';	
+						}
+					 if(row.orderStatus==2){
+							return '[<a href="javascript:updateOrderStatusToRefunds('+row.id+')">修改为已退款</a>]'+'[<a href="javascript:sendOut('+row.id+')">修改物流</a>]'+'[<a href="javascript:viewOrder('+row.id+')">查看订单</a>]'+'[<a href="javascript:note('+row.id+')">备注</a>]';	
+						}
+					 if(row.orderStatus==5){
+						 return '[<a href="javascript:viewOrder('+row.id+')">查看订单</a>]'+'[<a href="javascript:updateOrderStatusToRefunds('+row.id+')">修改为已退款</a>]'+'[<a href="javascript:note('+row.id+')">备注</a>]';
+						}
+					return '[<a href="javascript:viewOrder('+row.id+')">查看订单</a>]'+'[<a href="javascript:note('+row.id+')">备注</a>]';
+					
+					}
+				}
+		]]
+	});
+	
+	function note(id){
+		var parentDivId = "special_order_note_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/openRemark?orderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_note_div_ifr").attr('src', url);
+		$("#special_order_note_div").window("open");
+		
+	}
+	
+	//发货
+	function sendOut(id){
+		var parentDivId = "special_order_send_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/orderManage?orderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_send_div_ifr").attr('src', url);
+		$("#special_order_send_div").window("open");
+		
+	}
+	
+	//拆单
+	function splitOrder(id){
+		var parentDivId = "special_order_split_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/openSeparateOrder?orderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_split_div_ifr").attr('src', url);
+		if($(window).height()<=830){//适配小屏幕
+			$('#special_order_split_div').window({
+			    width: 800,
+			    height: 600,
+			    top: ($(window).height() - 600) * 0.5,
+			    left: ($(window).width() - 800) * 0.5
+			})
+		}
+		$("#special_order_split_div").window("open");
+		
+	}
+	
+	//修改为已退款
+	function updateOrderStatusToRefunds(id){
+		var parentDivId = "special_update_order_status_to_refunds_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/orderRefund?orderId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_update_order_status_to_refunds_div_ifr").attr('src', url);
+		$("#special_update_order_status_to_refunds_div").window("open");
+		
+	}
+	
+	//批量发货
+	function batchSendOut(){
+		var parentDivId = "special_order_batch_send_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/combineSendOut?parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_batch_send_div_ifr").attr('src', url);
+		$("#special_order_batch_send_div").window("open");
+		
+	}
+	
+	//批量修改
+	function batchEdit(){
+		var parentDivId = "special_order_batch_edit_div";
+		var parentTableId = "xlclOrderTable";
+		var url = "/tjsc/order/openCombineUpdate?parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_batch_edit_div_ifr").attr('src', url);
+		$("#special_order_batch_edit_div").window("open");
+		
+	}
+	
+	//查看订单
+	function viewOrder(orderId,handleTollbar){
+		
+		var order =$("#xlclOrderTable").datagrid("getSelected");
+		$("#xlcl_order_view_window_form").form("load",order);
+		$("#xlcl_order_view_window_form").form("load",
+		   {
+			"memberName":order.memberName!=null?order.memberName:null,
+			"leaveMessage":order.leaveMessage != null ? order.leaveMessage:null,
+				
+			"logisticsNo": order.orderLogistice ? order.orderLogistice.logisticsNo != null ? order.orderLogistice.logisticsNo:null :null,
+			"logisticsName":order.orderLogistice ? order.orderLogistice.name != null ? order.orderLogistice.name:null :null,
+			"logisticsPhone":order.orderLogistice ? order.orderLogistice.phone != null ? order.orderLogistice.phone:null :null	
+				
+		
+					
+		});
+		
+		$('#xlcl_order_view_window_form_table').datagrid({   
+			data:order.orderProducts.slice(0,10),
+			pagination:true,
+			pageSize:10,
+			pageList: [10], 
+			singleSelect:true,
+			rownumbers:true,
+			autoRowHeight:true,
+			fitColumns:true,
+			columns:[[
+	 				{field:'productName',title:'商品名称',width:160},
+	 				{field:'productPrice',title:'商品售价',width:80},
+	 				{field:'productNo',title:'商品编号',width:80},
+	 				{field:'color',title:'颜色',width:80},
+	 				{field:'packageNum',title:'装箱量',width:100},
+	 				{field:'mixFightBuyNum',title:'混拼购买数量*(个)',width:110},
+	 				{field:'havaBuyBox',title:'整箱购买数量*(箱)',width:110},
+	 				{field:'logisticsInformation',title:'指定物流',width:150},
+	 				{field:'placeOfDispatch',title:'发货地',width:150},
+	 				{field:'typeOfProductStr',title:'商品所属活动类型',width:150}
+	 				
+			]]
+		});
+		
+		var pager = $("#xlcl_order_view_window_form_table").datagrid("getPager");  
+        pager.pagination({  
+            total:order.orderProducts.length,  
+            onSelectPage:function (pageNo, pageSize) {  
+                var start = (pageNo - 1) * pageSize;  
+                var end = start + pageSize;  
+                $("#xlcl_order_view_window_form_table").datagrid("loadData", order.orderProducts.slice(start, end));  
+                pager.pagination('refresh', {  
+                    total:order.orderProducts.length,  
+                    pageNumber:pageNo  
+                });  
+            }  
+        });
+		
+		if(!order.orderLogistice){
+			$("#xlcl_order_view_logistics_window_form_table").closest('tr').css("display",'none');
+		}
+		else{
+			$("#xlcl_order_view_logistics_window_form_table").closest('tr').css("display",'table-row');
+		}
+		
+		$('#xlcl_order_view_logistics_window_form_table').datagrid({   
+			data:order.orderLogistice,
+			pagination:true,
+			singleSelect:true,
+			rownumbers:true,
+			autoRowHeight:true,
+			columns:[[
+	 				{field:'name',title:'物流名称',width:150},
+	 				{field:'phone',title:'物流电话',width:150},
+	 				{field:'pictureFile',title:'发货单',width:200,
+	 					formatter: function(value,row,index){
+	 						return '<a target="_blank" href='+ row.picture +'><img style="height:50px;display: block;margin: 0 auto;" src='+row.picture+' /></a>';
+	 					}
+	 				},
+	 				{field:'logisticsNo',title:'发货单号',width:150}
+	 				
+			]]
+		});
+		
+		//处理退货
+		if(handleTollbar!=null&&handleTollbar!=""){
+			$('#xlcl_order_view_window').dialog({
+				buttons: [{    
+					text: '同意退货', 
+					iconCls: 'icon-ok', 
+					handler: function() { 
+						handleReturnProduct(orderId,1)
+					} 
+				},{    
+					text: '拒绝退货', 
+					iconCls: 'icon-ok', 
+					handler: function(){ 
+						handleReturnProduct(orderId,0)
+					} 
+				}],
+			onClose:function(){
+				$(this).dialog({buttons:[]});
+				
+			}
+			});
+		
+		
+	}
+		$("#xlcl_order_view_window").window("open");
+}
+	
+	
+	//搜索订单
+	function orderSearch(){
+		var checkArr = $("#order_search_window_form input[name=orderStatuses]");
+		var orderStatusArr = '';
+		checkArr.each(function(index,element){
+			if($(element).attr("checked")){
+				orderStatusArr += $(element).val() + ',';
+			}
+		})
+		
+		orderStatusArr = orderStatusArr.substring(0,orderStatusArr.length-1);
+		
+		$("#xlclOrderTable").datagrid('reload',{
+		  "orderStatuses":orderStatusArr,
+		  "orderNo":$("#order_search_window_form input[name='orderNo']").val(), 
+		  "orderSearchCreateTimeStart":$("#orderSearchCreateTimeStart").datebox("getValue"),
+		   "orderSearchCreateTimeEnd":$("#orderSearchCreateTimeEnd").datebox("getValue"),
+		   "orderSearchAddressName":$("#order_search_window_form input[name='orderSearchAddressName']").val(), 
+		   "orderSearchAddressPhone":$("#order_search_window_form input[name='orderSearchAddressPhone']").val(),
+		   "productName":$("#order_search_window_form input[name='productName']").val(),
+		   "productNo":$("#order_search_window_form input[name='productNo']").val(),
+		   "memberId":$("#order_search_window_form input[name='memberId']").val()
+		});
+		
+	}
+	
+</script>		
+

@@ -1,0 +1,83 @@
+<style type="text/css">
+</style>
+<div id="visit_level_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="visitSaveLevel(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">添加访问等级</a>
+</div>
+<table id="visit_level_table" style="heigth: auto;"></table>
+<!-- 鏂板/缂栬緫鍒嗙被-->
+<div id="visit_save_level_div" class="easyui-window" title="访问等级管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:300px; padding: 10px;">
+	<iframe src="#" id="visit_save_level_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+	$('#visit_level_table').datagrid(
+			{
+				url : '/tjsc/visitLevel/list',
+				toolbar : '#visit_level_toolbar',
+				//pageSize:20,
+				//queryParams:{"type":0},
+				pagination : true,
+				singleSelect : true,
+				rownumbers : true,
+				autoRowHeight : true,
+				fitColumns:true,
+				fit:true,
+				remoteSort:true,
+ 				//sortName:'createTime',
+ 				//sortOrder:'DESC',
+				columns : [ [
+							{
+								field : 'visitTimes',
+								title : '访问次数 '
+							},
+							{
+								field : 'payTimes',
+								title : '付款次数'
+							},
+							{
+								field : 'level',
+								title : '访问等级'
+							},
+							{
+								field : 'operate',
+								title : '操作',
+								formatter : function(value, row, index) {
+									return outPutFunction("visitSaveLevel", row.id,"编辑") + outPutFunction("visitRemoveLevel",row.id, "删除");
+								}
+							}
+						] ]
+			});
+	function visitSaveLevel(id) {
+		var parentDivId = "visit_save_level_div";
+		var parentTableId = "visit_level_table";
+		var url = "/tjsc/visitLevel/input?visitLevelId=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#visit_save_level_div_ifr").attr('src', url);
+		$('#visit_save_level_div').window('open');
+	}
+
+	//删除
+	function visitRemoveLevel(rid) {
+		$.messager.confirm('访问等级管理', "确定要删除吗?", function(r) {
+			if (r) {
+				jQuery.post("/tjsc/visitLevel/delete", {
+					"visitLevelId" : rid
+				}, function(data) {
+					if (data == 'success') {
+						$("#visit_level_table").datagrid('reload');
+					} else {
+						$.messager.alert('Info', data, 'info');
+					}
+				});
+			}
+		});
+	}
+
+	
+</script>

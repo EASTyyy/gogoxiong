@@ -1,0 +1,315 @@
+
+选择类型：<select id="memberType" class="easyui-combobox" style="width: 150px;">
+			<option value="1">用户默认地址分布</option>
+			<option value="2">买家默认地址分布</option>
+		</select>
+		<a href="javascript:memberMapTypeConfirm();" class="easyui-linkbutton" iconCls="icon-search">确定</a>
+		
+<div id="memberMap" style="width: 1400px;height:800px;margin: 10px 10px;"></div>
+
+<script>
+
+var data;
+var option;
+
+var memberMap = echarts.init(document.getElementById('memberMap'));
+
+// var data2 = [
+//     {name: '富阳', value: ' '},
+//     {name: '泰安', value: 112},
+//     {name: '诸暨', value: 112},
+//     {name: '郑州', value: 113},
+//     {name: '哈尔滨', value: 114}
+// ];
+
+startMap(1);
+
+function startMap(type){
+	$.get('/tjsc/memberArealDistribution/list?type='+type, function (response){
+		data = response;  
+		setOption();
+		memberMap.setOption(option);
+	})
+}
+
+function memberMapTypeConfirm(){
+	var type = $("#memberType").combotree("getValue");
+	startMap(type);
+}
+
+
+var convertData = function (data) {
+    var res = [];
+    for (var i = 0; i < data.length; i++) {
+        var geoCoord = geoCoordMap[data[i].name];
+        if (geoCoord) {
+            res.push({
+                name: data[i].name+'-'+data[i].value,
+                value: geoCoord.concat(data[i].value)
+            });
+        }
+    }
+    return res;
+};
+
+function renderItem(params, api) {
+	
+	var points = [];
+    var color = api.visual('color');
+
+    return {
+        type: 'polygon',
+        shape: {
+            points: echarts.graphic.clipPointsByRect(points, {
+                x: params.coordSys.x,
+                y: params.coordSys.y,
+                width: params.coordSys.width,
+                height: params.coordSys.height
+            })
+        },
+        style: api.style({
+            fill: color,
+            stroke: echarts.color.lift(color)
+        })
+    };
+}
+
+function setOption(){
+	
+	option = {
+		    backgroundColor: '#404a59',
+		    title: {
+		        text: '全国用户城市分布图',
+		        subtext: '熊小二 你值得拥有',
+		        //sublink: 'http://www.pm25.in',
+		        left: 'center',
+		        textStyle: {
+		            color: '#fff'
+		        }
+		    },
+		    tooltip : {
+		        trigger: 'item'
+		    },
+		    bmap: {
+		        center: [104.114129, 37.550339],
+		        zoom: 5,
+		        roam: true,
+		        mapStyle: {
+		            styleJson: [
+		                    {
+		                        "featureType": "water",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "color": "#044161"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "land",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "color": "#004981"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "boundary",
+		                        "elementType": "geometry",
+		                        "stylers": {
+		                            "color": "#064f85"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "railway",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "highway",
+		                        "elementType": "geometry",
+		                        "stylers": {
+		                            "color": "#004981"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "highway",
+		                        "elementType": "geometry.fill",
+		                        "stylers": {
+		                            "color": "#005b96",
+		                            "lightness": 1
+		                        }
+		                    },
+		                    {
+		                        "featureType": "highway",
+		                        "elementType": "labels",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "arterial",
+		                        "elementType": "geometry",
+		                        "stylers": {
+		                            "color": "#004981"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "arterial",
+		                        "elementType": "geometry.fill",
+		                        "stylers": {
+		                            "color": "#00508b"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "poi",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "green",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "color": "#056197",
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "subway",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "manmade",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "local",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "arterial",
+		                        "elementType": "labels",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "boundary",
+		                        "elementType": "geometry.fill",
+		                        "stylers": {
+		                            "color": "#029fd4"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "building",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "color": "#1a5787"
+		                        }
+		                    },
+		                    {
+		                        "featureType": "label",
+		                        "elementType": "all",
+		                        "stylers": {
+		                            "visibility": "off"
+		                        }
+		                    }
+		            ]
+		        }
+		    },
+		    series : [
+		        {
+		            name: '用户分布数',
+		            type: 'scatter',
+		            coordinateSystem: 'bmap',
+		            data: convertData(data),
+		            symbolSize: function (val) {
+		            	if(val[2] <= 2){
+		            		return val[2] * 2;
+		            	}
+		            	else if(val[2] >= 100){
+		            		return val[2] / 5;
+		            	}
+		            	else{
+		            		return val[2] / 2;
+		            	}
+		                
+		            },
+		            label: {
+		                normal: {
+		                    formatter: '{b}',
+		                    position: 'right',
+		                    show: false
+		                },
+		                emphasis: {
+		                    show: true
+		                }
+		            },
+		            itemStyle: {
+		                normal: {
+		                    color: '#ddb926'
+		                }
+		            }
+		        },
+		        {
+		            name: 'Top 5',
+		            type: 'effectScatter',
+		            coordinateSystem: 'bmap',
+		            data: convertData(data.sort(function (a, b) {
+		                return b.value - a.value;
+		            }).slice(0, 100)),
+		            symbolSize: function (val) {
+		                return val[2] / 8;
+		            },
+		            showEffectOn: 'emphasis',
+		            rippleEffect: {
+		                brushType: 'stroke'
+		            },
+		            hoverAnimation: true,
+		            label: {
+		                normal: {
+		                    formatter: '{b}',
+		                    position: 'right',
+		                    show: true
+		                }
+		            },
+		            itemStyle: {
+		                normal: {
+		                    color: '#f4e925',
+		                    shadowBlur: 10,
+		                    shadowColor: '#333'
+		                }
+		            },
+		            zlevel: 1
+		        },
+		        {
+		            type: 'custom',
+		            coordinateSystem: 'bmap',
+		            renderItem: renderItem,
+		            itemStyle: {
+		                normal: {
+		                    opacity: 0.5
+		                }
+		            },
+		            animation: false,
+		            silent: true,
+		            data: [0],
+		            z: -10
+		        }
+		    ]
+		}
+	
+}
+
+</script>
+

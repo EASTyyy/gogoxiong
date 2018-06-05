@@ -1,0 +1,118 @@
+
+<div style="margin: 24px 10px;">
+	
+	起始日期：<input id="visitStaticStartDate" type="text"
+				class="easyui-datebox" style="width: 100px;">
+	结束日期：<input id="visitStaticEndDate" type="text"
+	class="easyui-datebox" style="width: 100px;">
+	搜索类型：<select id="visitStaticType" class="easyui-combobox" style="width: 100px;">
+						<option value="0">总访客</option>
+						<option value="1">独立访客</option>
+					</select>
+		<a href="javascript:visitStaticConfirm();" class="easyui-linkbutton"
+		iconCls="icon-search">确定</a>
+		
+		<a href="javascript:visitStaticMap();" class="easyui-linkbutton"
+		iconCls="icon-search">查看对应用户地域分布</a>
+</div>
+
+<div id="visitStatic" style="width: 800px;height:600px;"></div>
+
+<!-- fit:true -->
+<div id="visit_map_div" class="easyui-window" title="用户分布"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true,fit:true"
+	style="width:1400px; height:800px;">
+	<iframe src="#" id="visit_map_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+
+//var data=[["2000-06-05",116],["2000-06-06",129],["2000-06-07",135],["2000-06-08",86]]
+
+var visitStaticChart = echarts.init(document.getElementById('visitStatic'));
+
+setVisitStaticChart('','',0);
+
+function setVisitStaticChart(startDate,endDate,type){
+	
+	$.get('/tjsc/visitBuyHistory/visitOrDistribute?startTimeStr='+startDate+'&endTimeStr='+endDate+'&flag='+type, function (data) {
+	    
+			visitStaticChart.setOption(option = {
+			    title: {
+			        text: '首页访问量'
+			    },
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    xAxis: {
+			    	axisLabel:{
+                    	interval:2,
+	                    textStyle:{
+	                        color:"#c23531"
+	                    }
+                  	},
+			    	boundaryGap:false,
+			        data: data.map(function (item) {
+			            return item[0];
+			        })
+			    },
+			    yAxis: {
+			        splitLine: {
+			            show: true
+			        }
+			    },
+			    toolbox: {
+			        left: 'center',
+			        feature: {
+// 			            restore: {},
+			            saveAsImage: {}
+			        }
+			    },
+//	 		    dataZoom: [{
+//	 		        startValue: '2014-7-01',
+//	 		        endValue: '2014-10-01'
+//	 		    }, {
+//	 		        type: 'inside'
+//	 		    }],
+			    series: {
+			        name: '访问量',
+			        type: 'line',
+			        data: data.map(function (item) {
+			            return item[1];
+			        }),
+			        itemStyle : {  
+	                    normal : {  
+	                        lineStyle:{  
+	                            color:'#95B8E7'  
+	                        }  
+	                    }  
+	                }
+			    }
+			});
+		
+	});
+	
+	
+	
+}
+
+function visitStaticConfirm() {
+	var startDate = $("#visitStaticStartDate").datebox("getValue");
+	var endDate = $("#visitStaticEndDate").datebox("getValue");
+	var type = $("#visitStaticType").combotree("getValue");
+	setVisitStaticChart(startDate,endDate,type);
+}
+
+function visitStaticMap() {
+	var startDate = $("#visitStaticStartDate").datebox("getValue");
+	var endDate = $("#visitStaticEndDate").datebox("getValue");
+	var url = "/tjsc/visitBuyHistory/goToLimitTimeVisitUserAddress?startTimeStr=" + startDate
+			+ "&endTimeStr=" + endDate;
+	$("#visit_map_div_ifr").attr('src', url);
+	$('#visit_map_div').window('open');
+}
+
+</script>
+

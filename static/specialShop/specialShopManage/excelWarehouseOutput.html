@@ -1,0 +1,55 @@
+
+<style type="text/css">
+</style> 
+
+<div id="xlcl_excel_warehouse_output" style="padding:5px;height:auto">
+	<div style="margin-bottom:5px">
+		<a href="#" onclick="excel_warehouse_out()" class="easyui-linkbutton" iconCls="icon-add" plain="true">导出商品</a>
+	</div>
+</div>
+
+<table id="xlcl_excel_warehouse_output_table" style="heigth:auto"></table> 
+
+<div id="xlcl_excel_warehouse_output_div" class="easyui-window" title="分仓导出" data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false" style="width:950px; height: 450px; padding: 10px;">
+	<iframe src="#" id="xlcl_excel_warehouse_output_div_ifr" marginwidth="0" marginheight="0" width="950px" height="450px" frameborder="0" scrolling="false" allowtransparency="true"></iframe>	
+</div>
+<script>				
+
+	$('#xlcl_excel_warehouse_output_table').datagrid({   
+		url:'/xlcl/excel/select?sortField=-createTime&type=19',   
+		//queryParams:{"userType":"between,1,2","isAccount":true},
+		pagination:true,
+		signleSelect:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		toolbar: '#xlcl_excel_warehouse_output',
+		columns:[[   
+			{field : 'name',title : '文件名称',width:200},
+			{field : 'typeStr',title : '类型',width:80},
+			{field : 'excelTime',title : '导出时间',width:120}, 
+			{field : 'operate',title : '操作',width:250,
+				formatter : function(value, row, index) {
+				return '[<a target="_blank" href="'+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelWarehouse('+row.id+')">删除记录</a>]';
+						//return '[<a target="_blank" href="'+$!{staticRoot}+row.downloadUrl+'">下载文件</a>]'+'[<a href="javascript:deleteExcelRecord('+row.id+')">删除记录</a>]';
+				}
+			}
+		]]
+	});
+	
+	function deleteExcelWarehouse(excelId){
+		jQuery.post("/xlcl/excel/delete", {'excelId':excelId}, function(data) {
+			if (data == 'success') {
+				$("#xlcl_excel_warehouse_output_table").datagrid('reload');
+			} else {
+				$.messager.alert('Info', "删除失败", 'info');
+			}
+		});
+	}
+	function excel_warehouse_out(){
+		$("#xlcl_excel_warehouse_output_div_ifr").attr('src',"/xlcl/excel/openWarehouseProductExcel");
+		$('#xlcl_excel_warehouse_output_div').window('open');
+	}
+		
+</script>	
