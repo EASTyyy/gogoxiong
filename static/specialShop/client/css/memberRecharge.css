@@ -1,0 +1,172 @@
+.rechargeTips{
+	background: #f2f2f2;
+    padding: 5px 10px;
+    font-size: 16px;
+    color: #959595;
+}
+
+#cardContainer{
+    width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: white;
+    text-align: center;
+    padding: 15px 0;
+    padding-bottom: 0px;
+}
+
+#cardContainer>div{
+	display: inline-block;
+    width: 43%;
+    text-align: center;
+    border: 3px solid #f6822d;
+    border-radius: 8px;
+    box-sizing: border-box;
+    color: #f6822d;
+    margin-bottom: 40px;
+    position: relative;
+}
+
+#cardContainer>div.active{
+    background: #f6822d;
+    color: white;
+}
+
+#cardContainer>div:nth-child(odd){
+	margin-right: 17px;
+}
+
+#cardContainer>div>span{
+	display: block;
+    text-align: left;
+    padding-left: 8px;
+    padding-top: 4px;
+    font-size: 12px;
+}
+
+#cardContainer>div>div{
+	font-size: 22px;
+    padding-top: 9px;
+}
+
+#cardContainer>div>p{
+	text-align: left;
+    padding-left: 6px;
+    padding-bottom: 4px;
+    padding-top: 7px;
+    font-size: 16px;
+}
+
+
+#cardContainer .changeNumber{
+	display: inline-block;
+	width: 100%;
+    height: 23px;
+    overflow: hidden;
+    vertical-align: middle;
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    visibility: hidden;
+}
+
+#cardContainer .active .changeNumber{
+	visibility: visible;
+}
+
+#cardContainer .changeNumber>span{
+    display: inline-block;
+    width: 39%;
+    height: 100%;
+    line-height: 20px;
+    vertical-align: top;
+    text-align: center;
+    background: #f4f4f4;
+    color: white;
+}
+
+#cardContainer .changeNumber>input{
+	vertical-align: top;
+    height: 100%;
+    text-align: center;
+    width: 30px;
+    line-height: 20px;
+    background: #f4f4f4;
+    color: gray;
+}
+
+#cardContainer .active .changeNumber>span{
+	background: #ff455c;
+}
+
+#cardContainer .active .changeNumber>input{
+	background: #f4f4f4;
+  	color: black;	
+}
+
+
+
+
+
+
+#cardContainer>div>p>span{
+	padding: 0 4px;
+}
+
+#cardContainer>div>p>b{
+	font-weight: normal;
+    font-size: 12px;
+}
+
+
+#inputAmount{
+	background: white;
+    padding: 0 12px;
+    padding-right: 0;
+}
+
+#inputAmount>div{
+	border-top: 1px solid #e7e7e7;
+    padding: 10px 0;
+}
+
+#inputAmount span{
+	line-height: 30px;
+}
+
+#inputAmount input{
+	width: 72%;
+	font-size: 18px;
+    line-height: 30px;
+}
+
+#inputAmount input::-webkit-input-placeholder {
+    font-size: 18px;
+    line-height: 30px;
+}
+
+#pay{
+	background: gray;
+    color: white;
+    width: 90%;
+    margin: 0 auto;
+    font-size: 17px;
+    margin-top: 40px;
+    text-align: center;
+    line-height: 35px;
+    border-radius: 6px;
+}
+
+#pay.active{
+	background: #f6822d;
+}
+
+
+@media all and (max-width: 320px) {
+	#inputAmount input{
+		width: 65%;
+	}
+}
+

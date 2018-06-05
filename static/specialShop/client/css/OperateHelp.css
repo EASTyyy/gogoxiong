@@ -1,0 +1,35 @@
+
+/*操作帮助标题*/
+h1{
+	text-align: center;
+	font-size: 24px;
+	font-weight: normal;
+	margin-top: 10px;
+}
+
+.wrap{
+	width: 100%;
+	padding: 0 10px;
+	box-sizing: border-box;
+}
+
+.wrap h3{
+	font-size: 16px;
+	font-weight: normal;
+	margin-top: 30px;
+}
+
+.wrap p{
+	width: 100%;
+	font-size: 12px;
+	margin:15px 0px 5px;
+	line-height: 20px;
+	box-sizing: border-box;
+}
+
+.wrap img{
+	width: 89%;
+	padding: 10px 20px;
+	margin: 0 auto;
+
+}

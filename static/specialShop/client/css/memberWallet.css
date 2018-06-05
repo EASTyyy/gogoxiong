@@ -1,0 +1,82 @@
+#topContainer{
+	height: 166px;
+    overflow: hidden;
+    background: #ff7022;
+    position: relative;
+    color: white;
+    font-size: 14px;
+}
+
+#topContainer > p{
+    padding: 8px 10px;
+    overflow: hidden;
+}
+
+#topContainer > p .left{
+	float: left;
+}
+
+#topContainer > p .right{
+	float: right;
+}
+
+#topContainer > div{
+	text-align: center;
+    font-size: 38px;
+    margin-top: 18px;
+}
+
+.public{
+	display: block;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    background: white;
+    font-size: 16px;
+    position: relative;
+    line-height: 45px;
+    padding: 0 16px;
+    padding-right: 26px;
+    margin-bottom: 5px;
+}
+
+.public>img{
+	position: absolute;
+    width: 6px;
+    right: 13px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media all and (max-width: 320px) {
+	
+}
+

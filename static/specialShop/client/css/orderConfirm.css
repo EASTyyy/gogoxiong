@@ -1,0 +1,606 @@
+/* 椤堕儴鍦板潃 */
+#address{
+	display: block;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+    position: relative;
+    padding-left: 0.50rem;
+    padding-right: 0.37rem;
+    border-bottom: 4px solid #05a29b;
+}
+
+#address>img{
+	position: absolute;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#address .addressIcon{
+    width: 13px;
+    left: 0.26rem;
+}
+
+#address .addressRight{
+	width: 7px;
+    right: 0.20rem;
+}
+
+#address .infoContainer{
+	
+}
+
+#address .emptyAddress{
+	line-height: 65px;
+    color: #c30d23;
+    font-size: 16px;
+}
+
+#address .infoContainer .nameTel{
+	overflow: hidden;
+    width: 90%;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 15px;
+}
+
+#address .infoContainer .nameTel .tel{
+	float: right;
+}
+
+#address .infoContainer .address{
+	font-size: 12px;
+    line-height: 18px;
+    margin-top: 5px;
+    padding-bottom: 12px;
+}
+
+/* 瀹㈡湇鎸夐挳 */
+#customerButton{
+    background: white;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 12px;
+    padding: 8px 0;
+    margin-top: 8px;
+}
+
+#customerButton>a{
+	width: 50%;
+    display: block;
+    float: left;
+    height: 34px;
+    line-height: 34px;
+}
+
+#customerButton>a>img{
+	width: 18px;
+	margin-top: 8px;
+    margin-right: 5px;
+}
+
+#customerButton .left{
+	width: 49%;
+	border-right: 1px solid #eaeaea;
+}
+
+.public{
+	background: white;
+    font-size: 12px;
+    padding: 8px 0.13rem;
+    line-height: 18px;
+}
+
+#detailTip{
+	margin-top: 8px;
+	border-bottom: 1px solid #eeeeee;
+}
+
+#detailTip>span{
+	background: url(../image/addr-edit.png) no-repeat 3px 3px;
+    background-size: 14px 14px;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: bottom;
+    float: right;
+}
+
+#detailTip>i{
+	font-style: normal;
+    float: right;
+    font-size: 10px;
+    font-weight: 200;
+    margin-right: 2px;
+}
+
+#payTips{
+	padding-top: 0;
+}
+
+#amountTips{
+	padding-top: 0;
+}
+
+#payTips span{
+	color: #c30d23;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 0 5px;
+}
+
+#amountTips span{
+	color: #c30d23;
+    font-weight: bold;
+    font-size: 15px;
+    padding: 0 5px;
+}
+
+/* 鍟嗗搧鍒楄〃 */
+.productList{
+	background: white;
+	margin-bottom: 11px;
+}
+
+.productList>p{
+	width: 93%;
+    margin: 0 auto;
+    font-size: 16px;
+    color: #c30d23;
+    padding-top: 8px;
+}
+
+.productList>li{
+	overflow: hidden;
+    width: 93%;
+    box-sizing: border-box;
+    border-bottom: 1px solid #eeeeee;
+    margin: 0 auto;
+    padding: 10px 0;
+    position: relative;
+}
+
+.productList>li>.specialTag{
+	position: absolute;
+    right: -4px;
+    width: 70px;
+    top: 18%;
+}
+
+.productList>li>div{
+	float: left;
+    overflow: hidden;
+    height: 100px;
+    box-sizing: border-box;
+}
+
+.productList>li .productImg{
+    border: 1px solid #2aae99;
+}
+
+.productList>li .productImg img{
+    width: 135px;
+    height: 100px;
+}
+
+.productList>li .productInfo{
+	font-size: 12px;
+	padding-left: 0.18rem;
+	overflow: hidden;
+	position: relative;
+}
+
+.productList>li .productInfo h3{
+	font-size: 14px;
+    font-weight: 200;
+    margin-bottom: 4px;
+    max-width: 190px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.productList>li .productInfo p{
+	line-height: 18px;
+}
+
+.productList>li .productInfo p>span{
+    color: #b31430;
+}
+
+.productList>li .productInfo p>span.area{
+    font-weight: bold;
+    color: red;
+}
+
+.productList>li .productInfo .price{
+	/* font-size: 18px; */
+}
+
+.productList>li .productInfo .number{
+    float: right;
+    margin-right: -0.35rem;
+}
+
+/* 鍔犲噺 */
+.productList>li .productInfo .numberContainer{
+    position: absolute;
+    left: 0.18rem;
+    bottom: 0;
+}
+
+.productList>li .productInfo .numberContainer>span{
+	position: relative;
+    top: 2px;
+}
+
+.productList>li .changeNumber{
+	display: inline-block;
+    height: 20px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.productList>li .changeNumber>span{
+	display: inline-block;
+    width: 23px;
+    height: 100%;
+    line-height: 20px;
+    vertical-align: top;
+    text-align: center;
+    background: #ff455c;
+    color: white;
+}
+
+.productList>li .changeNumber>input{
+	vertical-align: top;
+    height: 100%;
+    text-align: center;
+    width: 30px;
+    line-height: 20px;
+    background: #f4f4f4;
+}
+
+.productList>li .changeNumber .reduce{
+	
+}
+
+.productList>li .changeNumber .buyNumber{
+	
+}
+
+.productList>li .changeNumber .add{
+	
+}
+
+.productList>li .delet{
+    display: none;
+	background: url(../image/addr-delet.png) no-repeat 3px 2px;
+    background-size: 14px 14px;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 0;
+    top: 10px;
+}
+
+.productList>li .limit{
+    position: absolute;
+    bottom: 11px;
+    right: 0;
+    font-size: 12px;
+    color: #999;
+}
+
+.productList .warehouse{
+	font-size: 12px;
+    color: black;
+}
+
+.productList .singleLimit{
+    padding-right: 5px;
+}
+
+/* 物流信息 */
+#logistics{
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+
+#logistics>p{
+    padding-bottom: 7px;
+}
+
+#logistics .infoContainer{
+	width: 94%;
+    margin: 0 auto;
+}
+
+#logistics .infoContainer>div{
+    background: #f4f4f4;
+    margin-bottom: 2px;
+    overflow: hidden;
+    line-height: 25px;
+}
+
+#logistics .infoContainer>div>span{
+	margin-left: 4px;
+}
+
+#logistics .infoContainer>div>input{
+    background: #f4f4f4;
+    width: 70%;
+}
+
+#payWay ul{
+	overflow: hidden;
+    text-align: center;
+    padding-top: 4px;
+}
+
+#payWay ul li{
+	display: inline-block;
+    background: #f4f4f4;
+    padding: 5px 9px;
+    border-radius: 5px;
+}
+
+#payWay ul li b{
+	font-style: normal;
+    font-weight: normal;
+    display: none;
+}
+
+#payWay ul li.active{
+	background: #f58330;
+	color: white;
+}
+
+#payWay ul li.gray{
+	color: #a2a2a2;
+}
+
+#payWay ul li.gray b{
+    display: initial;
+}
+
+#payWay ul li:first-child{
+	margin-right: 55px;
+}
+
+#payWay #walletPay{
+	/* display: none; */
+}
+
+#payWay.payWayClass{
+	-webkit-animation: flashing 1s;
+	animation: flashing 1s;
+}
+
+@-webkit-keyframes flashing{
+	from {
+       background: red;
+    }
+    13% {
+       background: white;
+    }
+    25% {
+       background: red;
+    }
+    37% {
+       background: white;
+    }
+    50% {
+      background: red;
+    }
+    63% {
+      background: white;
+    }
+    75% {
+      background: red;
+    }
+   	to {
+     background: white;
+    }
+}
+
+@keyframes flashing{
+	from {
+       background: red;
+    }
+    13% {
+       background: white;
+    }
+    25% {
+       background: red;
+    }
+    37% {
+       background: white;
+    }
+    50% {
+      background: red;
+    }
+    63% {
+      background: white;
+    }
+    75% {
+      background: red;
+    }
+   	to {
+     background: white;
+    }
+}
+
+/* 鏁存嫾灏忚 */
+.smallCount{
+	line-height: 25px;
+    background: #7a7a7a;
+    color: white;
+    font-size: 12px;
+    text-align: right;
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 0.13rem;
+}
+
+.smallCount>span{
+	
+}
+
+/* 鎬婚噾棰� */
+#total{
+	
+}
+
+#discount{
+	padding-top: 0;
+	display: none;
+}
+
+#discountAmount{
+	padding-top: 0;
+	display: none;
+}
+
+#total>span,#discount>span,#discountAmount>span{
+	color:#c30d23;
+    font-size: 14px;
+}
+
+#discountAmount i{
+	color: #c30d23;
+    font-weight: 200;
+    font-size: 14px;
+    font-style: initial;
+}
+
+#total>b{
+	color:#c30d23;
+    font-weight: 200;
+    font-size: 14px;
+    display: none;
+}
+
+#total>b>i{
+	font-style: normal;
+	font-weight: bold;
+   	padding: 0 3px;
+}
+
+#logisticsTips{
+	margin-top: 10px;
+	margin-bottom: 60px;
+}
+
+#logisticsTips h3{
+	margin-bottom: 10px;
+}
+
+#logisticsTips p{
+    margin-bottom: 7px;
+	font-size: 10px;
+}
+
+/* 鍗栧鐣欒█ */
+#comments{
+	overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+#comments>span{
+	float: left;
+}
+
+#comments>div{
+	float: left;
+    width: 75%;
+    margin-left: 0.10rem;
+}
+
+#comments>div>input{
+	width: 100%;
+}
+
+#comments>div>input::-webkit-input-placeholder {
+	color: #7f7f7f;
+	font-size: 12px;
+	line-height: normal;
+}
+
+/* 搴曢儴鎸夐挳 */
+#bottom{
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    height: 50px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+}
+
+#bottom>a{
+	float: left;
+	height: 100%;
+    width: 13.33%;
+    background: white;
+    font-size: 12px;
+    color: #4a4a4a;
+    box-sizing: border-box;
+    border-right: 1px solid #e3e3e3;
+}
+
+#bottom>a>img{
+    width: 23px;
+    margin-top: 8px;
+}
+
+#bottom>div{
+    float: right;
+    height: 100%;
+    width: 60%;
+    line-height: 50px;
+    color: white;
+    font-size: 18px;
+}
+
+#bottom .payButton{
+	background: #0ba29b;
+}
+
+#bottom .payButtonGray{
+	background: gray;
+}
+
+/* 绌虹姸鎬� */
+#emptyCar{
+    display: none;
+    position: absolute;
+    top: 25%;
+}
+
+#emptyCar img{
+    width: 100%;
+}
+
+
+
+@media all and (max-width: 320px) {
+	#logistics .infoContainer>div>input{
+	    width: 80%;
+	}
+	.productList>li .productInfo h3{
+	    max-width: 140px;
+	}
+	.productList>li>.specialTag {
+	    position: absolute;
+	    right: -3px;
+	    width: 44px;
+	    top: 23%;
+	}
+}
