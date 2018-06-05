@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/home.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/jquery.cookie.js"></script>
+</head>
+<body>
+<div id="userInfo">
+	<img class="lazy userHead" src="/specialShop/client/image/lazy_2.png" data-original='$!{memberLogo}'>
+	<div class="userName">$!{memberName}</div>
+	<div class="memberId"><span>ID : </span>$!{memberId}</div>
+	<div class="userScore">$!{memberScore.presentScore}<span>积分</span></div>
+	<img class="userLevel" src="/specialShop/client/image/home-memberLevel1.png">
+</div>
+<div id="orderBottun">
+	<a href="/tjsc/weixin/order/index">
+		<img src="$!{static}/specialShop/client/image/home-order-whole.png"  >
+		<p>全部</p>
+	</a>
+	<a href="/tjsc/weixin/order/index?orderStatus=0" >
+		<em>$!{notPayTotalNum}</em>
+		<img src="$!{static}/specialShop/client/image/home-order-nopay.png">
+		<p>待付款</p>
+	</a>
+	<a href="/tjsc/weixin/order/index?orderStatus=88" >
+		<em>$!{dshTotalNum}</em>
+		<img src="$!{static}/specialShop/client/image/home-order-post.png">
+		<p>待收货</p>
+	</a>
+	<a href="/tjsc/weixin/order/index?orderStatus=3">
+		<img src="$!{static}/specialShop/client/image/home-order-return.png">
+		<p>已退款</p>
+	</a>
+</div>
+
+<a class="orderPublic" href="/tjsc/weixin/order/index">
+	<p>我的订单<span>查看更多订单</span></p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<a class="orderPublic" href="/tjsc/weixin/memberAccount/index?restMoney=$!{tjscMemberAccount.restMoney}">
+	<p>账户余额<span>$!{tjscMemberAccount.restMoney}元</span></p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<a class="orderPublic" href="/tjsc/weixin/memberScore/index">
+	<p>我的积分<span>$!{memberScore.presentScore}</span></p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<!-- <a class="orderPublic" href="/tjsc/weixin/memberLevel/index"> -->
+<!-- 	<p>会员等级<span>$!{memberScore.levelName}</span></p> -->
+<!-- 	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png"> -->
+<!-- </a> -->
+
+<!-- <a class="orderPublic" href="/tjsc/weixin/member/index"> -->
+<!-- 	<p>我的会员</p> -->
+<!-- 	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png"> -->
+<!-- </a> -->
+
+<a class="orderPublic" href="/tjsc/weixin/address/list">
+	<p>地址管理</p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<a class="orderPublic" href="/tjsc/weixin/securityTrans/goSecurityTrans">
+	<p>交易保障</p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<a class="orderPublic" href="/tjsc/weixin/home/operateHelp">
+	<p>帮助操作</p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<a class="orderPublic" href="/tjsc/weixin/home/serviceCenter">
+	<p>客服中心</p>
+	<img src="$!{static}/specialShop/client/image/pay-rightArrow.png">
+</a>
+
+<div id="bottomTab">
+	
+	<a href="/tjsc/weixin/cxActivity/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha.png">
+		<p>畅销</p>
+	</a>
+	<a href="/tjsc/weixin/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价</p>
+	</a>
+	
+	<!-- logo -->
+	<a>
+		<img class="logo" src="$!{static}/specialShop/client/image/bottomMenu-logo.png">
+	</a>
+	<!-- logo -->
+	
+	<a href="/tjsc/weixin/cart/index">
+		<span>$!{cartSize}</span>
+		<img src="$!{static}/specialShop/client/image/bottomMenu-car.png">
+		<p>订单</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home-active.png">
+		<p>我的</p>
+	</a>
+</div>
+
+<script>
+
+init();
+
+/* 初始化函数 */
+function init(){
+	
+	$("img.lazy").lazyload();
+	setFontSize();
+	setCarNumber();
+	setRedNumber();
+	setMemberLevel();
+}
+
+function setMemberLevel(){
+	var level = '$!{memberVipLevel}';
+	if(level){
+		$('#userInfo .userLevel').attr('src','/specialShop/client/image/home-memberLevel'+ level +'.png');
+	}
+}
+
+/* 设置红点数量 */
+function setRedNumber(){
+	$("#orderBottun em").each(function(index,element){
+		var realNum = parseFloat($(element).html());
+		var showNumber;
+		if(realNum){
+			showNumber = realNum > 99 ? '99+' : realNum;
+		}
+		else{
+			showNumber = '';
+		}
+		$(element).html(showNumber);
+	});
+}
+
+/* 设置购物车内商品数量 */
+function setCarNumber(){
+	var realNumber = parseFloat($("#bottomTab>a>span").html());
+	if(!realNumber){
+		$("#bottomTab>a>span").html('');
+		return;
+	}
+	var showNumber = realNumber > 99 ? '99+' : realNumber;
+	if(showNumber==0){
+		showNumber = '';
+		console.log(showNumber)
+	}
+	$("#bottomTab>a>span").html(showNumber);
+}
+
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

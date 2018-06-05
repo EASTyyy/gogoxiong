@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>操作帮助</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/OperateHelp.css" />
+</head>
+<body>
+	<h1>操作帮助</h1>
+	<div class="wrap">
+		<h3>如何进入正货特价？</h3>
+		<p>点击菜单【特价拼单】—>【特价玩具】，进入平台首页</p>
+		<img src="/specialShop/client/image/help_1.jpg"/>
+		<p>在首页点击产品图或【立即拼单】进入产品详情，再点击【立即抢购】、选择产品属性，【确定】后进入支付页面，可以根据产品发货区域填写【指定物流】，点击【立即支付】，完成支付</p>
+		<img src="/specialShop/client/image/help_2.jpg"/>
+		<img src="/specialShop/client/image/help_3.jpg"/>
+		<img src="/specialShop/client/image/help_4.jpg"/>
+		<img src="/specialShop/client/image/help_5.jpg"/>
+		<p>在商场首页，可以根据四个拼单分类(【整箱特价】、【每日上新】、【混拼专场】、【5元专区】)来下单，也可以通过筛选功能部分的【发货区域】、【价位】、【分类】来选择商品</p>
+		<img src="/specialShop/client/image/help_9.jpg"/>
+		<img src="/specialShop/client/image/help_10.jpg"/>
+		<img src="/specialShop/client/image/help_11.jpg"/>
+		<img src="/specialShop/client/image/help_12.jpg"/>
+		<img src="/specialShop/client/image/help_13.jpg"/>
+		<img src="/specialShop/client/image/help_14.jpg"/>
+		<img src="/specialShop/client/image/help_15.jpg"/>
+		<p>点击菜单栏【秒杀】，进入秒杀页，查看秒杀商品以及秒杀时间快速掌握秒杀信息</p>
+		<img src="/specialShop/client/image/help_16.jpg"/>
+		<p>点击【我的订单】，进入个人中心，查看订单详情，在待收货的订单中可以查看该订单的物流详情</p>
+		<img src="/specialShop/client/image/help_6.jpg"/>
+		<img src="/specialShop/client/image/help_7.jpg"/>
+		<img src="/specialShop/client/image/help_8.jpg"/>
+	</div>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/car.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+</head>
+<body style="background: #f2f2f2;">
+<div id="topButton">
+	<div class="complete">完成</div>
+	<!-- <div class="active">编辑</div> -->
+	<div class="active" onClick="deleteProduct()">删除</div>
+</div>
+
+<ul id="productList">
+ 	#foreach($!{product} in $!{tjscCartList})
+ 	<li data-id=$!{product.id} class="isAbleCheck">
+ 		<div class="checkIconContainer" onClick="productCheckClick(this)">
+ 			<img class="active" src="$!{static}/specialShop/client/image/car-checked.png">
+			<img class="noActive" src="$!{static}/specialShop/client/image/car-no-checked.png">
+ 		</div>
+ 		#if($!{product.seckillProductId})
+ 		<div class="productImg"  onClick="window.location='/tjsc/weixin/seckill/productDetail?seckillProductId=$!{product.seckillProductId}'">
+ 		#else
+ 		<div class="productImg"  onClick="window.location='/tjsc/weixin/FightOrderProduct/productDetail?fightOrderId=$!{product.fightOrderId}&fightOrderProductId=$!{product.fightOrderProductId}'">
+ 		#end
+ 			<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+ 		</div>
+ 		#if($!{product.seckillProductId})
+ 		<div class="productInfo"  onClick="window.location='/tjsc/weixin/seckill/productDetail?seckillProductId=$!{product.seckillProductId}'">
+ 		#else
+ 		<div class="productInfo"  onClick="window.location='/tjsc/weixin/FightOrderProduct/productDetail?fightOrderId=$!{product.fightOrderId}&fightOrderProductId=$!{product.fightOrderProductId}'">
+ 		#end 
+ 			#if($!{product.isFreePost}==0)
+			<h3><span style="color:red;">[免邮]</span>$!{product.productName}</h3>
+			#else
+			<h3>$!{product.productName}</h3>
+			#end
+ 			#if($!{product.fightOrderMode} == 0)
+ 				<p>拼单模式：整拼（$!{product.packageNum}个/箱）</p>
+ 				#else
+ 				<p>拼单模式：混拼（$!{product.mixFightNumThreshold}个起拼）</p>
+ 				#end
+ 			<p>商品颜色：$!{product.color}</p>
+ 			<p>装箱规格：$!{product.boxStandard}</p>
+		</div>
+ 		<div class="right">
+ 			<em onClick="deleteProduct(this)"></em>
+ 			<div class="price">￥
+ 			#if($!{product.fightOrderMode} == 0)
+ 				$!{product.wholeBoxPrice}
+ 				#else
+ 				$!{product.mixFightPrice}
+ 				#end
+ 			</div>
+ 			<span class="number">X$!{product.num}件</span>
+ 		</div> 
+ 	</li>
+ 	#end
+
+</ul>
+
+<a href="/tjsc/weixin/index" id="emptyCar">
+	<img src="$!{static}/specialShop/client/image/car-empty.png">
+</a>
+
+<div id="total">
+	<div id="totalCheck" onClick="totalCheckClick(this)"><!-- class="checked" -->
+		<img class="active" src="$!{static}/specialShop/client/image/car-checked.png">
+		<img class="noActive" src="$!{static}/specialShop/client/image/car-no-checked.png">
+		<span>全选</span>
+	</div>
+	<div class="totalPrice">
+		合计￥
+		<span>0.00</span>
+		( 不含运费 )
+	</div>
+	<div class="sumButton" onClick="count()">
+		结算(<span>0</span>)
+	</div>
+</div>
+
+
+
+<div id="bottomTab">
+	<a href="/tjsc/weixin/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价商品</p>
+	</a>
+	<a href="/tjsc/weixin/seckill/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha.png">
+		<p>秒杀专区</p>
+	</a>
+	
+	<!-- logo -->
+	<a>
+		<img class="logo" src="$!{static}/specialShop/client/image/bottomMenu-logo.png">
+	</a>
+	<!-- logo -->
+	
+	<a>
+		<img src="$!{static}/specialShop/client/image/bottomMenu-car-active.png">
+		<p>购物车</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home.png">
+		<p>个人中心</p>
+	</a>
+</div>
+
+
+<script>
+
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+	setFontSize();
+	checkEmptyCar();
+}
+
+/* 结算 */
+function count(){
+	var id = getCheckedId();
+	if(!id){
+		alert("你还没有选择商品");        
+        return;
+	}
+	$.ajax({
+        url: "/tjsc/weixin/cart/cehckCountCart?cartIds=" + id,
+        type: "post",
+        async : false,
+        dataType:"text",
+        success: function(data){
+            if(data=="success"){
+            	window.location="/tjsc/weixin/cart/count?cartIds="+id;
+            }else{
+                alert(data);
+            }
+        },
+        error:function(data){
+        	alert(data);
+        }
+
+    });
+	
+	
+}
+
+function checkEmptyCar(){
+	var productLength = $("#productList>li").size();
+	if(!productLength){
+		$("#productList").css('display','none');
+		$("#emptyCar").css('display','block')
+	}
+	else{
+		totalCheckClick($("#totalCheck"));//是否默认全选
+	}
+}
+
+/* 删除商品 */
+function deleteProduct(target){
+	if(target){
+		
+		if(confirm("是否删除商品？")){
+			var id = $(target).parent().parent().attr('data-id');
+	    	$.ajax({
+	        	type: "POST",
+	        	url: "/tjsc/weixin/cart/deleteCart",
+	        	data: {"cartIds":id},
+	        	dataType: "text",
+	        	async:false,
+	        	success: function(data){
+	           		if(data=="success"){
+	           			$(target).parent().parent().remove();
+	           			calcTotalPrice();
+	           			checkEmptyCar();
+	            	}else{
+	               		alert("删除失败，请重试！");
+	            	}
+	         	},
+	         	error:function(data){
+		        	alert(data);
+		        }
+	         
+	        });
+	   	}
+		
+	}
+	else{
+		var id = getCheckedId();
+		if(!id.length){
+			alert("请选择要删除的商品！");
+			return;
+		};
+		if(confirm("是否删除商品？")){
+			
+	    	$.ajax({
+	        	type: "POST",
+	        	url: "/tjsc/weixin/cart/deleteCart",
+	        	data: {"cartIds":id},
+	        	dataType: "text",
+	        	async:false,
+	        	success: function(data){
+	           		if(data=="success"){
+	           			$("#productList").find('li.checked').remove();
+	           			calcTotalPrice();
+	           			checkEmptyCar();
+	            	}else{
+	               		alert("删除失败，请重试！");
+	            	}
+	         	},
+	         	error:function(data){
+		        	alert(data);
+		        }
+	         
+	        });
+	   	}
+		
+	}
+}
+
+/* 获取选择商品id */
+function getCheckedId(){
+	var checkedArr = $("#productList").find('li.checked');
+	var id = '';
+	
+	$.each(checkedArr,function(i,value){
+		id += $(value).attr('data-id')+','
+	})
+	
+	id = id.substring(0,id.length-1);
+	return id;
+}
+
+/* 选择商品 */
+function productCheckClick(target){
+	var targetLi = $(target).parent();
+	targetLi.hasClass('checked') ? targetLi.removeClass('checked') : targetLi.addClass('checked');
+	var checkedLength = $("#productList>li.checked").size();
+	$("#total .sumButton span").html(checkedLength);
+	calcTotalPrice();
+	if( isCheckedAll() ){
+		$("#totalCheck").attr('class','checked');
+	}
+	else{
+		$("#totalCheck").attr('class','');
+	}
+	
+}
+
+/* 全选 */
+function totalCheckClick(target){
+	//$(target).attr('class') == 'checked' ? $(target).attr('class','') : $(target).attr('class','checked');
+	var isChecked = $(target).hasClass('checked');
+	if(isChecked){
+		$(target).attr('class','');
+		$("#productList>.isAbleCheck").removeClass('checked');
+	}
+	else{
+		$(target).attr('class','checked');
+		$("#productList>.isAbleCheck").addClass('checked');
+	}
+	calcTotalPrice();
+}
+
+/* 计算总金额 */
+function calcTotalPrice(){
+	var totalPrice = 0;
+	var checkedLength = $("#productList>li.checked").size();
+	for(var i=0;i<checkedLength;i++){
+		var number = parseFloat($("#productList>li.checked").eq(i).find('.number').html().substring(1));
+		var price = parseFloat($("#productList>li.checked").eq(i).find('.price').html().substring(1));
+		totalPrice += price*number;
+	}
+	$("#total .totalPrice span").html(totalPrice.toFixed(2));
+	$("#total .sumButton span").html(checkedLength);
+}
+
+/* 检测是否为全选状态 */
+function isCheckedAll(){
+	var LiLength = $("#productList>li").size();
+	var checkedLength = $("#productList>li.checked").size();
+	return LiLength == checkedLength; 
+}
+
+
+
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

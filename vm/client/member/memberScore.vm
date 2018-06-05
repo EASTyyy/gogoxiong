@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>我的积分</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberScore.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+<div id="topContainer">
+	<h3>当前积分</h3>
+	<div>$!{memberScore.presentScore}</div>
+	<p>积分=累积购物金额  1元=1积分</p>
+</div>
+<p class="title">积分明细</p>
+<ul id="memberScoreList">
+<!-- 	<li> -->
+<!-- 		<h3>购物积分发放【熊小二购物平台】</h3> -->
+<!-- 		<p>2017-11-14 13:52:40</p> -->
+<!-- 		<span>+50</span> -->
+<!-- 	</li> -->
+</ul>
+<div id="loading">加载中。。。</div>
+<script>
+
+var page =1;
+var rows =20;
+var isEnableRequest = true;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	pullRefresh();
+	getList();
+}
+
+/* 拉取列表 */
+function getList(){
+	if(!isEnableRequest){return};
+	
+	var url="/tjsc/weixin/memberScore/findScoreHistoryList?page="+page+"&rows="+rows+"&orderStatus=";
+	
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	if(!pageData.rows || pageData.rows==""){
+               $('#loading').text('没有更多数据了!');
+               isEnableRequest = false;
+           	}else{
+           		var list = eval(pageData.rows);  
+           		renderDom(list);
+                page=page+1;
+                isEnableRequest = list.length < rows ? false : true;
+                if(!isEnableRequest){
+             	   $('#loading').text('没有更多数据了!');
+                }
+            }
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 添加 */
+function renderDom(dataList){
+	var lists = eval(dataList);
+    var ul =$("#memberScoreList");
+    for(var i =0;i<lists.length;i++){
+	     var list =lists[i];
+	     var li ='<li>';
+	     
+	     li +='<h3>'+ list.scoreDetailStr +'</h3>';
+	     li +='<p>'+ list.createTime +'</p>';
+	     li +='<span>'+ list.changeScoreStr +'</span>';
+	     li +='</li>';
+	     
+	     $(li).appendTo(ul);
+    }
+}
+
+
+/* 上拉    */
+function pullRefresh() {
+	$(window).scroll(function(){
+		var scrollTop = $(this).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(this).height();
+		if(scrollTop + windowHeight >= scrollHeight - 10 && isEnableRequest){
+			getList();
+			isEnableRequest = false;
+		}
+	});
+};
+
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>账户充值</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberRecharge.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+<p class="rechargeTips">请充值</p>
+<div id="cardContainer">
+	#foreach($!{scoreRecharge} in $!{tjscScoreRechargeConfigList})
+	<div onclick="cardTab(this)" #if($velocityCount == 1) class="active" #end>
+		<span>充值</span	>
+		<div>$!{scoreRecharge.denomination}元</div>
+		<p>送<span>$!{scoreRecharge.giveScore}</span><b>积分</b></p>
+	</div>
+	#end
+</div>
+
+<!-- <div id="inputAmount"> -->
+<!-- 	<div> -->
+<!-- 		<span>充值金额：</span> -->
+<!-- 		<input placeholder="请输入充值金额（元）" /> -->
+<!-- 	</div> -->
+<!-- </div> -->
+
+<div id="pay" onclick="payClick()">充值</div>
+
+<script>
+
+function cardTab(target){
+	$(target).addClass('active').siblings().removeClass('active');
+}
+
+function payClick(){
+	var amountStr = $('#cardContainer>.active>div').html();
+	var amount = amountStr.substr(0,amountStr.length-1);
+	var score = $('#cardContainer>.active>p>span').html();
+	var url="/tjsc/weixin/memberDepositHistory/submit?amount="+amount+"&giveScore="+score+"&callback=";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+            	
+       		if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady(data,amount), false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady(data,amount)); 
+                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady(data,amount));
+                }
+            }
+       		else{
+                onBridgeReady(data,amount);
+            }
+           	
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+
+/* 微信支付js */
+function onBridgeReady(data,amount){
+   WeixinJSBridge.invoke(
+      'getBrandWCPayRequest', 
+      {
+          "appId" : data.result.appId,     //公众号名称，由商户传入     
+          "timeStamp":data.result.timeStamp, //时间戳，自1970年以来的秒数     
+          "nonceStr" :data.result.nonceStr, //随机串     
+          "package": data.result.package_,     
+          "signType" : data.result.signType, //微信签名方式：     
+          "paySign" : data.result.paySign //微信签名 
+      },
+      function(res){
+          //付款成功
+          if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+        	  window.location="/tjsc/weixin/memberDepositHistory/paySuccess?payAmount="+amount;
+          }
+          else{
+           		//用户放弃付款或支付失败
+           		//window.location="/tjsc/weixin/memberDepositHistory/payFail";
+           		alert('充值失败！')
+          }
+      }
+  )
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>充值明细</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberBill.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+
+<ul id="memberBillList">
+<!-- 	<li> -->
+<!-- 		<p>交易时间：<span>2017-11-14 13:52:40</span><b>充值成功</b></p> -->
+<!-- 		<p>充值账户：<span>微信名？？？</span></p> -->
+<!-- 		<p>充值金额：<span>2000元</span></p> -->
+<!-- 	</li> -->
+</ul>
+<div id="loading">加载中。。。</div>
+<script>
+
+var page =1;
+var rows =20;
+var isEnableRequest = true;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	pullRefresh();
+	getList();
+}
+
+/* 拉取列表 */
+function getList(){
+	if(!isEnableRequest){return};
+	
+	var url="/tjsc/weixin/memberDepositHistory/index?page="+page+"&rows="+rows;
+	
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	if(!pageData.rows || pageData.rows==""){
+               $('#loading').text('没有更多数据了!');
+               isEnableRequest = false;
+           	}else{
+           		var list = eval(pageData.rows);  
+           		renderDom(list);
+                page=page+1;
+                isEnableRequest = list.length < rows ? false : true;
+                if(!isEnableRequest){
+             	   $('#loading').text('没有更多数据了!');
+                }
+            }
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 添加 */
+function renderDom(dataList){
+	var lists = eval(dataList);
+    var ul =$("#memberBillList");
+    for(var i =0;i<lists.length;i++){
+	     var list =lists[i];
+	     var li ='<li>';
+	     
+	     li +='<p>交易时间：<span>'+list.createTime+'</span><b>'+ list.remark +'成功</b></p>';
+	     li +='<p>'+ list.remark +'账户：<span>'+list.memberName+'</span></p>';
+	     li +='<p>'+ list.remark +'金额：<span>'+list.amountStr+'元</span></p>';
+	     li +='</li>';
+	     
+	     $(li).appendTo(ul);
+    }
+}
+
+
+/* 上拉    */
+function pullRefresh() {
+	$(window).scroll(function(){
+		var scrollTop = $(this).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(this).height();
+		if(scrollTop + windowHeight >= scrollHeight - 10 && isEnableRequest){
+			getList();
+			isEnableRequest = false;
+		}
+	});
+};
+
+</script>
+</body>
+</html>

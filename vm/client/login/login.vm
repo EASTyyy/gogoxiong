@@ -1,0 +1,146 @@
+<!doctype html>
+<html style="height: 100%;">
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/login.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+</head>
+<body>
+<img id="headshot" class='lazy' src='/specialShop/client/image/bottomMenu-logo.png' data-original="$!{roll.picture}"/>	
+<h3 id="wechatName">微信名</h3>
+<div id="loginContainer">
+	<div class="phoneNum">
+		<input onInput="validatePhoneNumber(this)" maxlength="11" placeholder="请输入您的手机号" />
+	</div>
+	<div class="validateCode">
+		<input maxlength="8" placeholder="请输入验证码" />
+		<button id="codeButton" class="buttonGray" disabled="disabled">获取验证码</button>
+	</div>
+</div>
+<div id="loginButton">绑定手机并登录</div>
+<script>
+var phoneReg = /^1[34578]\d{9}$/;
+var flag = true;
+
+init()
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+}
+
+/* 输入时验证手机号码  */
+function validatePhoneNumber(target){
+	if(!flag){return};
+	
+	if($(target).val().length == 11 && phoneReg.test($(target).val())){
+		$('#codeButton').removeClass('buttonGray').removeAttr('disabled');
+	}
+	else{
+		$('#codeButton').addClass('buttonGray').attr('disabled','disabled');
+	}
+}
+
+/* 绑定获取验证码按钮事件 */
+$('#codeButton').on('click',function(){
+	var phoneNumber = $('#loginContainer .phoneNum input').val();
+	$('#codeButton').addClass('buttonGray').attr('disabled','disabled');
+	flag = false;
+	countDown(60);
+	$.ajax({
+        type: "GET",
+        url: '/tjsc/weixin/login/getCaptcha',
+        data: {"phone":phoneNumber},
+        async:false,
+        success: function(resp){
+        	if(resp != "success") {
+        		alert(resp);
+        	}
+        },
+        error: function(error){
+        	$('#codeButton').removeClass('buttonGray').removeAttr('disabled');
+        	alert(error);
+        }
+	});
+})
+
+/* 绑定登录按钮点击事件 */
+$("#loginButton").on('click',function(){
+	var phoneNumber = $('#loginContainer .phoneNum input').val();
+	var validateCode = $('#loginContainer .validateCode input').val();
+	
+	if(!phoneNumber){
+		alert('请填写手机号！')
+		return;
+	}
+	if( !phoneReg.test(phoneNumber) ){
+		alert('手机号有误！')
+		return;
+	}
+	
+	if(!validateCode){
+		alert('请填写验证码！')
+		return;
+	}
+	
+	if(validateCode.length < 6){
+		alert('验证码为6位！')
+		return;
+	}
+	
+	
+	submitRequest(phoneNumber,validateCode);
+})
+
+/* 提交登录 */
+function submitRequest(phoneNumber,validateCode){
+	var url = '/tjsc/weixin/login/login'
+	$.ajax({
+        type: "GET",
+        url: url,
+        data: {
+			"phone":phoneNumber,
+			"captcha":validateCode
+		},
+        async:false,
+        success: function(resp){
+        	if(resp =="success") {
+        		window.location = "/tjsc/weixin/index";
+        	} else {
+        		alert(resp);
+        	}
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+	
+}
+
+/* 倒计时函数 */
+function countDown(number){
+	if(number == 0){
+		flag = true;
+		$('#codeButton').text('重新获取');
+		$('#codeButton').removeClass('buttonGray').removeAttr('disabled');
+		return
+	};
+	var time = number;
+	$('#codeButton').text(time+' 秒');
+	setTimeout(function() {  
+		time--;
+		countDown(time)
+    },1000)  
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>会员等级</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberLevel.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+<div id="topContainer">
+	<div class="levelContainer">
+		#foreach($!{level} in $!{levelList})
+		<div class="level">
+			<img src="#">
+			<div class="progress"><span></span></div>
+			<div class="levelInfo">
+				<p>$!{level.levelName}</p>
+				<p class="split">$!{level.needScore}</p>
+			</div>
+		</div>
+		#end
+	</div>
+	<h3 class="range">距离下一等级还需$!{memberScore.nextLevelNeedScoreSub}积分</h3>
+	<ul class="levelTips">
+		<li>
+			等级<span>$!{memberScore.levelName}</span>
+		</li>
+		<li>
+			积分<span id="currentScore">$!{memberScore.presentScore}</span>
+		</li>
+	</ul>
+</div>
+
+<ul id="explain">
+	<li class="active">
+		<a onclick="explainTab(this)">
+			<p>当前等级特权说明</p>
+			<img src="/specialShop/client/image/pay-rightArrow.png">
+		</a>
+		<div>
+			<p>$!{memberScore.levelDescription}</p>
+		</div>
+	</li>
+	<li>
+		<a onclick="explainTab(this)">
+			<p>所有等级特权说明</p>
+			<img src="/specialShop/client/image/pay-rightArrow.png">
+		</a>
+		<div>
+<!-- 			#foreach($!{explain} in $!{levelList}) -->
+<!-- 			<p>$!{explain.levelName}:$!{explain.levelDescription}</p> -->
+<!-- 			#end -->
+			<h3>一、会员级别设置： </h3>
+			<p>1. 普通会员: 0-9999积分</p>
+			<p>2. 黄金VIP: 10000-29999积分</p>
+			<p>3. 铂金VIP: 30000-99999积分</p>
+			<p>4. 钻石VIP: 100000及以上积分</p>
+			<p>积分=累积购物金额（确认收货后获得）</p>
+			<p>1元=1积分，</p>
+			<p>累积购物金额越高，积分越高，对应的用户等级也越高，积分有效期1年整，过期失效。</p>
+			<h3>二、会员特权： </h3>
+			<p>1. 普通会员:</p>
+			<p class="content">熊小二平台特价商品</p>
+			<p class="content">部分秒杀商品购买资格</p>
+			<p class="content">购物获取积分</p>
+			<p>2. 黄金VIP: </p>
+			<p class="content">熊小二平台特价商品、所有秒杀商品购买资格，并可享受9.9折优惠； </p>
+			<p class="content">购物获取积分；</p>
+			<p class="content">新品、促销、优惠信息、个人关注产品优先通知。</p>
+			<p>3. 铂金VIP:</p>
+			<p class="content">熊小二平台特价商品、所有秒杀商品购买资格，并可享受9.8折优惠；  </p>
+			<p class="content">购物获取积分；</p>
+			<p class="content">新品、促销、优惠信息、个人关注产品优先通知；</p>
+			<p class="content">VIP客服专线；</p>
+			<p class="content">并每月可享受1次免运费服务（不可累计）。</p>
+			<p>4. 钻石VIP:</p>
+			<p class="content">熊小二平台特价商品、所有秒杀商品购买资格，并可享受9.6折优惠；购物获取积分；</p>
+			<p class="content">购物获取积分；</p>
+			<p class="content">新品、促销、优惠信息、个人关注产品优先通知；</p>
+			<p class="content">VIP客服专线；</p>
+			<p class="content">并每月可享受1次免运费服务（不可累计）。</p>
+			<h3>三、成为各级别会员的条件（积分满足条件即自动升降级）：   </h3>
+			<p class="bottom">1. 普通会员：关注熊小二成为普通会员； </p>
+			<p class="bottom">2. 黄金VIP： 购物累计消费金额或消费+充值送满10000积分，即自动升级成为黄金VIP会员；  </p>
+			<p class="bottom">3. 铂金VIP： 购物累计消费金额或消费+充值送满30000积分，即自动升级成为铂金VIP会员； </p>
+			<p class="bottom">4. 钻石VIP： 购物累计消费金额或消费+充值送满100000积分，即自动升级成为钻石VIP会员。 </p>
+			<p class="bottom">例：一次充值74000元，获得充值赠送积分26400+消费积分74000，合计达到100400积分，升级钻石会员。</p>
+		</div>
+	</li>
+</ul>
+
+
+	
+<script>
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$('#explain').css('display','none');
+	setStyle();
+	calc();
+}
+
+function calc(){
+	
+	var currentScore = parseFloat($('#currentScore').html());
+	var currentPoint = null;
+	var nextSplitPoint = null;
+	var ratio = 1*100+'%';
+	$('#topContainer .split').each(function(index,element){
+		var splitPoint = parseFloat($(element).html());
+		var num = index+1;
+		$(element).parent().parent().find('img').attr('src','/specialShop/client/image/memberLevel'+num+'.png');
+		if(splitPoint <= currentScore){
+			$(element).parent().parent().addClass('active').siblings().removeClass('active');
+			$(element).parent().parent().find('.progress span').css('width','100%');
+			currentPoint = parseFloat($('#topContainer .split').eq(index).html());
+			nextSplitPoint = parseFloat($('#topContainer .split').eq(index+1).html());
+		}
+		if(!index){
+			var dom = '<div class="progress leftSide"><b></b></div>';
+			var firstRatio = parseFloat($('#currentScore').html()/$('#topContainer .split').eq(index).html())*100+'%';
+			$(dom).appendTo( $(element).parent().parent() );
+			if(splitPoint > currentScore){
+				$(element).parent().parent().find('.progress.leftSide b').css('width',firstRatio);
+			}
+			else{
+				$(element).parent().parent().find('.progress.leftSide b').css('width','100%');
+			}
+		}
+		
+	})
+	if(currentPoint && nextSplitPoint){
+		ratio = ( currentScore - currentPoint )/( nextSplitPoint - currentPoint )*100+'%';
+	}
+	$('#topContainer .level.active').find('.progress span').css('width',ratio);
+	
+}
+
+function explainTab(target){
+	if($(target).parent().hasClass('active')){
+		$(target).parent().removeClass('active');
+	}
+	else{
+		$(target).parent().addClass('active');
+	}
+}
+
+function setStyle(){
+	var ratio = 1/( $('#topContainer .level').size() )*100;
+	$('#topContainer .level').css('width',ratio+'%');
+}
+</script>
+</body>
+</html>

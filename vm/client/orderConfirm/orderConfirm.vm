@@ -1,0 +1,737 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Pragma" content="no-cache"> 
+<meta  http-equiv="Cache-Control" content="no-cache"> 
+<meta  http-equiv="Expires" content="0">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/orderConfirm.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/weui.min.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/weui.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/jquery.cookie.js"></script>
+</head>
+<body>
+<a href="javascript:loadAddress()" id="address">
+	<img class="addressIcon" src="/specialShop/client/image/addr-icon.png">
+	#if($!{address})
+	<div class="infoContainer">
+		<div class="nameTel">
+			<span class="name">收件人：$!{address.name}</span>
+			<span class="tel">$!{address.phone}</span>
+		</div>
+		<div class="address">收货地址：$!{address.fullAddress}</div>
+	</div>
+	#else
+	<div class="emptyAddress">请填写收货地址</div>
+	#end
+	<img class="addressRight" src="/specialShop/client/image/addr-right.png">
+</a>
+<div id="customerButton">
+	<a class="left">
+		<img src="/specialShop/client/image/kefuIcon.png">在线客服
+	</a>
+	<a class="right" href="/tjsc/weixin/home/serviceCenter">
+		客服中心
+	</a>
+</div>
+<div id="detailTip" class="public">订单详情<span onClick="edit()"></span><i onClick="edit()">编辑</i></div>
+#if($!{wholeTjscCartList}!='null'&&$!{wholeTjscCartList}!='[]'&&$!{wholeTjscCartList}!='')
+<ul id="wholeList" class="productList">
+	<p>整批</p>
+	#foreach($!{product} in $!{wholeTjscCartList})
+	#if($!{product.seckillId})<!-- 秒杀 -->
+	<li data-id=$!{product.id} class="legal noDiscount">
+	<img class="specialTag" src="/specialShop/client/image/miaoshaTag.png">
+	<div class="productImg">
+		<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+	</div>
+	#elseif($!{product.cxActivityId} || $!{product.cxProductId})<!-- 畅销 -->
+	<li data-id=$!{product.id} class="legal">
+	<img class="specialTag" src="/specialShop/client/image/changxiaoTag.png">
+	<div class="productImg" onclick="window.location='/tjsc/weixin/cxActivity/productDetail?productId=$!{product.productId}&tjscCXActivityId=$!{product.cxActivityId}&cxProductModel=whole'">
+		<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+	</div>
+	#else<!-- 特价及其他 -->
+	<li data-id=$!{product.id} class="legal">
+	<div class="productImg">
+		<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+	</div>
+	#end
+		
+		<div class="productInfo" style="height: 145px;">
+			<h3>$!{product.productName}</h3>
+			<p>单个价格：<span>￥$!{product.wholeBoxPrice}</span></p>
+			<p>装  箱  量：$!{product.packageNum}个</p>
+			#set($totalAmount=$!{product.wholeBoxPrice}*$!{product.packageNum})
+			<p>整箱价格：<span class="price">￥$totalAmount</span></p>
+			#set($inventory=$!{product.wholeBoxNum}/$!{product.packageNum})
+			<p>剩余数量：$inventory箱</p>
+			<p>发货区域：<span class="price area">$!{product.warehouseName}</span></p>
+			<div style="bottom: 5px;" class="numberContainer">
+				<div class="changeNumber" data-inventory='$inventory'>
+					#set($boxNum=$!{product.wholeBoxBuyNum}/$!{product.packageNum})
+					<span class="reduce" onclick="changeBuyNumber(this,'reduce')">-</span><input class="buyNumber" type="number" value=$boxNum onchange="inputNumber(this)"><span class="add" onclick="changeBuyNumber(this,'add')">+</span>
+				</div>
+				<span>箱</span>
+			</div>
+		</div>
+		#if($!{product.isPurchase}=='0')
+		<span style="bottom: 15px;" class="limit">限购<span>$!{product.everyOnePurchase}</span>箱</span>
+		#else
+		<span style="bottom: 15px;" class="limit">不限购</span>
+		#end
+		<span class="delet" onClick="delet(this)"></span>
+	</li>
+	#end
+	<div class="smallCount">（小计<span class="totalNumber">0</span>箱）  ￥<span class="totalPrice">0</span></div>
+</ul>
+#end
+
+#if($!{mixCartDtoList}!='null'&&$!{mixCartDtoList}!='[]'&&$!{mixCartDtoList}!='')
+<div id="singleList" class="productList">
+	<p>混拼</p>
+	#foreach($!{warehouse} in $!{mixCartDtoList})
+	<ul class="productList">
+		<p class="warehouse">$!{warehouse.warehouseName}</p>
+		#foreach($!{product} in $!{warehouse.mixCartList})
+			#if($!{product.seckillId})<!-- 秒杀 -->
+			<li data-id=$!{product.id} class="legal noDiscount">
+			<img class="specialTag" src="/specialShop/client/image/miaoshaTag.png">
+			<div class="productImg">
+				<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+			</div>
+			#elseif($!{product.cxActivityId} || $!{product.cxProductId})<!-- 畅销 -->
+			<li data-id=$!{product.id} class="legal">
+			<img class="specialTag" src="/specialShop/client/image/changxiaoTag.png">
+			<div class="productImg" onclick="window.location='/tjsc/weixin/cxActivity/productDetail?productId=$!{product.productId}&tjscCXActivityId=$!{product.cxActivityId}&cxProductModel=mixFight'">
+				<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+			</div>
+			#else<!-- 特价及其他 -->
+			<li data-id=$!{product.id} class="legal">
+			<div class="productImg">
+				<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'>
+			</div>
+			#end
+			
+			<div class="productInfo" style="height: 123px;">
+				<h3>$!{product.productName}</h3>
+				<p>单个价格：<span class="price">￥$!{product.mixFightPrice}</span></p>
+				<p>起拼数量：<span class="startNumber">$!{product.mixFightNumThreshold}</span>个</p>
+				<p>剩余数量：$!{product.mixFightNum}个</p>
+				<p>发货区域：<span class="price area">$!{product.warehouseName}</span></p>
+				<div class="numberContainer">
+					<div class="changeNumber" data-inventory='$!{product.mixFightNum}'>
+						<span class="reduce" onclick="changeBuyNumber(this,'reduce')">-</span><input class="buyNumber" type="number" value='$!{product.mixFightBuyNum}' onchange="inputNumber(this)"><span class="add" onclick="changeBuyNumber(this,'add')">+</span>
+					</div>
+					<span>个</span>
+				</div>
+			</div>
+			#if($!{product.isPurchase}=='0')
+			<span class="limit">限购<span>$!{product.everyOnePurchase}</span>个</span>
+			#else
+			<span class="limit">不限购</span>
+			#end
+			<span class="delet" onClick="delet(this)"></span>
+		</li>
+		#end
+		<div class="smallCount">
+			<a class="notFull" href="/tjsc/weixin/index" style="display: block;color: white;">
+				<span>该仓库混拼需满￥<span class="singleLimit">$!{mixFightCash}</span> 还差￥<span class="difference" style="padding-right: 2px;">0</span>起拼</span>
+			</a>
+			（小计<span class="totalNumber">0</span>个）  ￥<span class="totalPrice">0</span>
+		</div>
+	</ul>
+	#end
+</div>
+#end
+
+<div id="total" class="public">商品总额：<span>￥0</span><b>（您享<i>#if($!{warehouseIdListIsEmpty}=='no')$!{discountsRatioStr}#end</i>折优惠<span>，秒杀除外</span>）</b></div>
+<div id="discountAmount" class="public">优惠金额：<span>￥0</span></div>
+<div id="discount" class="public">实付金额：<span style="font-size: 20px;font-weight: bold;">￥0</span></div>
+#if($!{needAmount666})
+<div id="amountTips" class="public">（还需累计消费<span>￥$!{needAmount}</span>  享<span>$!{nextDiscountsRatio}</span>折）</div>
+#end
+<div id="payTips" class="public">点击支付后请在<span>$!{endPayTime}</span>分钟内完成付款</div>
+<!-- <div class="public" style="padding-top: 0;font-weight: bold;">新品预售区商品，不保证年前全部发出</div> -->
+
+<div id="logistics" class="public">
+	<p>发货指定物流（不填写则默认不指定）</p>
+	<div class="infoContainer">
+		#foreach($!{logistics} in $!{logisticsInfoList})
+		<div>
+			<span>$!{logistics.placeOfDispatch} :</span>
+			<input placeholder="$!{logistics.placeOfDispatch}物流公司名称及联系方式" value="$!{logistics.logisticsInformation}" />
+		</div>
+		#end
+	</div>
+</div>
+
+<div id="payWay" class="public">
+	<p>支付方式：</p>
+	<ul>
+		<li id="wechatPay" class="active" onclick="payWayClick(this)">微信支付</li>
+		<li id="walletPay" onclick="payWayClick(this)" class="gray">余额<b>不足</b> ( ￥<span>$!{tjscMemberAccount.restMoney}</span> )</li>
+	</ul>
+</div>
+
+<div id="comments" class="public">
+	<span>买家留言</span>
+	<div>
+		<input type="text" value="" placeholder="选填(请简单填写)" maxlength="30" />
+	</div>
+</div>
+
+<div class="public" id="logisticsTips">
+	<h3>物流发货申明：</h3>
+	<p>1，下单后，务必填好产品发货地指定的发货物流公司和电话，以保障货物安全；</p>
+	<p>2，每一笔寄出的产品，都会由专业人员检验，确认包装完好，数量无误后，进行打包发货；</p>
+	<p>3，货物运输过程中，造成的产品损伤或丢失，请与物流公司进行核对并维权，熊小二不对此负责！</p>
+	<p>4，发出的产品将到达各个物流站点，请根据需要，进行自提或者中转，若产生中转费用，须由您自行承担！</p>
+</div>
+
+<div id="bottom">
+	<a href="/tjsc/weixin/cxActivity/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha.png">
+		<p>畅销</p>
+	</a>
+	<a href="/tjsc/weixin/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home.png">
+		<p>我的</p>
+	</a>
+	<div id="payNow" class="payButton" onclick="payClick()">立即支付</div>
+</div>
+
+<a href="/tjsc/weixin/index" id="emptyCar">
+	<img src="$!{static}/specialShop/client/image/car-empty.png">
+</a>
+
+<script>
+
+var orderNo;
+var payTypeSwitch = true;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+	setFontSize();
+	checkEmpty();
+}
+
+/* 支付方式点击 */
+function payWayClick(target){
+	!$(target).hasClass('gray') ? $(target).addClass('active').siblings().removeClass('active') : null;
+	payTypeSwitch = false;
+}
+
+/* 检查购物车是否为空 */
+function checkEmpty(){
+	var isEmpty = !parseFloat($(".productList>li").size());
+	
+	$(".productList").each(function(index,element){
+		var liLength = $(element).find(".legal").size();
+		if(!liLength){
+			$(element).remove();
+		}
+	});
+	
+	if(isEmpty){
+		$("#emptyCar").css("display",'block').siblings().css("display",'none');
+		$("#bottom").css("display",'block');
+	}
+	else{
+		calcTotalPrice();
+	}
+}
+
+/* 组装物流信息 */
+function getLogistics(){
+	var result = '';
+	$("#logistics>.infoContainer>div").each(function(index,element){
+		result += $(element).find('span').html();
+		result += $(element).find('input').val() + ',';
+	});
+	result = result.substring(0,result.length-1);
+	return result;
+}
+
+/* 加减购买数量 */
+function changeBuyNumber(target,type){
+	
+	var currentInput = $(target).parent().find('.buyNumber');
+	/* cartId */
+	var cartId = parseFloat($(target).closest('li').attr('data-id'));
+	
+	/* 限购数 */
+	var limitBuy = parseFloat($(target).closest('li').find('.limit span').html());
+	
+	if(!limitBuy){
+		limitBuy = Infinity;
+	}
+	
+	/* 库存量 */
+	var inventory = Math.floor(parseFloat($(target).parent().attr('data-inventory')));
+	
+	/* 混拼时 起拼数 */
+	var startNumber = parseFloat($(target).closest('li').find('.startNumber').html());
+	
+	/* 最终上限 */
+	var topLimit = limitBuy > inventory ? inventory : limitBuy;
+	
+	/* 最终下限 */
+	var underLimit = startNumber ? startNumber : 1;
+	
+	var prevNumber = parseFloat(currentInput.val());
+	
+	if(type == 'add'){
+		if(prevNumber < topLimit){
+			weui.loading('loading');
+			$.ajax({
+		        type: "GET",
+		        url: "/tjsc/weixin/cart/updateNum?cartId="+cartId+"&num="+(prevNumber+1),
+		        async:false,
+		        success: function(data){
+		        	weui.loading('loading').hide();
+		           	if(data == "success"){
+		           		currentInput.val(prevNumber+1);
+		           		calcTotalPrice();
+		           	}
+		           	else{
+		           		
+		            }
+		        },
+		        error: function(error){
+		        	weui.loading('loading').hide();
+		        	alert(error);
+		        }
+		        
+			});
+			
+		}
+		else{
+			alert('超出购买上限！');
+		}
+	}
+	else{
+		if(prevNumber > underLimit){
+			weui.loading('loading');
+			$.ajax({
+		        type: "GET",
+		        url: "/tjsc/weixin/cart/updateNum?cartId="+cartId+"&num="+(prevNumber-1),
+		        async:false,
+		        success: function(data){
+		        	weui.loading('loading').hide();
+		           	if(data == "success"){
+		           		currentInput.val(prevNumber-1);
+		           		calcTotalPrice();
+		           	}
+		           	else{
+		           		
+		            }
+		        },
+		        error: function(error){
+		        	weui.loading('loading').hide();
+		        	alert(error);
+		        }
+			});
+			
+			
+		}
+	}
+	
+}
+
+/* 直接输入数量 */
+function inputNumber(target){
+	
+	var currentInput = $(target);
+	
+	/* cartId */
+	var cartId = parseFloat($(target).closest('li').attr('data-id'));
+	
+	/* 限购数 */
+	var limitBuy = parseFloat($(target).closest('li').find('.limit span').html());
+	
+	if(!limitBuy){
+		limitBuy = Infinity;
+	}
+	
+	/* 库存量 */
+	var inventory = Math.floor(parseFloat($(target).parent().attr('data-inventory')));
+	
+	/* 混拼时 起拼数 */
+	var startNumber = parseFloat($(target).closest('li').find('.startNumber').html());
+	
+	/* 最终上限 */
+	var topLimit = limitBuy > inventory ? inventory : limitBuy;
+	
+	/* 最终下限 */
+	var underLimit = startNumber ? startNumber : 1;
+	
+	var prevNumber = parseFloat(currentInput.val());
+	
+	if(prevNumber > topLimit){
+		prevNumber = topLimit;
+	}
+	
+	if(prevNumber < underLimit){
+		prevNumber = underLimit;
+	}
+	weui.loading('loading');
+	$.ajax({
+        type: "GET",
+        url: "/tjsc/weixin/cart/updateNum?cartId="+cartId+"&num="+prevNumber,
+        async:false,
+        success: function(data){
+        	weui.loading('loading').hide();
+           	if(data == "success"){
+           		currentInput.val(prevNumber);
+           		calcTotalPrice();
+           	}
+           	else{
+           		
+            }
+        },
+        error: function(error){
+        	weui.loading('loading').hide();
+        	alert(error);
+        }
+	});
+	
+}
+
+/* 获取所有商品cartId及数量 */
+function getCartId(){
+	var cartIdArr = $(".productList").find('li.legal');
+	var id = '';
+	
+	$.each(cartIdArr,function(i,value){
+		id += $(value).attr('data-id')+','
+	})
+	
+	id = id.substring(0,id.length-1);
+	return id;
+	
+}
+
+/* 格式化折扣显示（去除末尾0） */
+function strRemoveZero(str){
+	var result = str.replace(/(0+)$/g,"");
+	var endStr = result.charAt(result.length-1);
+	if(endStr == '.'){
+		result = result.substr(0,result.length-1);
+	}
+	return parseFloat(result);
+}
+
+/* 计算金额 */
+function calcTotalPrice(){
+	var wholeList = $("#wholeList").size();
+	var singleList = $("#singleList").size();
+	var wholeTotalPrice = 0;
+	var wholeTotalNumber = 0;
+	var singleTotalPrice = 0;
+	var singleTotalNumber = 0;
+	var totalAmount = 0;
+	var discountAmount = 0;
+	var discount = parseFloat($("#total>b>i").html());
+	var walletAmount = parseFloat($("#walletPay span").html());
+	var wholeNoDiscountAmount = 0;
+	var singleNoDiscountAmount = 0;
+	if(wholeList){
+		$("#wholeList>li.legal").each(function(index,element){
+			var price = parseFloat($(element).find('.price').html().substring(1));
+			var number = parseFloat($(element).find('.buyNumber').val());
+			wholeTotalPrice += price*number;
+			wholeTotalNumber += number;
+		});
+		$("#wholeList .totalNumber").html(wholeTotalNumber);
+		$("#wholeList .totalPrice").html(wholeTotalPrice.toFixed(2));
+	}
+	
+	if(singleList){
+		$('#payNow').attr('class','payButton');
+		var singleLimit = parseFloat($("#singleList .singleLimit").html());
+		$("#singleList>ul").each(function(index,element){
+			var singleStockPrice = 0;
+			var singleStockNumber = 0;
+			$(element).find('li.legal').each(function(index,element){
+				var price = parseFloat($(element).find('.price').html().substring(1));
+				var number = parseFloat($(element).find('.buyNumber').val());
+				singleStockPrice += price*number;
+				singleStockNumber += number;
+			});
+			$(element).find('.totalNumber').html(singleStockNumber);
+			$(element).find('.totalPrice').html(singleStockPrice.toFixed(2));
+			singleTotalPrice += singleStockPrice;
+			if( (singleLimit-singleStockPrice) > 0 ){
+				$(element).find('.notFull').css('display','block');
+				$(element).find('.difference').html((singleLimit-singleStockPrice).toFixed(2));
+				$('#payNow').attr('class','payButtonGray');
+	 		}
+			else{
+				$(element).find('.notFull').css('display','none');
+			}
+		});
+	}
+	
+	//计算不参加优惠的商品总额
+	$("#wholeList li.noDiscount").each(function(index,element){
+		var price = parseFloat($(element).find('.price').html().substring(1));
+		var number = parseFloat($(element).find('.buyNumber').val());
+		wholeNoDiscountAmount += price*number;
+	});
+	$("#singleList li.noDiscount").each(function(index,element){
+		var price = parseFloat($(element).find('.price').html().substring(1));
+		var number = parseFloat($(element).find('.buyNumber').val());
+		singleNoDiscountAmount += price*number;
+	});
+	
+	//总金额
+	totalAmount = (wholeTotalPrice+singleTotalPrice).toFixed(2);
+	if(discount){
+		//折扣金额
+		discountAmount = ( (wholeTotalPrice+singleTotalPrice-wholeNoDiscountAmount-singleNoDiscountAmount)*(1-discount/10) ).toFixed(2);
+		$("#total>b>i").html(discount);
+		$("#total>b").css('display','initial');
+		$("#discount").css('display','block');
+		if(parseFloat(discountAmount)){
+			$("#discountAmount").css('display','block');
+			if(wholeNoDiscountAmount || singleNoDiscountAmount){
+				$("#total>b>span").css('display','initial');
+			}
+			else{
+				$("#total>b>span").css('display','none');
+			}
+		}
+		else{
+			$("#total>b").css('display','none');
+		}
+		$("#discount>span").html("￥"+ Math.ceil( ((totalAmount-discountAmount)*100).toFixed(1) )/100);
+		$("#discountAmount>span").html("￥"+ Math.ceil(discountAmount*100)/100);
+		if((Math.ceil( ((totalAmount-discountAmount)*100).toFixed(1) )/100) > walletAmount){
+			$('#walletPay').removeClass('active').addClass('gray').siblings().addClass('active');
+		}
+		else{
+			$('#walletPay').removeClass('gray');
+		}
+	}
+	else{
+		$("#total>span").css('font-size','16px');
+		$("#total>span").css('font-weight','bold');
+		if(totalAmount > walletAmount){
+			$('#walletPay').removeClass('active').addClass('gray').siblings().addClass('active');
+		}
+		else{
+			$('#walletPay').removeClass('gray');
+		}
+	}
+	
+	$("#total>span").html("￥"+totalAmount);
+}
+
+/* 点击支付按钮 */
+function payClick(){
+	if(!'$!{addressId}'){
+		alert("请填写收货地址！")
+		return;
+	}
+	if(orderNo){
+		window.loaction = "";
+		return;
+	}
+	var isAblePayClick = $('#payNow').attr('class') == 'payButton' ? true :false;
+	if(!isAblePayClick){
+		alert('混拼未满起拼金额');
+		return;
+	};
+	
+	var hasWalletPay = parseFloat($("#walletPay span").html()) > 0;
+	var scrollTop = $(window).scrollTop();
+	var scrollHeight = $(document).height();
+	var windowHeight = $(window).height();
+	$('#payWay').removeClass('payWayClass');
+	if( (scrollTop + windowHeight < scrollHeight) && hasWalletPay && payTypeSwitch){ 
+		window.scrollTo(0,document.body.scrollHeight);
+		$('#payWay').addClass('payWayClass');
+		payTypeSwitch = false;
+		return;
+	}
+	
+	var payWay = $('#payWay ul li.active').attr('id') == 'wechatPay' ? 'wechatPay' : 'walletPay';
+	var cartIds = getCartId();
+	var comment = $("#comments input").val();
+	var logistics = getLogistics();
+	var url="/tjsc/weixin/order/createOrder?leaveMessage="+comment+"&cartIds="+ cartIds +"&addressId=$!{addressId}" + "&logisticsInformation="+ logistics;
+	
+	if(payWay == 'walletPay'){
+		if(!confirm("确定使用余额支付？")){return};
+	}
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+        	if(payWay == 'walletPay'){//走余额支付
+        		walletPay(data);
+        	}
+        	else{//走微信支付
+        		if(data && data.orderNo){
+            		orderNo = data.orderNo;
+            		wechatPay(data);
+            	}
+            	else{
+            		alert(data);
+            	}
+        	}
+        	
+           	
+        },
+        error: function(error){
+        	alert(error.responseText);
+        }
+	});
+}
+
+/* 微信支付 */
+function wechatPay(data){
+	var url="/xlcl/weixin/order/pay/paySign?outTradeNo="+data.orderNo+"&totalFee="+ data.totalAmount +"&callback=";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+            	
+       		if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady(data), false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady(data)); 
+                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady(data));
+                }
+            }
+       		else{
+                onBridgeReady(data);
+            }
+           	
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+	
+}
+
+/* 余额支付 */
+function walletPay(data){
+	var url="/xlcl/weixin/order/pay/walletPay?outTradeNo="+data.orderNo+"&totalFee="+ data.totalAmount +"&callback=";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+            	
+        	if(data=="success"){
+        		window.location="/xlcl/weixin/order/pay/paySuccess?addressId=$!{addressId}&orderNo="+data.orderNo;
+	    	}else{
+	       		alert(data);
+	    	}
+           	
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+	
+}
+
+/* 微信支付js */
+function onBridgeReady(data){
+   WeixinJSBridge.invoke(
+      'getBrandWCPayRequest', 
+      {
+          "appId" : data.result.appId,     //公众号名称，由商户传入     
+          "timeStamp":data.result.timeStamp, //时间戳，自1970年以来的秒数     
+          "nonceStr" :data.result.nonceStr, //随机串     
+          "package": data.result.package_,     
+          "signType" : data.result.signType, //微信签名方式：     
+          "paySign" : data.result.paySign //微信签名 
+      },
+      function(res){
+          //付款成功后，转跳到待发货页面下
+          if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+        	  window.location="/xlcl/weixin/order/pay/paySuccess?addressId=$!{addressId}&orderNo="+data.orderNo;
+          }
+          else{
+           //只要无论是用户放弃付款还是支付失败，转跳到待付款下
+           window.location="/tjsc/weixin/order/index?orderStatus=0";
+          }
+      }
+  )
+}
+
+/* 删除 */
+function delet(target){
+	if(confirm("是否删除商品？")){
+		var id = $(target).parent().attr('data-id');
+    	$.ajax({
+        	type: "POST",
+        	url: "/tjsc/weixin/cart/deleteCart",
+        	data: {"cartIds":id},
+        	dataType: "text",
+        	async:false,
+        	success: function(data){
+           		if(data=="success"){
+//            			$(target).parent().remove();
+//            			$(".productList .delet").css('display','none');
+//            			calcTotalPrice();
+//            			checkEmpty();
+           			location.reload();
+            	}else{
+               		alert("删除失败，请重试！");
+            	}
+         	},
+         	error:function(data){
+	        	alert(data);
+	        }
+         
+        });
+   	}
+	
+}
+
+/* 编辑 */
+function edit(){
+	var deletButtonState = $(".productList .delet").css('display');
+	deletButtonState == 'none' ? $(".productList .delet").css('display','block') : $(".productList .delet").css('display','none');
+}
+
+//带有结算参数打开收货地址
+function loadAddress(){
+  window.location="/tjsc/weixin/address/list?addressId=$!{addressId}";
+}
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

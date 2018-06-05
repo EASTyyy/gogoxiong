@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>其他</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberOther.css" />
+</head>
+<body>
+
+<div class="tipsContainer">
+	<h3>积分会员说明</h3>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+</div>
+<div class="tipsContainer">
+	<h3>积分会员说明</h3>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+	<p>66666积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明积分会员说明</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>会员中心</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/memberCenter.css" />
+
+</head>
+<body>
+<div id="topContainer">
+	<h2>Hello,$!{memberScore.nickName}</h2>
+	<div class="memberLevel">
+		<p>您当前会员等级为$!{memberScore.levelName}</p>
+		<p>您可以通过增加积分来提升会员等级</p>
+	</div>
+</div>
+<div id="memberInfoLink">
+	<a class="public" href="/tjsc/weixin/memberAccount/index?restMoney=$!{tjscMemberAccount.restMoney}">
+		<p>账户余额<span>$!{tjscMemberAccount.restMoney}元</span></p>
+		<img src="/specialShop/client/image/pay-rightArrow.png">
+	</a>
+	<a class="public" href="/tjsc/weixin/memberScore/index">
+		<p>我的积分<span>$!{memberScore.presentScore}</span></p>
+		<img src="/specialShop/client/image/pay-rightArrow.png">
+	</a>
+	<a class="public" href="/tjsc/weixin/memberLevel/index">
+		<p>会员等级<span>$!{memberScore.levelName}</span></p>
+		<img src="/specialShop/client/image/pay-rightArrow.png">
+	</a>
+	<a class="public" href="/tjsc/weixin/member/other">
+		<p>其他<span></span></p>
+		<img src="/specialShop/client/image/pay-rightArrow.png">
+	</a>
+</div>
+
+</body>
+</html>

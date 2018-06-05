@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>充值成功</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/rechargeSuccess.css" />
+</head>
+<body>
+<div class="list" style="min-height:auto;">
+	 <div id="payment_1">
+	 	<div class='zon'>
+	 		<span class='duigou'></span>
+	 		<div class='bottom'>成功充值<span id='qian_1'>$!{payAmount}</span>元</div>
+	 	</div>
+     </div>
+	 <div id='chakanyue_1'>
+        <a href='/tjsc/weixin/memberAccount/list'>查看余额</a>
+     </div>
+</div>  
+</body>
+</html>
+
+
