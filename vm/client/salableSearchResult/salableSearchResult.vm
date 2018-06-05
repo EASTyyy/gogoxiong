@@ -1,0 +1,370 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>搜索结果</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<!-- <link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/searchResult.css" /> -->
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/salableSearchResult.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+</head>
+<body>
+<div id="search">
+	#if($!{category})
+		<p>$!{category.name}</p>
+	#else
+		<p>畅销</p>
+	#end
+	<div onClick='window.location="/tjsc/weixin/cxActivity/index"'>
+		<div>新品</div>
+	</div>
+	<div onclick="searchTab(this)">
+		<div class="icon">
+			排序
+			<img src="/specialShop/client/image/pay-rightArrow.png">
+		</div>
+		<div class="content">
+			<div class="content2" data-type="warehouseId">
+				<div>
+					<span data-param='1' onclick="search(this,1,'','','click')">最新上架</span>
+				</div>
+				<div>
+					<span data-param='2' onclick="search(this,2,'','','click')">销量最高</span>
+				</div>
+				<div>
+					<span data-param='3' onclick="search(this,3,'','','click')">价格最低</span>
+				</div>
+				<div>
+					<span data-param='4' onclick="search(this,4,'','','click')">价格最高</span>
+				</div>
+				<div>
+					<span data-param='5' onclick="search(this,5,'','','click')">正版授权</span>
+				</div>
+				<div>
+					<span data-param='6' onclick="search(this,6,'','','click')">3C条码</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div onclick="searchTab(this)">
+		<div class="icon">
+			价位
+			<img src="/specialShop/client/image/pay-rightArrow.png">
+		</div>
+		<div class="content">
+			<div class="content2" data-type="price">
+				<div>
+					<span data-param='0-1' onclick="search(this,'','0-1','','click')">1元以下</span>
+				</div>
+				<div>
+					<span data-param='1-5' onclick="search(this,'','1-5','','click')">1-5元</span>
+				</div>
+				<div>
+					<span data-param='5-10' onclick="search(this,'','5-10','','click')">5-10元</span>
+				</div>
+				<div>
+					<span data-param='10-50' onclick="search(this,'','10-50','','click')">10-50元</span>
+				</div>
+				<div>
+					<span data-param='50-100' onclick="search(this,'','50-100','','click')">50-100元</span>
+				</div>
+				<div>
+					<span data-param='100-999999' onclick="search(this,'','100-999999','','click')">100元以上</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="search" onClick='window.location="/tjsc/weixin/product/goToWeiXinSearch?searchType=1&cxProductModel=$!{cxProductModel}&tjscCXActivityId=$!{cxActivity.id}"'>
+		<div>
+			搜索
+			<img src="/specialShop/client/image/search.png">
+		</div>
+	</div>
+</div>
+<ul id="productList"></ul>
+<div style="padding-bottom: 5px;" id="loading">数据加载中。。。</div>
+<div id="mask" onclick="maskClick()"></div>
+<script>
+
+var page =1;
+var rows =20;
+var isEnableRequest = true;
+var sortType = '$!{orderBy}';
+var price = '$!{price}';
+var type = '$!{cxProductModel}';
+
+var isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
+var currentList = [];
+var session;
+var discountsRatio=1;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+	setFontSize();
+	
+	if(isAndroid){
+		session = sessionStorage.getItem('salableSearchParam');
+	}
+	
+	if(session){
+		session = JSON.parse(sessionStorage.getItem('salableSearchParam'));
+		page = session.page;
+		sortType = session.sortType,
+		price = session.price,
+		currentList = JSON.parse( session.prevList );
+		addListProduct(currentList);
+	}
+	else{
+		getProductList(sortType,price);
+	}
+	
+	pullRefresh();
+	setSortActive();
+}
+
+function setSortActive(){
+	$("#search span[data-param="+ sortType +"]").addClass('active');
+	$("#search span[data-param="+ price +"]").addClass('active');
+}
+
+function searchTab(target,click){
+	if($(target).hasClass('active')){
+		$(target).removeClass('active');
+		$('#mask').css('display','none');
+		$('body').css('overflow','auto');
+	}
+	else{
+		$('#mask').css('display','block');
+		$('body').css('overflow','hidden');
+		$(target).addClass('active').siblings().removeClass('active');
+	}
+}
+
+function search(target,sortTypes,prices,click){
+	$('#search .content span').removeClass('active');
+	$(target).addClass('active');
+	sortType = sortTypes;
+	price = prices;
+	if(isAndroid){
+		removeSession();
+	}
+	else{
+		currentList = [];
+	}
+	page =1;
+	$("#productList>li").remove();
+	isEnableRequest = true;
+	$('#loading').text('数据加载中。。。');
+	$(window).scrollTop(0);
+	getProductList(sortType,price);
+	
+}
+
+/* 点击商品图片 */
+function productClick(productId,cxActivityId){
+	if(isAndroid){
+		saveSession();
+	}
+	window.location = '/tjsc/weixin/cxActivity/productDetail?productId='+productId+'&tjscCXActivityId='+cxActivityId+'&cxProductModel='+type;
+}
+
+/* 存储session */
+function saveSession(){
+	var list = JSON.stringify(currentList);
+	var param = {
+	  page: page,
+	  sortType:sortType,
+	  price:price,
+	  prevList: list
+	};
+	param = JSON.stringify(param);
+	sessionStorage.setItem('salableSearchParam',param);
+}
+
+/* 清空session */
+function removeSession(){
+	sessionStorage.removeItem('salableSearchParam');
+	currentList = [];
+}
+
+/* 拉取商品列表 */
+function getProductList(sortType,price){
+	if(!isEnableRequest){return};
+	var url;
+	url="/tjsc/weixin/cxActivity/weiXinSearch?&name=$!{name}&categoryId=$!{categoryId}&tjscCXActivityId=$!{tjscCXActivityId}&price="+ price +"&page="+page+"&rows="+rows+"&cxProductModel=" + '$!{cxProductModel}'+"&orderBy="+sortType;
+	
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	if(!pageData.rows || pageData.rows==""){
+               $('#loading').text('没有更多数据了!');
+               isEnableRequest = false;
+           	}else{
+           		var products = eval(pageData.rows);
+           		currentList = currentList.concat(products);
+           		addListProduct(products);
+                page=page+1;
+                isEnableRequest = products.length < rows ? false : true;
+                if(!isEnableRequest){
+             	   $('#loading').text('没有更多数据了!');
+                }
+            }
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 添加商品 */
+function addListProduct(tjscProductList){
+	var products = eval(tjscProductList);
+    var productListUl =$("#productList");
+    for(var i =0;i<products.length;i++){
+	     var product =products[i];
+	     var li;
+	     var isOnlyMix = product.isMixFight == 2;
+	     var wholeBoxPrice;
+	     var price;
+	     var intsPrice;
+	     var decimalPrice = '';
+	     wholeBoxPrice = parseFloat(product.priceForIndex*discountsRatio).toString();
+    	 if( wholeBoxPrice.indexOf(".") > 0 ){
+    		 price = wholeBoxPrice.split(".");
+    		 if(price[1].length > 2){
+    			 wholeBoxPrice = parseFloat(product.fightOrderProductPriceForWX*discountsRatio).toFixed(2).toString();
+    		 }
+    	 }
+	     
+	     if( wholeBoxPrice.indexOf(".") > 0 ){
+	    	 price = wholeBoxPrice.split(".");
+	    	 intsPrice = price[0];
+	    	 decimalPrice = '.'+price[1];
+	     }
+	     else{
+	    	 intsPrice = wholeBoxPrice;
+	     }
+	     
+	     if(type == 'mixFight'){//混拼
+			 li = '<li class="orange">';
+		 }
+		 else{//整批
+			 li = '<li>';
+		 }
+	     
+	     if(type == 'mixFight' && product.totalMixFightSurplusStock <= 0){//混拼售罄
+			 li += '<div class="noStart" onclick="productClick('+product.productId+','+product.cxActivityId+')">已售罄</div>';
+		 }
+		 else if(type == 'whole' && product.totalWholeBoxSurplusStockStr <= 0){//整批售罄
+			 li += '<div class="noStart" onclick="productClick('+product.productId+','+product.cxActivityId+')">已售罄</div>';
+		 }
+	     
+	     li += '<div class="tag">';
+	     if(product.productTags){
+	    	 for(var j =0;j<product.productTags.length;j++){
+	    		 li += '<span>'+ product.productTags[j] +'</span>';
+	    	 }
+	     }
+	     li += '</div>';
+	     li += '<div class="imgContainer" onclick="productClick('+product.productId+','+product.cxActivityId+')">';
+	     li += '<img class="lazy" style="height:150px;" src="/specialShop/client/image/lazy_1.png" data-original='+ product.mainPicture +'>';
+	     li += '</div>';
+	     
+	     li += '<h3>'+ product.productName +'</h3>';
+	     
+	     li += '<p class="price"><span class="money">￥</span>'+ intsPrice + '<span class="decimal">'+ decimalPrice +'</span>' +'<del>出厂价：<span>￥'+ product.factoryPriceForIndex +'</span></del></p>';
+	     
+    	 if(type == 'whole'){
+	    	 li += '<p>已售<span>'+ product.totalWholeBoxHaveBuyNumStr +'</span>箱  剩余<span>'+ product.totalWholeBoxSurplusStockStr +'</span>箱</p>';
+	     }
+	     else{
+	    	 li += '<p>已售<span>'+ product.totalMixFightHaveBuyNumStr +'</span>个  剩余<span>'+ product.totalMixFightSurplusStock +'</span>个</p>';
+	     }
+	     
+    	 li += '<p>装箱 ： '+ product.packageNum + '</p>';
+	     li += '<p>货号 ：<span class="productNo">'+ product.productNo +'</span></p>';
+	     
+	     if(type == 'mixFight' && product.totalMixFightSurplusStock <= 0){//混拼售罄
+			li += '<a style="background: #9f9f9f;">加入订单</a>';
+		 }
+		 else if(type == 'whole' && product.totalWholeBoxSurplusStockStr <= 0){//整批售罄
+			li += '<a style="background: #9f9f9f;">加入订单</a>';
+		 }
+		 else{
+			li += '<a onclick="buyNow('+product.productId+','+product.cxActivityId+')">加入订单</a>';
+		 }
+	     
+	     li += '</li>';
+	     
+	     $(li).appendTo(productListUl);
+    }
+    $("img.lazy").lazyload();
+    
+    
+}
+
+/* 直接购买 */
+function buyNow(productId,cxActivityId){
+	$.ajax({
+        type: "GET",
+        url: '/tjsc/weixin/cart/buyCXProductImmediately?productId='+productId+'&cxActivityId='+cxActivityId+'&fightOrderMode='+type,
+        async:false,
+        dataType:"text",
+        success: function(resp){
+        	if(resp == "success") {
+        		if(isAndroid){
+            		saveSession();
+            	}
+        		window.location = '/tjsc/weixin/cart/index';
+        	} else {
+        		alert(resp);
+        	}
+       		
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 点击遮罩层 */
+function maskClick(){
+	$('#search').find('.active').removeClass('active');
+	$('#mask').css('display','none');
+	$('body').css('overflow','auto');
+}
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+/* 上拉    */
+function pullRefresh() {
+	$(window).scroll(function(){
+		var scrollTop = $(this).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(this).height();
+		if(scrollTop + windowHeight >= scrollHeight - 50 && isEnableRequest){
+			getProductList(sortType,price);
+			
+		}
+	});
+};
+
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>系统维护升级</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/UpGrade.css" />
+</head>
+<body>
+	<div class="wrap">
+		<img src="/specialShop/client/image/upgrade.png"/>
+		<div class="upTime">
+			<p>预计维护时间</p> 
+			<p class="current">2018.5.10  10:00</p>
+			<p>至</p>
+			<p class="current">2018.5.10  18:00</p>
+		</div>
+		<div>如有问题请联系：</div>
+		<img class="code" src="/specialShop/client/image/wechatkefu.jpg"/>
+		<div>客服微信：xxe201709</div>
+		<div>客服电话：17606513276</div>					
+	</div>
+</body>
+</html>

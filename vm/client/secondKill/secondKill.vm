@@ -1,0 +1,429 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/secondKill.css" />
+
+
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+
+<script type="text/javascript" src="$!{static}/specialShop/client/library/jquery.cookie.js"></script>
+
+</head>
+<body>
+<div id="preview">
+	<p>秒杀-下期预告</p>
+	<ul>
+		<span class="leftArrow"></span>
+		<span class="rightArrow"></span>
+		#foreach($!{list} in ${seckillActivityDtoList})
+			#if($!{list})
+	 		<li>
+	 			<h3>$!{list.dateStr}</h3>
+	 			<div class="imgContainer" onClick=window.location="/tjsc/weixin/seckill/productDetail?productId=$!{list.productId}&seckillId=$!{list.seckillId}"> 
+	 				<img class="lazy" src="/specialShop/client/image/lazy_1.png" data-original="$!{list.mainPicture}"> 
+	 			</div> 
+	 		</li>
+	 		#end
+ 		#end
+	</ul>
+</div>
+<h3 class="secondKillTitle">今日热场秒杀</h3>
+<div id="emptyActivity">
+	<img src="$!{static}/specialShop/client/image/noActivity.jpg">
+</div>
+<ul id="secondKillList">
+<!-- 	<li>class="noStart" class="noStart" -->
+<!-- 		<div class="topTime"> -->
+<!-- 			<div class="startTime">今日开抢 10：00档</div> -->
+<!-- 			<div class="countdown">距离结束 00:00:00</div> -->
+<!-- 			<div class="state">已结束</div> -->
+<!-- 		</div> -->
+<!-- 		<ul class="productList"> -->
+<!-- 			<li>class="soldOut" -->
+<!-- 				<div class="imgContainer"> -->
+<!-- 					<img class="selled" src="/specialShop/client/image/secondKill-selled.png"> -->
+<!-- 					<img class="lazy" src="/specialShop/client/image/lazy_1.png" data-original="/specialShop/client/image/test1.jpg"> -->
+<!-- 				</div> -->
+<!-- 				<div class="info"> -->
+<!-- 					<div class="infoContainer"> -->
+<!-- 						<h3>购购熊玩具</h3> -->
+<!-- 						<p><span>出厂价：￥299</span><span>限购数：5箱</span></p> -->
+<!-- 						<p><span>装箱数：24个/箱</span><span>库存数：50箱</span></p> -->
+<!-- 						<h2><span>￥</span>39.9</h2> -->
+						
+<!-- 						<a>立即秒杀</a> -->
+<!-- 						<div class="inventory"> -->
+<!-- 							<p>已售40箱  | 余量20箱</p> -->
+<!-- 							<span></span> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</li> -->
+<!-- 			<li> -->
+<!-- 				<div class="imgContainer"> -->
+<!-- 					<img class="lazy" src="/specialShop/client/image/lazy_1.png" data-original="/specialShop/client/image/test1.jpg"> -->
+<!-- 				</div> -->
+<!-- 				<div class="info"> -->
+<!-- 					<div class="infoContainer"> -->
+<!-- 						<h3>购购熊玩具</h3> -->
+<!-- 						<p><span>出厂价：￥299</span><span>限购数：5箱</span></p> -->
+<!-- 						<p><span>装箱数：24个/箱</span><span>库存数：50箱</span></p> -->
+<!-- 						<h2><span>￥</span>39.9</h2> -->
+						
+<!-- 						<a>立即秒杀</a> -->
+<!-- 						<div class="inventory"> -->
+<!-- 							<p>已售40箱  | 余量20箱</p> -->
+<!-- 							<span></span> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</li> -->
+<!-- 		</ul> -->
+<!-- 	</li> -->
+	
+
+</ul>
+
+<div id="bottomTab">
+	<a href="/tjsc/weixin/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价</p>
+	</a>
+	<a href="/tjsc/weixin/cxActivity/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha.png">
+		<p>畅销</p>
+	</a>
+	
+	<!-- logo -->
+	<a>
+		<img class="logo" src="$!{static}/specialShop/client/image/bottomMenu-logo.png">
+	</a>
+	<!-- logo -->
+	
+	<a href="/tjsc/weixin/cart/index">
+		<span>$!{cartSize}</span>
+		<img src="$!{static}/specialShop/client/image/bottomMenu-car.png">
+		<p>订单</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home.png">
+		<p>我的</p>
+	</a>
+</div>
+
+
+<script>
+
+init();
+
+/* 初始化函数 */
+function init(){
+	
+	$("img.lazy").lazyload();
+	setFontSize();
+	getProductList();
+	fillEmptyActivity();
+	setCarNumber();
+	
+}
+
+/* 设置购物车内商品数量 */
+function setCarNumber(){
+	var realNumber = parseFloat($("#bottomTab>a>span").html());
+	if(!realNumber){
+		$("#bottomTab>a>span").html('');
+		return;
+	}
+	var showNumber = realNumber > 99 ? '99+' : realNumber;
+	$("#bottomTab>a>span").html(showNumber);
+}
+
+function fillEmptyActivity(){
+	var activityLength = $("#preview>ul>li").size();
+	var fillLength = 0;
+	var localDate = new Date();
+	if(activityLength < 3){
+		fillLength = 3-activityLength;
+		localDate.setDate(localDate.getDate()+activityLength);
+		for(var i=0;i<fillLength;i++){
+			localDate.setDate(localDate.getDate()+1);
+			addFillEmptyActivity(localDate.getMonth()+1,localDate.getDate());
+		}
+	}
+	
+}
+
+/* 填充空白活动 */
+function addFillEmptyActivity(month,date){
+	//console.log(month +'月'+ date +'日')
+	var ul =$("#preview>ul");
+	
+	var li ='<li>';
+	li += '<h3>'+ month +'月'+ date +'日</h3>';
+	li += '<div class="imgContainer">';
+	li += '<img src="/specialShop/client/image/lazy_1.png">';
+	li += '</div>';
+	li += '</li>';
+	
+	$(li).appendTo(ul);
+}
+
+/* 添加商品 */
+function addListProduct(productArr){
+	var products = eval(productArr);
+    var productListUl =$("#secondKillList");
+    for(var i=0;i<products.length;i++){
+	     var product = products[i];
+	     /* var nowTime = new Date( product.nowDateStr); */
+	     var  nowTime = eval("new Date("+ (product.nowDateStr).replace(/\D+/g,",")+")"); 
+	     if(product.activityStatus == 0){//未开始
+	     	var li ='<li class="noStart">';
+	     }
+	     if(product.activityStatus == 1){//进行中
+	     	var li ='<li>';
+	     }
+	     if(product.activityStatus == 2){//已结束
+	     	var li ='<li class="end">';
+	     }
+	     
+	     li += '<a name='+ product.id +' class="topTime">';
+	     li += '<div class="startTime">今日开抢 '+ product.startTimeStr +' 档</div>';
+	     
+	     
+	     if(product.activityStatus == 0){//未开始
+	    	 li += '<div>距离开始 <span class="countdown">00:00:00</span></div>';
+	     }
+	     if(product.activityStatus == 1){//进行中
+	    	 li += '<div>距离结束 <span class="countdown">00:00:00</span></div>';
+	     }
+	     if(product.activityStatus == 2){//已结束
+	    	 li += '<div>距离结束 <span class="countdown">00:00:00</span></div>';
+	     }
+	     
+	     li += '<div class="state">'+ product.activityStatusStr +'</div>';
+	     li += '</a>';
+	     li += '<ul class="productList"></ul>';
+	     li += '</li>';
+	     
+	     $(li).appendTo(productListUl);
+	     renderProduct($("#secondKillList>li").eq(i).find('.productList'),product.seckillProductList,product.activityStatus,product.id);
+	     
+	     /* 开启对应定时器 */
+	     (function(j){
+	    	 var endTime;
+    		 var t;
+	    	 if( products[j].activityStatus == 0 ){//未开始
+	    		 /* endTime = new Date(products[j].startTime); */
+	    		 endTime=eval("new Date("+ (products[j].startTime).replace(/\D+/g,",")+")"); 
+	    		 t = endTime.getTime()/1000 - nowTime.getTime()/1000;
+	    		 eval("var timer_"+j+"=setInterval(function(){countdown(timer_"+j+",$('#secondKillList>li').eq(j).find('.countdown'))},1000)");
+	    	 }
+	    	 else{
+	    		 /* endTime = new Date(products[j].endTime); */
+	    		 endTime=eval("new Date("+ (products[j].endTime).replace(/\D+/g,",")+")"); 
+	    		 t = endTime.getTime()/1000 - nowTime.getTime()/1000;
+	    		 eval("var timer_"+j+"=setInterval(function(){countdown(timer_"+j+",$('#secondKillList>li').eq(j).find('.countdown'))},1000)");
+	    	 }
+	    	 
+	    	 function countdown(intervalName,countdownContainer){
+	    	    	
+	    		 	t = t-1;
+	    		    var s = parseInt(t);
+	    		    var m = 0;
+	    		    var h = 0;
+	    		    var d = 0;
+	    		    if(s > 60) {
+	    		        m = parseInt(s/60);
+	    		        s = parseInt(s%60);
+	    		        if(m > 60) {
+	    		            h = parseInt(m/60);
+	    		            m = parseInt(m%60);
+	    		            if(h > 24){
+	    		            	d = parseInt(h/24);
+	    		            	h = parseInt(h%24);
+	    		            }
+	    		        }
+	    		    }
+	    		    
+	    	        var isEnd = t < 0 ? true :false;
+	    	        var isReload = t == 0 ? true :false;
+	    	        
+	    	        if(isEnd){
+	    	        	clearInterval(intervalName);
+	    	    		countdownRender(countdownContainer,'00','00','00','00');
+	    	    		return;
+	    	    	}
+	    	        
+	    	        if(isReload){
+	    	        	reload();
+	    	    	}
+	    	        
+	    	    	d = d.toString().length == 1 ? '0' + d : d;
+	    	    	h = h.toString().length == 1 ? '0' + h : h;
+	    	    	m = m.toString().length == 1 ? '0' + m : m;
+	    	    	s = s.toString().length == 1 ? '0' + s : s;
+	    	    	//console.log(d+":"+h+":"+m+":"+s)
+	    	    	countdownRender(countdownContainer,d,h,m,s);
+	    	    	
+	    	    }
+	     })(i);
+    }
+    
+    /* 对应渲染商品 */
+    function renderProduct(productContainer,productArr,status,seckillId){
+    	var products = eval(productArr);
+        var productUl =$(productContainer);
+        for(var i =0;i<products.length;i++){
+        	var product =products[i];
+        	var soldRatio = 0;
+        	var wholeBoxPrice = product.seckillProductWholeBoxPrice.toString();
+        	/* var mixFightPrice = product.mixFightPrice.toString(); */
+	     	var price;
+	     	var intsPrice;
+	     	var decimalPrice = '';
+	     	var mfPrice;
+	     	var mixFightIntsPrice;
+	     	var mixFightDecimalPrice = '';
+	     	if( wholeBoxPrice.indexOf(".") > 0 ){
+    	 		price = wholeBoxPrice.split(".");
+	    	 	intsPrice = price[0];
+	    	 	decimalPrice = '.'+price[1];
+	     	}
+	     	else{
+	    	 	intsPrice = wholeBoxPrice;
+	     	}
+/* 	     	if( mixFightPrice.indexOf(".") > 0 ){
+	     		mfPrice = mixFightPrice.split(".");
+	     		mixFightIntsPrice = mfPrice[0];
+	     		mixFightDecimalPrice = '.'+mfPrice[1];
+	     	} */
+	  /*    	else{
+	     		mixFightIntsPrice = mixFightPrice;
+	     	} */
+        	var li ='<li onClick=window.location=\"/tjsc/weixin/seckill/productDetail?seckillId='+seckillId +'&productId='+ product.id+ '\">';
+        	li += '<div class="imgContainer">';
+        	//li += '<img class="selled" src="/specialShop/client/image/secondKill-selled.png">';
+        	li += '<img class="lazy" src="/specialShop/client/image/lazy_1.png" data-original='+ product.seckillProductPictureForWXIndex +'>';
+        	li += '</div>';
+        	li += '<div class="info">';
+        	li += '<div class="infoContainer">';
+        	if(false){
+      	    	 li += '<h3><span style="color:red;">[免邮]</span>'+ product.productName +'</h3>';
+      	     }
+      	     else{
+      	    	 li += '<h3>'+ product.name +'</h3>';
+      	    }
+        	if(product.seckillProductTotalPurchase > 0){
+//         		li += '<p><span><del>出厂价：￥'+ product.factoryPrice +'</del></span><span>限购数：'+ product.everyOnePurchase/product.packageNum +'箱</span></p>';
+        		li += '<p><span><del>出厂价：￥'+ product.factoryPriceForWx +'</del></span></p>';
+        		li += '<p><span>总限购数：'+ product.seckillProductTotalPurchaseStrForWX +'箱</span></p>';
+        	}
+        	else{
+//         		li += '<p><span><del>出厂价：￥'+ product.factoryPrice +'</del></span><span>限购数：不限购</span></p>';
+        		li += '<p><span><del>出厂价：￥'+ product.factoryPrice +'</del></span></p>';
+        		li += '<p><span>限购数：不限购</span></p>';
+        	}
+        	
+//         	li += '<p><span>装箱数：'+ product.packageNum +'个/箱</span><span>库存数：'+ product.stockedBoxNum +'箱</span></p>';
+		
+				li += '<p><span>装箱数：'+ product.packageNum +'个/箱</span></p>';
+				li += '<h2><span>￥</span>'+ intsPrice + '<i class="decimal">'+ decimalPrice +'</i></h2>';
+        	
+        	
+        	if(status == 0){//未开始
+        		li += '<a>候场中</a>';
+   	     	}
+   	     	if(status == 1){//进行中
+   	     		li += '<a>立即秒杀</a>';
+   	     	}
+   	     	if(status == 2){//已结束
+   	     		li += '<a>活动已结束</a>';
+   	     	}
+        	
+        	li += '<div class="inventory">';
+        	
+        	if(status == 0){//未开始
+        		//判断当前商品是否允许混拼
+        		li += '<p>储备量'+ product.totalWholeSurplusStockStrForWX  +'箱</p>';
+   	     	}
+   	     	if(status == 1){//进行中
+   	     		soldRatio = product.totalWholeHaveBuyNumberStrForWX/(product.totalWholeHaveBuyNumberStrForWX+product.totalWholeSurplusStockStrForWX);
+	     		li += '<p>已售'+ product.totalWholeHaveBuyNumberStrForWX +'箱  | 余量'+ product.totalWholeSurplusStockStrForWX +'箱</p>';
+	     		li += '<span></span>';
+   	     	}
+   	     	if(status == 2){//已结束
+   	     		li += '<p>已售'+ product.totalWholeHaveBuyNumberStrForWX +'箱  | 余量'+ product.totalWholeSurplusStockStrForWX +'箱</p>';
+   	     	}
+   	     	
+   	     	
+        	
+        	li += '</div>';
+        	li += '</div>';
+        	li += '</div>';
+        	li += '</li>';
+        	$(li).appendTo(productUl);
+        	renderSoldRatioSpan(productContainer,i,soldRatio);
+       }
+       $("img.lazy").lazyload();
+    }
+}
+
+/* 设置已售比例进度条 */
+function renderSoldRatioSpan(productContainer,i,soldRatio){
+	var iWidth = $(productContainer).find('li').eq(i).find('.inventory').width();
+	$(productContainer).find('li').eq(i).find('.inventory span').css('width',iWidth*soldRatio);
+}
+
+/* 倒计时结束 活动重新渲染 */
+function reload(){
+	$("#secondKillList>li").remove();
+	getProductList();
+} 
+
+/* 倒计时渲染 */
+function countdownRender(countdownContainer,d,h,m,s){
+	$(countdownContainer).html(h+":"+m+":"+s);
+}
+
+/* 拉取商品列表 */
+function getProductList(){
+	var url="/tjsc/weixin/seckill/getSeckillProductList";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	var products = eval(pageData);
+           	if($(products).size() > 0 ){
+           		addListProduct(products);
+           	}
+           	else{
+           		$("#emptyActivity").css('display','block');
+           	}
+       		
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

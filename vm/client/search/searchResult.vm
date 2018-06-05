@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>搜索结果</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/searchResult.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+</head>
+<body>
+<ul id="sortTab">
+	<li data-type='whole' onclick="sortTabClick('whole','click')" class="active">
+		<div>整批</div>
+	</li>
+	<li data-type='mixFight' onclick="sortTabClick('mixFight','click')">
+		<div>混拼</div>
+	</li>
+</ul>
+<ul id="productList"></ul>
+<div style="padding-bottom: 5px;" id="loading">没有更多数据了!</div>
+
+<script>
+
+var page =1;
+var rows =20;
+var isEnableRequest = true;
+var order = 'desc';
+var type = 'whole';
+var orderFlag = false;
+
+var isAndroid = navigator.userAgent.indexOf('Android') > -1 || navigator.userAgent.indexOf('Adr') > -1;
+var currentList = [];
+var session;
+var discountsRatio=1;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+	setFontSize();
+	
+	if(isAndroid){
+		session = sessionStorage.getItem('mySearchParam');
+	}
+	
+	if(session){
+		session = JSON.parse(sessionStorage.getItem('mySearchParam'));
+		page = session.page;
+		type = session.type;
+		order = session.order;
+		currentList = JSON.parse( session.prevList );
+	}
+	
+	sortTabClick(type);
+	pullRefresh();
+}
+
+/* 排序tab切换 */
+function sortTabClick(sortType,click){
+	if(click){
+		if(isAndroid){
+			removeSession();
+		}
+		else{
+			currentList = [];
+		}
+		page =1;
+	}
+	$("#productList>li").remove();
+	isEnableRequest = true;
+	type = sortType;
+	$('#loading').text('数据加载中。。。');
+	$("#sortTab>li[data-type="+ sortType +"]").attr('class','active').siblings().attr('class','');
+	$(window).scrollTop(0);
+	if(sortType == 'mixFight'){
+		
+		if(orderFlag && click){
+			order = order == 'desc' ? 'asc' : 'desc';
+		}
+		orderFlag = true;
+		if(currentList.length){
+			addListProduct(currentList);
+		}
+		else{
+			getProductList(type,order);
+		}
+		
+	}
+	else{
+		if(currentList.length){
+			addListProduct(currentList);
+		}
+		else{
+			getProductList(type);
+		}
+	}
+	
+}
+
+/* 存储session */
+function saveSession(){
+	var list = JSON.stringify(currentList);
+	var param = {
+	  page: page,
+	  type: type,
+	  order: order,
+	  prevList: list
+	};
+	param = JSON.stringify(param);
+	sessionStorage.setItem('mySearchParam',param);
+}
+
+/* 清空session */
+function removeSession(){
+	sessionStorage.removeItem('mySearchParam');
+	currentList = [];
+}
+
+/* 拉取商品列表 */
+function getProductList(sortType,order){
+	if(!isEnableRequest){return};
+	var url;
+	url="/tjsc/weixin/product/weiXinSearch?&name=$!{name}&categoryId=$!{categoryId}&warehouseId=$!{warehouseId}&price=$!{price}&page="+page+"&rows="+rows+"&searchType="+sortType + "&fightOrderId=" + '$!{tjscFightOrder.id}';
+	
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	if(!pageData.rows || pageData.rows==""){
+               $('#loading').text('没有更多数据了!');
+               isEnableRequest = false;
+           	}else{
+           		var products = eval(pageData.rows);
+           		currentList = currentList.concat(products);
+           		addListProduct(products);
+                page=page+1;
+                isEnableRequest = products.length < rows ? false : true;
+                if(!isEnableRequest){
+             	   $('#loading').text('没有更多数据了!');
+                }
+            }
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 添加商品 */
+function addListProduct(tjscProductList){
+	var products = eval(tjscProductList);
+    var productListUl =$("#productList");
+    for(var i =0;i<products.length;i++){
+	     var product =products[i];
+	     var li;
+	     var isOnlyMix = product.isMixFight == 2;
+	     var wholeBoxPrice;
+	     var price;
+	     var intsPrice;
+	     var decimalPrice = '';
+	     wholeBoxPrice = parseFloat(product.fightOrderProductPriceForWX*discountsRatio).toString();
+    	 if( wholeBoxPrice.indexOf(".") > 0 ){
+    		 price = wholeBoxPrice.split(".");
+    		 if(price[1].length > 2){
+    			 wholeBoxPrice = parseFloat(product.fightOrderProductPriceForWX*discountsRatio).toFixed(2).toString();
+    		 }
+    	 }
+	     
+	     if( wholeBoxPrice.indexOf(".") > 0 ){
+	    	 price = wholeBoxPrice.split(".");
+	    	 intsPrice = price[0];
+	    	 decimalPrice = '.'+price[1];
+	     }
+	     else{
+	    	 intsPrice = wholeBoxPrice;
+	     }
+	     
+	     if(product.activityTag == 1){
+	    	 li ='<li onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?productId='+ product.id+ +'&fightOrderId='+ $!{tjscFightOrder.id} + '&fightOrderProductType='+product.fightOrderProductType +'\")>';
+	    	 
+	    	 if(product.fightOrderProductType == 1){//特价玩具
+	    		 li ='<li onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?fightOrderProductId='+ product.fightOrderProductId+ '&fightOrderProductType='+product.fightOrderProductType +'\")>';
+	    	 }
+	    	 else if(product.fightOrderProductType == 2){//每日新品
+	    		 li ='<li class="green" onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?fightOrderProductId='+ product.fightOrderProductId+ '&fightOrderProductType='+product.fightOrderProductType +'\")>';
+	    	 }
+	    	 else if(product.fightOrderProductType == 3){//闪拼专场
+	    		 li ='<li class="pink" onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?fightOrderProductId='+ product.fightOrderProductId+ '&fightOrderProductType='+product.fightOrderProductType +'\")>';
+	    	 }
+	    	 else{//  4    新品众筹
+	    		 li ='<li class="orange" onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?fightOrderProductId='+ product.fightOrderProductId+ '&fightOrderProductType='+product.fightOrderProductType +'\")>';
+	    	 }
+	    	 
+	     }
+	     else{
+	    	 if(type == 'whole'){
+	    		 li ='<li onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?productId='+ product.id +'&fightOrderId=$!{tjscFightOrder.id}&fightOrderProductType=1\")>';
+	    	 }
+	    	 else{
+	    		 li ='<li class="pink" onClick=productClick("/tjsc/weixin/FightOrderProduct/productDetail?productId='+ product.id +'&fightOrderId=$!{tjscFightOrder.id}&fightOrderProductType=3\")>';
+	    	 }
+	    	 
+	     }
+	     if($!{tjscFightOrder.activityStatus} == 0){
+			 li += '<div class="noStart">未开始</div>';
+		 } 
+		 else if( product.fightOrderProductIsMixFight == 0 ){//只能整批
+			 if(product.totalWholeSurplusStockStrForWX <= 0){
+				 li += '<div class="noStart">已售罄</div>';
+			 }
+		 }
+		 else if( product.fightOrderProductIsMixFight == 1 ){//允许混拼
+			 if(product.totalWholeSurplusStockStrForWX <= 0 && product.totalFightOrderProductMixFightSurplusStockForWx <= 0){
+				 li += '<div class="noStart">已售罄</div>';
+			 }
+			 else if(product.totalWholeSurplusStockStrForWX <= 0 && product.totalFightOrderProductMixFightSurplusStockForWx > 0 && type == 'whole'){
+				 li += '<div class="noStart">还可混拼</div>';
+			 }
+			 else if(product.totalWholeSurplusStockStrForWX > 0 && product.totalFightOrderProductMixFightSurplusStockForWx <= 0 && type == 'mixFight'){
+				 li += '<div class="noStart">还可整批</div>';
+			 }
+		 }
+		 else{
+			 if(product.totalFightOrderProductMixFightSurplusStockForWx <= 0){
+				 li += '<div class="noStart">已售罄</div>';
+			 }
+		 }
+	     li += '<div class="tag">';
+	     if(product.productTags){
+	    	 for(var j =0;j<product.productTags.length;j++){
+	    		 li += '<span>'+ product.productTags[j] +'</span>';
+	    	 }
+	     }
+	     li += '</div>';
+	     li += '<div class="imgContainer">';
+	     li += '<img class="lazy" style="height:150px;" src="/specialShop/client/image/lazy_1.png" data-original='+ product.mainPicture +'>';
+	     li += '</div>';
+	     
+	     if(product.isFreePost == 0){
+	    	 li += '<h3><span style="color:red;">[免邮]</span>'+ product.name +'</h3>';
+	     }
+	     else{
+	    	 li += '<h3>'+ product.name +'</h3>';
+	     }
+	     
+	     li += '<p class="price"><span class="money">￥</span>'+ intsPrice + '<span class="decimal">'+ decimalPrice +'</span>' +'<del>出厂价：<span>￥'+ product.factoryPriceForWx +'</span></del></p>';
+	     
+	    
+    	 if(type == 'whole'){
+	    	 li += '<p>已售<span>'+ product.totalWholeHaveBuyNumberStrForWX +'</span>箱  剩余<span>'+ product.totalWholeSurplusStockStrForWX +'</span>箱</p>';
+	     }
+	     else{
+	    	 li += '<p>已售<span>'+ product.totalFightOrderProductMixFightHaveBuyNumForWX +'</span>个  剩余<span>'+ product.totalFightOrderProductMixFightSurplusStockForWx +'</span>个</p>';
+	     }
+	     
+	     li += '<p>货号 ： '+ product.productNo +'</p>';
+	     li += '<p>装箱 ： '+ product.packageNum + '</p>';
+	     
+	     if(product.activityStatus == 0){
+	    	 li += '<a style="background: #9f9f9f;">立即拼单</a>';
+		 }
+	     else if( product.fightOrderProductIsMixFight == 0 ){//只能整批
+			 if(product.totalWholeSurplusStockStrForWX <= 0){
+				 li += '<a style="background: #9f9f9f;">立即拼单</a>';
+			 }
+			 else{
+	    		 li += '<a>立即拼单</a>';
+	    	 }
+		 }
+		 else if( product.fightOrderProductIsMixFight == 1 ){//允许混拼
+			 if(product.totalWholeSurplusStockStrForWX <= 0 && product.totalFightOrderProductMixFightSurplusStockForWx <= 0){
+				 li += '<a style="background: #9f9f9f;">立即拼单</a>';
+			 }
+			 else{
+	    		 li += '<a>立即拼单</a>';
+	    	 }
+		 }
+		 else{
+			 if(product.totalFightOrderProductMixFightSurplusStockForWx <= 0){
+				 li += '<a style="background: #9f9f9f;">立即拼单</a>';
+			 }
+			 else{
+	    		 li += '<a>立即拼单</a>';
+	    	 }
+		 }
+	     li += '</li>';
+	     
+	     $(li).appendTo(productListUl);
+    }
+    $("img.lazy").lazyload();
+    
+    
+}
+
+/* 点击商品 */
+function productClick(url){
+	if(isAndroid){
+		saveSession();
+	}
+	window.location = url;
+}
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+/* 上拉    */
+function pullRefresh() {
+	$(window).scroll(function(){
+		var scrollTop = $(this).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(this).height();
+		if(scrollTop + windowHeight >= scrollHeight - 50 && isEnableRequest){
+			if(type == 'wholeBoxPrice'){
+				getProductList(type,order);
+			}
+			else{
+				getProductList(type);
+			}
+			
+		}
+	});
+};
+
+</script>
+</body>
+</html>

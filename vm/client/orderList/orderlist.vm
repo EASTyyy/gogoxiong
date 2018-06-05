@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>熊小二特供平台</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/orderList.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/jquery.cookie.js"></script>
+</head>
+<body>
+<div id="topTab">
+	<div class="avtive" data-type="90911" onclick="topTabClick(this,'90911')">
+		<span>全部</span>
+	</div>
+	<div data-type="0" onclick="topTabClick(this,'0')">
+		<em id="noPay">$!{notPayTotalNum}</em>
+		<span>待付款</span>
+	</div>
+	<div data-type="88" onclick="topTabClick(this,'88')">
+		<em id="noReceive">$!{dshTotalNum}</em>
+		<span>待收货</span>
+	</div>
+	<div data-type="3" onclick="topTabClick(this,'3')">
+		<span>已退款</span>
+	</div>
+</div>
+
+<ul id="orderList">
+<!-- 	<li> -->
+<!-- 		<p>订单编号：20171212112121212<span>待付款</span></p> -->
+<!-- 		<div class="productList"> -->
+<!-- 			<div class="productImg"> -->
+<!-- 				<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.mainPicture}'> -->
+<!-- 			</div> -->
+<!-- 			<div class="productInfo"> -->
+<!-- 				<h3>1:18捍卫骑士遥控越野车</h3> -->
+<!-- 				<p>拼单模式：整批（60个/箱)</p> -->
+<!-- 				<p>商品颜色：迷彩色</p> -->
+<!-- 				<p>装箱规格：65*89*75cm</p> -->
+<!-- 			</div> -->
+<!-- 			<div class="rightNumber"> -->
+<!-- 				<h3>￥1690</h3> -->
+<!-- 				<p>x1</p> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 		<div class="totalInfo"> -->
+<!-- 			<p>共1件商品  合计：￥1700（含运费￥100）</p> -->
+<!-- 			<div class="btnContainer"> -->
+<!-- 				<a>删除订单</a> -->
+<!-- 				<a>立即支付</a> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</li> -->
+</ul>
+<div style="padding-bottom:0;line-height:30px;" id="loading">加载中。。。</div>
+
+<script>
+
+var page =1;
+var rows =20;
+var isEnableRequest = true;
+var type = '$!{orderStatus}';
+
+init();
+
+/* 初始化函数 */
+function init(){
+	
+	$("img.lazy").lazyload();
+	type = type ? type : '90911';
+	setTabStartType();
+	setFontSize();
+	setRedNumber();
+	pullRefresh();
+	getOrderList();
+}
+
+/* 设置tab选中状态 */
+function setTabStartType(){
+	var defaultType = type;
+	$("#topTab>div").each(function(index,element){
+		var currentType = $(element).attr('data-type');
+		currentType == defaultType ? $(element).attr('class','avtive') : $(element).attr('class','');
+	});
+	
+}
+
+/* 设置红点数量 */
+function setRedNumber(){
+	$("#topTab em").each(function(index,element){
+		var realNum = parseFloat($(element).html());
+		var showNumber;
+		if(realNum){
+			showNumber = realNum > 99 ? '99+' : realNum;
+		}
+		else{
+			showNumber = '';
+		}
+		$(element).html(showNumber);
+	});
+}
+
+/* 顶部tab切换 */
+function topTabClick(target,types){
+	window.location = "?orderStatus="+types;
+	$(target).addClass('avtive').siblings().removeClass('avtive');
+	$("#orderList>li").remove();
+	$(window).scrollTop(0);
+	page =1;
+	isEnableRequest = true;
+}
+
+/* 拉取订单列表 */
+function getOrderList(){
+	if(!isEnableRequest){return};
+	
+	var url="/tjsc/weixin/order/getOrders?page="+page+"&rows="+rows+"&orderStatus="+type;
+	
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(pageData){
+           	if(!pageData.data || pageData.data==""){
+               $('#loading').text('没有更多数据了!');
+               isEnableRequest = false;
+           	}else{
+           		var orders = eval(pageData.data);  
+           		addOrder(orders);
+                page=page+1;
+                isEnableRequest = orders.length < rows ? false : true;
+                if(!isEnableRequest){
+             	   $('#loading').text('没有更多数据了!');
+                }
+            }
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 添加订单 */
+function addOrder(orderList){
+	var orders = eval(orderList);
+    var orderListUl =$("#orderList");
+    for(var i =0;i<orders.length;i++){
+	     var order =orders[i];
+	     var li ='<li>';
+	     
+	     li +='<p>订单编号：'+ order.orderNo +'<span>'+ order.orderStatusStr +'</span></p>';
+	     
+	     if(order.orderProducts){
+	    	 for(var j = 0;j<order.orderProducts.length;j++){
+		    	 var orderProduct = order.orderProducts[j];
+			     li +='<div class="productList" onclick=payOrder('+ order.id +')>';
+			     li +='<div class="productImg">';
+			     li +='<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='+ orderProduct.productMainPicture +'>';
+			     li +='</div>';
+			     li +='<div class="productInfo">';
+			     li +='<h3>'+ orderProduct.productName +'</h3>';
+			     if(orderProduct.fightOrderMode == 0){
+			     	li +='<p>拼单模式：整批（'+ orderProduct.packageNum +'个/箱)</p>';
+			     }
+			     else{
+			     	li +='<p>拼单模式：混拼（'+ orderProduct.mixFightNumThreshold+'个/起拍)</p>';
+			     }
+			     
+			     li +='<p>商品颜色：'+ orderProduct.color +'</p>';
+			     li +='<p>商品货号：'+ orderProduct.productNo +'</p>';
+			     //li +='<p>外箱体积：'+ orderProduct.boxStandard +'</p>';
+			     li +='<p>发货地：'+ orderProduct.placeOfDispatch +'</p>';
+			     li +='</div>';
+			     li +='<div class="rightNumber">';
+			     if(orderProduct.fightOrderMode == 0){
+			    	 li +='<h3>￥'+ parseFloat(orderProduct.productPrice*orderProduct.packageNum).toFixed(2)+'/箱</h3>';
+				     li +='<p>x'+ orderProduct.wholeBoxBuyNum/orderProduct.packageNum+'箱</p>';
+			     }
+			     else{
+			    	 li +='<h3>￥'+ parseFloat(orderProduct.productPrice).toFixed(2)+'/个</h3>';
+				     li +='<p>x'+ orderProduct.mixFightBuyNum+'个</p>';
+			     }
+			     
+			     li +='</div>';
+			     li +='</div>';
+		     }
+	     }
+	     
+	     li +='<div class="totalInfo">';
+	     
+	     if(order.freightAmount){
+	     	li +='<p>共'+ order.orderProducts.length +'件商品  合计：￥'+order.realityAmount+'（含运费￥'+order.freightAmount+'）</p>';
+	     }
+	     else{
+	     	li +='<p><span class="createTime">'+order.createTime+'</span>共'+ order.orderProducts.length +'件商品  合计：￥'+order.realityAmount+'</p>';
+	     }
+	     
+	     li +='<div class="btnContainer">';
+		 if(order.orderStatus == 0){
+			 li +='<a class="delet" onClick="deleteOrder('+order.id+',this)">取消订单</a>';
+			 li +='<a onclick=payOrder('+ order.id +')>立即支付</a>';
+		 }
+		 if(order.orderStatus == 2){
+			 li +='<a onclick=confirmReceive('+ order.id +')>确认收货</a>';
+		 }
+		 if(order.orderStatus == 6){
+			 li +='<a onclick=rePay('+ order.id +')>重新支付</a>';
+		 }
+	     li +='</div>';
+	     li +='</div>';
+	     li += '</li>';
+	     
+	     $(li).appendTo(orderListUl);
+    }
+    
+    $("img.lazy").lazyload();
+}
+
+/* 重新支付 */
+function rePay(id){
+	if(confirm("确定取消订单并将订单商品加入购物车吗？")){
+		$.ajax({
+	        type: "GET",
+	        url: "/tjsc/weixin/order/cancelOrderAndAddProductsToCart?orderId="+id,
+	        async:false,
+	        //dataType:'text',
+	        success: function(data){
+	        	
+	        	if(data=='success'){
+	        		window.location = "/tjsc/weixin/cart/index";
+	        	}
+	        	else{
+	        		alert(data);
+	        	}
+	        },
+	        error: function(error){
+	        	alert(error);
+	        }
+ 		});
+	}
+}
+
+/* 确认收货 */
+function confirmReceive(id){
+	if(confirm("是否确认收货？")){
+		$.ajax({
+	        type: "GET",
+	        url: "/tjsc/weixin/order/confirmOrder?orderId="+id,
+	        async:false,
+	        //dataType:'text',
+	        success: function(data){
+	        	
+	        	if(data=='success'){
+	        		$("#noReceive").html( $("#noReceive").html()-1 );
+		        	setRedNumber();
+		        	$("#orderList>li").remove();
+		        	$(window).scrollTop(0);
+		        	page =1;
+		        	isEnableRequest = true;
+		        	getOrderList();
+	        	}
+	        	else{
+	        		alert(data);
+	        	}
+	        },
+	        error: function(error){
+	        	alert(error);
+	        }
+ 		});
+	}
+}
+
+/* 删除订单 */
+function deleteOrder(id,target){
+	if(confirm("是否取消订单？")){
+		$.ajax({
+	        type: "POST",
+	        url: "/tjsc/weixin/order/cancelOrder?orderId="+id,
+	        async:false,
+	        //dataType:'text',
+	        success: function(data){
+	        	if(data=='success'){
+	        		$("#noPay").html( $("#noPay").html()-1 );
+		        	setRedNumber();
+		        	$(target).closest('li').remove();
+	        	}
+	        	else{
+	        		alert(data);
+	        	}
+	        },
+	        error: function(error){
+	        	alert(data)
+	        },
+			complete:function(data){
+				//console.log(data)
+			}
+ 		});
+	}
+}
+
+/* 支付 */
+function payOrder(id){
+	window.location = "/tjsc/weixin/order/orderDetail?orderId="+id ;
+}
+
+/* 上拉    */
+function pullRefresh() {
+	$(window).scroll(function(){
+		var scrollTop = $(this).scrollTop();
+		var scrollHeight = $(document).height();
+		var windowHeight = $(this).height();
+		if(scrollTop + windowHeight >= scrollHeight - 10 && isEnableRequest){
+			getOrderList();
+			isEnableRequest = false;
+		}
+	});
+};
+
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

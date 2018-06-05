@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+<title>客服中心</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/serviceCenter.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+	<div class="banner">
+		<img height="200" src="/specialShop/client/image/kefu_center.png">
+		<p style="margin-top: 124px;">长按识别二维码</p>
+		<p>加客服微信</p>
+	</div>
+	<div class="service_mess">
+		<div class="weixin">
+			<span></span>
+			<p>微信号1：deng3276176</p>
+		</div>
+		<div class="weixin">
+			<span></span>
+			<p>微信号2：xxe201709</p>
+		</div>
+		<div class="qq">
+			<span></span>
+			<p>QQ 号：257580383</p>
+		</div>
+		<div class="tel">
+			<span></span>
+			<p>咨询热线：0571-87984497</p>
+		</div>
+		<div class="e-mail">
+			<span></span>
+			<p>服务邮箱：257580383@qq.com</p>
+		</div>
+		<div style="margin-bottom: 65px;" class="address">
+			<span></span>
+			<p><em style="font-style: normal;">联系地址：</em><b>浙江省杭州市滨江区秋溢路399号金润科技园A座3楼</b></p>
+		</div>
+	</div>
+<script>
+
+init();
+
+/* 初始化函数 */
+function init(){
+	//setCarNumber();
+}
+
+/* 设置购物车内商品数量 */
+function setCarNumber(){
+	var realNumber = parseFloat($("#bottomTab>a>span").html());
+	if(!realNumber){
+		$("#bottomTab>a>span").html('');
+		return;
+	}
+	var showNumber = realNumber > 99 ? '99+' : realNumber;
+	$("#bottomTab>a>span").html(showNumber);
+}
+
+</script>
+</body>
+</html>

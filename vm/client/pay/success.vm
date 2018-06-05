@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>支付成功</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/paySuccess.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+</head>
+<body>
+<div id="wrap">
+	<div id="pay">
+		<p id="p1"><img src="/specialShop/client/image/pay-success.png" width="26"/><span>付款成功</span></p>
+		<p id="p2">商家正在努力发货，请耐心等待！</p>
+		<a style="margin-bottom: 5px;" href="/tjsc/weixin/order/index">查看订单</a>
+		<a href="/tjsc/weixin/cxActivity/index">去首页逛逛</a>
+	</div>
+	<ul>
+		<li>
+			<span>商品名称 </span>
+			<b>
+				<span>$!{tjscOrderProduct.productName}等$!{count}件商品</span>
+				<img src="/specialShop/client/image/pay-rightArrow.png" width="8"/>
+			</b>
+		</li>
+		<li><span>收货人</span><b>$!{address.name} $!{address.phone}</b></li>
+		<li><span>收货地址</span><b>$!{address.fullAddress}</b></li>
+<!-- 		<li style="border-bottom: none;"><span>支付成功时间</span><b>2017-07-21 11:06</b></li> -->
+	</ul>
+</div>
+
+<script>
+init();
+
+/* 初始化函数 */
+function init(){
+	setFontSize();
+}
+
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+</script>
+</body>
+</html>

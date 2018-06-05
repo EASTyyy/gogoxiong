@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>订单详情</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/orderDetail.css" />
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/jquery.cookie.js"></script>
+</head>
+<body>
+
+<div class="order_status">
+	#if($!{tjscOrder.orderStatus}==0)
+	<span>订单待支付</span>
+	#end
+	#if($!{tjscOrder.orderStatus}==1||$!{tjscOrder.orderStatus}==2)
+	<span>订单待收货</span>
+	#end
+	#if($!{tjscOrder.orderStatus}==3)
+	<span>订单已退款</span>
+	#end
+	#if($!{tjscOrder.orderStatus}==4 || $!{tjscOrder.orderStatus}==6)
+	<span>订单已取消</span>
+	#end
+	#if($!{tjscOrder.orderStatus}==5)
+	<span>订单已收货</span>
+	#end
+	<img src="/specialShop/client/image/truck.png" width="80"/>
+</div>
+<div class="order_message">
+	#if($!{tjscOrder.orderStatus}==2||$!{tjscOrder.orderStatus}==3)
+		#if(${tjscOrder.orderLogistice}!=''&&${tjscOrder.orderLogistice}!=[])
+			#foreach($order in ${tjscOrder.orderLogistice})
+			<div class="logi_message">
+				<p>物流单号：$!{order.logisticsNo}</p>
+				<p>物流公司：$!{order.name}</p>
+				<p>联系电话$!{order.phone}</p>
+				#if($!{tjscOrder.orderIsFreePost} == 0)
+				  <p>支付方式：包邮</p>
+				#elseif($!{tjscOrder.orderIsFreePost} == 1)
+				<p>支付方式：货到支付</p>
+				#end
+				<a href="$!{order.picture}">
+					<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{order.picture}'>
+				</a>
+			</div>
+			#end
+		#end
+	#end
+	<div class="address">
+		<p>$!{tjscOrder.name}&nbsp;&nbsp;&nbsp;$!{tjscOrder.phone}</p>
+		<p>$!{tjscOrder.address}</p>
+	</div>
+</div>
+<div class="productList">
+	#if($!{tjscOrder.ZPList}!='null'&&$!{tjscOrder.ZPList}!='[]'&&$!{tjscOrder.ZPList}!='')
+	<div class="int_bill">
+		<p class="bill">
+			<span style="font-size: 18px; color: #393939;">整批</span>
+			<b class="sub_total">小计：$!{tjscOrder.ZPTotalNum}箱  ￥$!{tjscOrder.ZPTotalPrice}</b>
+		</p>
+		<ul>
+			#foreach($!{product} in $!{tjscOrder.ZPList})
+			<li>
+				<div class="productImg">
+					<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.tjscOrderProduct.productMainPicture}'>
+				</div>																			   
+				<div class="productInfo">
+					<h3>$!{product.tjscOrderProduct.productName}</h3>
+					<p>单个价格：￥$!{product.tjscOrderProduct.productPrice}</p>
+					<p>商品货号：$!{product.tjscOrderProduct.productNo}</p>
+					<p>装  箱  量：$!{product.tjscOrderProduct.packageNum}个</p>
+					#set($wholePrice=$!{product.tjscOrderProduct.productPrice}*$!{product.tjscOrderProduct.packageNum})
+					<p>整箱价格：$wholePrice</p>
+					<p>发货地：$!{product.tjscOrderProduct.placeOfDispatch}</p>
+					#set($num=$!{product.tjscOrderProduct.wholeBoxBuyNum}/$!{product.tjscOrderProduct.packageNum})
+					<span>x$num箱</span>								
+				</div>
+			</li>
+			#end
+		</ul>
+	</div>
+	#end
+	
+	#if($!{tjscOrder.HPList}!='null'&&$!{tjscOrder.HPList}!='[]'&&$!{tjscOrder.HPList}!='')
+	<div class="mixture_bill">
+		<p class="bill">
+			<span style="font-size: 18px; color: #393939;">混拼</span>
+			<b class="sub_total">小计：$!{tjscOrder.HPTtotalNum}个  ￥$!{tjscOrder.HPTotalPrice}</b>
+		</p>
+		<ul>
+			#foreach($!{product} in $!{tjscOrder.HPList})
+			<li>
+				<div class="productImg">
+					<img class="lazy" src="/specialShop/client/image/lazy_2.png" data-original='$!{product.tjscOrderProduct.productMainPicture}'>
+				</div>
+				<div class="productInfo">
+					<h3>$!{product.tjscOrderProduct.productName}</h3>
+					<p>单个价格：￥$!{product.tjscOrderProduct.productPrice}</p>
+					<p>商品货号：$!{product.tjscOrderProduct.productNo}</p>
+					<p>起拼数量：$!{product.tjscOrderProduct.mixFightNumThreshold}个</p>
+					<p>发货地：$!{product.tjscOrderProduct.placeOfDispatch}</p>
+					<span>x$!{product.tjscOrderProduct.mixFightBuyNum}个</span>		
+				</div>
+			</li>
+			#end
+		</ul>
+	</div>
+	#end
+</div>
+<div class="total">
+	<p>
+		实付：
+		<span style="color: #c30d23; font-size: 16px;">￥$!{tjscOrder.realityAmount}</span>
+	</p>
+</div>
+<div class="service">
+		<ol>
+			<li><a href="#"><img src="/specialShop/client/image/kefuIcon.png" width="20"/>在线客服</a></li>
+			<li><a href="/tjsc/weixin/home/serviceCenter" style="border-right: none;">客服中心</a></li>
+		</ol>
+</div>
+<div class="othermessage">
+	<p>创建时间：   $!{tjscOrder.createTimeStr} </p>
+	#if($!{tjscOrder.orderStatus}==1)
+	<p>付款时间：    $!{tjscOrder.orderPay.createTimeStr}</p>
+	#end
+	#if($!{tjscOrder.orderStatus}==2||$!{tjscOrder.orderStatus}==3||$!{tjscOrder.orderStatus}==5)
+	<p>付款时间：   $!{tjscOrder.orderPay.createTimeStr}</p>
+	<p>发货时间：     $!{tjscOrder.orderLogistice.createTimeStr}</p>
+	#end
+</div>
+
+#if($!{tjscOrder.orderStatus}==0)
+<div id="bottom">
+	<a href="/tjsc/weixin/cxActivity/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha.png">
+		<p>畅销</p>
+	</a>
+	<a href="/tjsc/weixin/index">
+		<img src="/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home.png">
+		<p>我的</p>
+	</a>
+	<div id="payNow" class="payButton" onclick="payClick()">立即支付<span> 00:00</span></div>
+</div>
+#end
+#if($!{tjscOrder.orderStatus}==2)
+<div id="bottom">
+	<a href="/tjsc/weixin/index">
+		<img src="/specialShop/client/image/productDetail-tejia.png">
+		<p>特价</p>
+	</a>
+	<a href="/tjsc/weixin/seckill/index">
+		<img src="/specialShop/client/image/productDetail-miaosha.png">
+		<p>秒杀</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/productDetail-zhanghu.png">
+		<p>我的</p>
+	</a>
+	<div id="payNow" class="payButton" onclick="confirmReceive()">确认收货</div>
+</div>
+#end
+<script>
+
+var specialTimer = null;
+var countdownStartTime;
+var countdownEndTime;
+var endTime;
+var nowTime;
+var t;
+
+var isAblePay = true;
+
+init();
+
+/* 初始化函数 */
+function init(){
+	$("img.lazy").lazyload();
+	setFontSize();
+	
+	$first=$.cookie('first_vist');
+	if(!$first||$first=='null'||$first==null){
+		$.cookie('first_vist','1',{ expires: 7 });
+	}
+	else{
+		$.cookie('first_vist',null);
+		location.reload(true);
+	}
+	
+	if('$!{tjscOrder.orderStatus}' == 0){
+		countdownStartTime = "$!{startTime}";
+		countdownEndTime = "$!{endTime}";
+	}
+	
+	if(countdownEndTime && countdownStartTime){
+		endTime = eval("new Date("+ countdownEndTime.replace(/\D+/g,",")+")");
+		nowTime = eval("new Date("+ countdownStartTime.replace(/\D+/g,",")+")"); 
+		t = endTime.getTime()/1000 - nowTime.getTime()/1000;
+		specialTimer = setInterval(countdown,1000);
+	}
+}
+
+/* 倒计时函数 */
+function countdown(){
+	t = t-1;
+    var s = parseInt(t);
+    var m = 0;
+    var h = 0;
+    var d = 0;
+    if(s > 60) {
+        m = parseInt(s/60);
+        s = parseInt(s%60);
+        if(m > 60) {
+            h = parseInt(m/60);
+            m = parseInt(m%60);
+           if(h > 24){
+            	d = parseInt(h/24);
+            	h = parseInt(h%24);
+            }
+        }
+    }
+    
+    var isEnd = t < 0 ? true :false;
+    
+    if(isEnd){
+		clearInterval(specialTimer);
+		countdownRender('');
+		isAblePay = false;
+		$('#payNow').addClass('payButtonGray');
+		$('.order_status span').html('订单已取消');
+		return;
+	}
+    
+	d = d.toString().length == 1 ? '0' + d : d;
+	h = h.toString().length == 1 ? '0' + h : h;
+	m = m.toString().length == 1 ? '0' + m : m;
+	s = s.toString().length == 1 ? '0' + s : s;
+	//console.log(d+','+h+','+m+','+s);
+	countdownRender(" "+m +":"+ s);
+	
+}
+
+/* 倒计时渲染 */
+function countdownRender(html){
+	$("#payNow>span").html(html);
+}
+
+/* 确认收货 */
+function confirmReceive(){
+	if(confirm("是否确认收货？")){
+		$.ajax({
+	        type: "GET",
+	        url: "/tjsc/weixin/order/confirmOrder?orderId=$!{tjscOrder.id}",
+	        async:false,
+	        dataType:'text',
+	        success: function(data){
+	        	window.location.reload();
+	        },
+	        error: function(error){
+	        	alert(error);
+	        }
+ 		});
+	}
+}
+
+/* 点击支付按钮 */
+function payClick(){
+	if(!isAblePay){return};
+	var url="/tjsc/weixin/order/checkNotPayOrder?orderId=$!{tjscOrder.id}";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+        	if(data == 'success'){
+        		var orderNo = '$!{tjscOrder.orderNo}';
+        		var totalAmount = '$!{tjscOrder.realityAmount}';
+        		pay(orderNo, totalAmount);
+        	}
+        	else{
+        		alert(data);
+        	}
+        },
+        error: function(error){
+        	alert(error.responseText);
+        }
+	});
+}
+
+function pay(orderNo, totalAmount){
+	var url="/xlcl/weixin/order/pay/paySign?outTradeNo="+orderNo+"&totalFee="+totalAmount +"&callback=";
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(data){
+            	
+       		if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', onBridgeReady(data), false);
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', onBridgeReady(data)); 
+                    document.attachEvent('onWeixinJSBridgeReady', onBridgeReady(data));
+                }
+            }
+       		else{
+                onBridgeReady(data);
+            }
+           	
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+	
+}
+
+/* 微信支付js */
+function onBridgeReady(data){
+   WeixinJSBridge.invoke(
+      'getBrandWCPayRequest', 
+      {
+          "appId" : data.result.appId,     //公众号名称，由商户传入     
+          "timeStamp":data.result.timeStamp, //时间戳，自1970年以来的秒数     
+          "nonceStr" :data.result.nonceStr, //随机串     
+          "package": data.result.package_,     
+          "signType" : data.result.signType, //微信签名方式：     
+          "paySign" : data.result.paySign //微信签名 
+      },
+      function(res){
+          //付款成功后，转跳到待发货页面下
+          if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+        	  window.location="/tjsc/weixin/order/index?orderStatus=1";
+          }
+          else{
+           //只要无论是用户放弃付款还是支付失败，转跳到待付款下
+           window.location="/tjsc/weixin/order/index?orderStatus=0";
+          }
+      }
+  )
+}
+
+
+
+
+
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>

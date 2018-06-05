@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>交易保障</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/SecurityTrans.css" />
+</head>
+<body>
+	<div class="wrap">
+		<h1>在熊小二特供平台的所有交易均受到第三方保障，绝对安全！</h1>
+		<div class="content">
+			<div class="con_1">
+				<h2>一、微信官方认证</h2>
+				<p>熊小二特供平台是经过微信官方认证的公众号，并且将每年进行审批认证，可在线提供商品销售、咨询服务等一系列电子商务活动！</p>
+				<p>熊小二特供平台认证的主体信息为“义乌宣乐网络科技有限公司”，是一家创立已久的有限责任公司。</p>
+				<p>在平台认证时，一并上传了公司营业执照信息、运营者身份证、法人身份证等信息，进一步加强了平台的信用保障！</p>
+				<p>所有在平台交易的货款都将通过微信官方认证的商户账号，以保障货款的安全性，在一定期限内再提现至公司账户。</p>
+				<img src="$!{static}/specialShop/client/image/renzheng.png" />
+			</div>
+			<div class="con_2">
+				<h2>二、法律责任</h2>
+				<p>通过熊小二特供平台购买的每一个商品，生成的每一笔交易订单，都受到法律保护</p>
+				<p>客户如果在购买交易的过程中，遇到欺诈现象，可凭借交易订单和支付订单进行法律维权！</p>
+			</div>
+			<div class="con_3">
+				<h2>三、熊小二特供平台强大的商业背景</h2>
+				<p>熊小二特供平台不仅仅是一个线上交易平台，在其线下，还拥有全国各地的实体门店支持！</p>
+				<p>熊小二特供平台的实体分部，有在山东临沂、河南郑州、北京、辽宁沈阳、浙江义乌等玩具中心城市连锁经营，同时会有提供按就近区域的订单发货，如此强大的商业背景，完全能够保障线上平台交易的安全性、可靠性！</p>
+			</div>
+			<div class="con_4">
+				<h2>四、交易投诉与建议反馈</h2>
+				<p>通过熊小二特供平台交易时，若产生任何疑问或者纠纷，都可以联系客服，寻求帮助。</p>
+				<p>平台在【关于我们】——【客服中心】里，公布了客服微信号、QQ号、电话、服务邮箱、和公司地址，期待您通过各种方式来联系我们。</p>
+				<img src="$!{static}/specialShop/client/image/fankuai.png" width="320" />
+			</div>
+			<div class="con_5">
+				<h2>五、交易规则说明</h2>
+				<p>买家购买商品成功后，由卖家发货并提供物流单号。买家可在【我的订单】中查询物流单号和订单状态。</p>
+				<p>买家收到货后，可以点击确认收货；如果收到货，买家未点击确认收货，发货后15天系统将自动确认收货。</p>
+				<p>在熊小二特供平台购买商品，一般情况，购买特价商品发货时间为3天，购买新品发货时间为3-5天，购买众筹商品发货时间为15天左右。</p>
+			</div>
+		</div>
+		
+	</div>
+</body>
+</html>

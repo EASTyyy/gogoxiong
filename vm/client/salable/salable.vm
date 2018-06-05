@@ -1,0 +1,409 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>熊小二特供平台</title>  
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/public.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/salable.css" />
+<link rel="stylesheet" type="text/css" href="$!{static}/specialShop/client/css/swiper.min.css" />
+
+
+<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/swiper.min.js"></script>
+<script type="text/javascript" src="$!{static}/specialShop/client/library/lazy.js"></script>
+
+</head>
+<body>
+<div id="mask" onclick="maskClick()"></div>
+<ul id="salableTab">
+	<li id="salableTabWhole" onclick="typeClick(this,'whole')" class="active">
+		<div>整批</div>
+	</li>
+	<div class="logodiv">
+		<img class="logo" src="/specialShop/client/image/bottomMenu-logo.png">
+	</div>
+	<li id="salableTabMixFight" onclick="typeClick(this,'mixFight')">
+		<div>混拼</div>
+	</li>
+	<div id="search">
+		<div onclick="searchTab(this)">
+			<div class="icon">
+				排序
+				<img src="/specialShop/client/image/pay-rightArrow.png">
+			</div>
+			<div class="content">
+				<div class="content2" data-type="warehouseId">
+					<div>
+						<span onclick="search(1,'','')">最新上架</span>
+					</div>
+					<div>
+						<span onclick="search(2,'','')">销量最高</span>
+					</div>
+					<div>
+						<span onclick="search(3,'','')">价格最低</span>
+					</div>
+					<div>
+						<span onclick="search(4,'','')">价格最高</span>
+					</div>
+					<div>
+						<span onclick="search(5,'','')">正版授权</span>
+					</div>
+					<div>
+						<span onclick="search(6,'','')">3C条码</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div onclick="searchTab(this)">
+			<div class="icon">
+				价位
+				<img src="/specialShop/client/image/pay-rightArrow.png">
+			</div>
+			<div class="content">
+				<div class="content2" data-type="price">
+					<div>
+						<span onclick="search('','0-1','')">1元以下</span>
+					</div>
+					<div>
+						<span onclick="search('','1-5','')">1-5元</span>
+					</div>
+					<div>
+						<span onclick="search('','5-10','')">5-10元</span>
+					</div>
+					<div>
+						<span onclick="search('','10-50','')">10-50元</span>
+					</div>
+					<div>
+						<span onclick="search('','50-100','')">50-100元</span>
+					</div>
+					<div>
+						<span onclick="search('','100-999999','')">100元以上</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div onclick="searchTab(this)">
+			<div class="icon">
+				分类
+				<img src="/specialShop/client/image/pay-rightArrow.png">
+			</div>
+			<div class="content">
+				<div class="content2" data-type="categoryId">
+					#foreach($category in $!{cxProductDtoList}) 
+					<div>
+						<span onclick="search('','','$!{category.categoryId}')">$!{category.categoryName}</span>
+					</div>
+					#end
+				</div>
+			</div>
+		</div>
+		<div class="search" onClick='goResult()'>
+			<div>
+				搜索
+				<img src="/specialShop/client/image/search.png">
+			</div>
+		</div>
+	</div>
+</ul>
+<div id="salableSlider" class="swipe swiper-container">
+    <ul class="swiper-wrapper">
+<!--     	#foreach($!{roll} in $!{tjscProduct.cyclePictureList})  -->
+<!--         <li class="swiper-slide">  -->
+<!--  			<img class="swiper-lazy" data-src="$!{roll.picture}"/> -->
+<!--  		</li>            	  -->
+<!--         #end -->
+		<li class="swiper-slide" onclick="swiperClick('/tjsc/weixin/seckill/index')"> 
+ 			<img class="swiper-lazy" data-src="/specialShop/client/image/salablebanner1.jpg"/>
+ 		</li>
+ 		<li class="swiper-slide"> 
+ 			<img class="swiper-lazy" data-src="/specialShop/client/image/salablebanner2.jpg"/>
+ 		</li>
+<!--  		<li class="swiper-slide" onclick="swiperClick('http://www.gogoxiong.com/tjsc/weixin/seckill/index')">  -->
+<!--  			<img class="swiper-lazy" data-src="http://image.gogoxiong.com/xlclUpload/2017/11/aef4f648-8853-40b6-9d8f-a3e822c58fd0.JPG"/> -->
+<!--  		</li> -->
+<!--  		<li class="swiper-slide" onclick="swiperClick('http://www.gogoxiong.com/tjsc/weixin/seckill/index')">  -->
+<!--  			<img class="swiper-lazy" data-src="http://image.gogoxiong.com/xlclUpload/2017/10/e907dc55-a3d1-42aa-bc53-031907ea60ed.JPG"/> -->
+<!--  		</li> -->
+    </ul>
+    <div class="swiper-pagination"></div>
+</div>
+<div id="category">
+	<ul class="productList"></ul>
+</div>
+<div id="bottomTab">
+	
+	<a>
+		<img src="$!{static}/specialShop/client/image/bottomMenu-miaosha-active.png">
+		<p>畅销</p>
+	</a>
+	<a href="/tjsc/weixin/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-tejia.png">
+		<p>特价</p>
+	</a>
+	
+	<!-- logo -->
+	<a>
+		<img class="logo" src="$!{static}/specialShop/client/image/bottomMenu-logo.png">
+	</a>
+	<!-- logo -->
+	
+	<a href="/tjsc/weixin/cart/index">
+		<span>$!{cartSize}</span>
+		<img src="$!{static}/specialShop/client/image/bottomMenu-car.png">
+		<p>订单</p>
+	</a>
+	<a href="/tjsc/weixin/home/index">
+		<img src="$!{static}/specialShop/client/image/bottomMenu-home.png">
+		<p>我的</p>
+	</a>
+</div>
+
+<script>
+
+var type;
+var session;
+
+init();
+
+
+/* 初始化函数 */
+function init(){
+	session = JSON.parse(sessionStorage.getItem('salableParam'));
+	if(session && session.type){
+		type = session.type;
+	}
+	else{
+		type = 'whole';
+	}
+	
+	if(type == 'mixFight'){
+		$('#salableTabMixFight').addClass('active').siblings().removeClass('active');
+	}
+	
+	$("img.lazy").lazyload();
+	setFontSize();
+	getProductList();
+	setCarNumber();
+	
+		
+}
+
+/* 搜索调转 */
+function goResult(){
+	window.location="/tjsc/weixin/product/goToWeiXinSearch?searchType=1&tjscCXActivityId=$!{cxActivity.id}&cxProductModel="+type;
+}
+
+/* 存储session */
+function saveSession(){
+	var param = {
+	  type: type
+	};
+	param = JSON.stringify(param);
+	sessionStorage.setItem('salableParam',param);
+}
+
+/* 清空session */
+function removeSession(){
+	sessionStorage.removeItem('salableSearchParam');
+}
+
+//轮播图实例化
+var mySwiper = new Swiper('#salableSlider', {
+	autoplay: 2500,
+	pagination:'#salableSlider .swiper-pagination',
+	loop:true,
+    lazyLoading:true
+})
+
+/* 点击轮播 */
+function swiperClick(url){
+	window.location = url;
+}
+/* 渲染列表 */
+function render(lists,type){
+	var listsContainer =$("#category");
+	for(var i =0;i<lists.length;i++){
+		var list =lists[i];
+		var ul = '<ul class="productList">';
+		ul += '<p><span>'+ list.categoryName +'</span><a href="javascript:void(0);" onclick="moreClick(' +list.categoryId +')">更多 ></a></p>';
+		for(var j =0;j<list.cxProductList.length;j++){
+			var product =list.cxProductList[j];
+			var price;
+			var intsPrice;
+		    var decimalPrice = '';
+		    price = parseFloat(product.priceForIndex).toString();
+		    
+	    	
+	    	if( price.indexOf(".") > 0 ){
+	    		price = price.split(".");
+		    	intsPrice = price[0];
+	    		decimalPrice = '.'+price[1];
+	    	}
+	    	else{
+	    		intsPrice = price;
+	    	}
+	    	
+			if(type == 'mixFight'){//混拼
+				ul += '<li class="orange">';
+			}
+			else{//整批
+				ul += '<li>';
+			}
+			
+			if(type == 'mixFight' && product.totalMixFightSurplusStock <= 0){//混拼售罄
+				ul += '<div class="noStart" onclick="productClick('+product.productId+','+product.cxActivityId+')">已售罄</div>';
+			}
+			else if(type == 'whole' && product.totalWholeBoxSurplusStockStr <= 0){//整批售罄
+				ul += '<div class="noStart" onclick="productClick('+product.productId+','+product.cxActivityId+')">已售罄</div>';
+			}
+			
+			ul += '<div class="imgContainer" onclick="productClick('+product.productId+','+product.cxActivityId+')">';
+			ul += '<img class="lazy" style="height:150px;" src="/specialShop/client/image/lazy_1.png" data-original="'+ product.mainPicture +'">';
+			ul += '</div>';
+			ul += '<h3>'+ product.productName +'</h3>';
+			ul += '<p class="price">';
+			ul += '<span class="money">￥</span>'+ intsPrice +'<span class="decimal">'+ decimalPrice +'</span><del>出厂价：<span>￥'+ product.factoryPriceForIndex +'</span></del>';
+			ul += '</p>';
+			
+			if(type == 'mixFight'){//混拼
+				ul += '<p>已售<span>' + product.totalMixFightHaveBuyNumStr + '</span>个  剩余<span>' + product.totalMixFightSurplusStock + '</span>个</p>';
+			}
+			else{//整批
+				ul += '<p>已售<span>' + product.totalWholeBoxHaveBuyNumStr + '</span>箱  剩余<span>' + product.totalWholeBoxSurplusStockStr + '</span>箱</p>';
+			}
+			
+			ul += '<p>装箱 ：'+product.packageNum+'</p>';
+			ul += '<p>货号 ：<span class="productNo">'+ product.productNo +'</span></p>';
+			
+			if(type == 'mixFight' && product.totalMixFightSurplusStock <= 0){//混拼售罄
+				ul += '<a style="background: #9f9f9f;">加入订单</a>';
+			}
+			else if(type == 'whole' && product.totalWholeBoxSurplusStockStr <= 0){//整批售罄
+				ul += '<a style="background: #9f9f9f;">加入订单</a>';
+			}
+			else{
+				ul += '<a onclick="buyNow('+product.productId+','+product.cxActivityId+')">加入订单</a>';
+			}
+			ul += '</li>';
+		}
+		$(ul).appendTo(listsContainer);
+	}
+	$("img.lazy").lazyload();
+}
+
+/* 点击商品图片 */
+function productClick(productId,cxActivityId){
+	window.location = '/tjsc/weixin/cxActivity/productDetail?productId='+productId+'&tjscCXActivityId='+cxActivityId+'&cxProductModel='+type;
+}
+
+/* 直接购买 */
+function buyNow(productId,cxActivityId){
+	$.ajax({
+        type: "GET",
+        url: '/tjsc/weixin/cart/buyCXProductImmediately?productId='+productId+'&cxActivityId='+cxActivityId+'&fightOrderMode='+type,
+        async:false,
+        dataType:"text",
+        success: function(resp){
+        	if(resp == "success") {
+        		window.location = '/tjsc/weixin/cart/index';
+        	} else {
+        		alert(resp);
+        	}
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+/* 点击更多 */
+function moreClick(id){
+	removeSession();
+	window.location="/tjsc/weixin/cxActivity/goToCXProductSearch?cxProductModel="+type+"&productTag=&price=&categoryId="+id+"&tjscCXActivityId="+$!{cxActivity.id};
+}
+
+/* 整批混拼类型切换 */
+function typeClick(target,types){
+	$(target).addClass('active').siblings().removeClass('active');
+	$("#category>ul").remove();
+	type = types;
+	getProductList();
+	saveSession();
+}
+
+function searchTab(target){
+	if($(target).hasClass('active')){
+		$(target).removeClass('active');
+		$('#mask').css('display','none');
+		$('body').css('overflow','auto');
+	}
+	else{
+		$('#mask').css('display','block');
+		$('body').css('overflow','hidden');
+		$(target).addClass('active').siblings().removeClass('active');
+	}
+}
+
+/* 拉取商品列表 */
+function getProductList(){
+	$(window).scrollTop(0);
+	var url="/tjsc/weixin/cxActivity/getCXProductList?num=6&tjscCXActivityId=$!{cxActivity.id}&cxProductModel="+type;
+	$.ajax({
+        type: "GET",
+        url: url,
+        async:false,
+        success: function(rows){
+           	var lists = eval(rows);
+           	if($(lists).size() > 0 ){
+           		render(lists,type);
+           	}
+           	else{
+           		
+           	}
+       		
+        },
+        error: function(error){
+        	alert(error);
+        }
+	});
+}
+
+
+/* 点击搜索分类 */
+function search(productTag,price,categoryId){
+	removeSession();
+	window.location="/tjsc/weixin/cxActivity/goToCXProductSearch?cxProductModel="+type+"&orderBy="+productTag+"&price="+price+"&categoryId="+categoryId+"&tjscCXActivityId="+$!{cxActivity.id};
+}
+/* 点击遮罩层 */
+function maskClick(){
+	$('#search').find('.active').removeClass('active');
+	$('#mask').css('display','none');
+	$('body').css('overflow','auto');
+}
+
+/* 设置购物车内商品数量 */
+function setCarNumber(){
+	var realNumber = parseFloat($("#bottomTab>a>span").html());
+	if(!realNumber){
+		$("#bottomTab>a>span").html('');
+		return;
+	}
+	var showNumber = realNumber > 99 ? '99+' : realNumber;
+	$("#bottomTab>a>span").html(showNumber);
+}
+
+/* 设置rem */
+function setFontSize() {
+　　var winWidth = $(window).width();
+　　var size = (winWidth / 750) * 200;
+　　document.documentElement.style.fontSize = (size < 100 ? size : 100) + 'px';
+};
+
+</script>
+</body>
+</html>
