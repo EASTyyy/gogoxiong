@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>修改积分比例</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+	<style type="text/css">
+		.submit{
+			font-size:14px;
+			border: 1px solid black;
+			padding: 10px 20px;
+		}
+		.submit:hover{
+			color:red;
+			cursor:pointer;
+		}
+	</style>
+</head>
+<body>	
+
+<div style="padding: 5px; height: auto;">
+	<form id="coreConfigClassifyInfoForm" style="text-align: center;" method="post" enctype="multipart/form-data">
+ 	<input name="id" type="hidden" value="$!{tjscScoreConfig.id}"/> 
+		<table style="display: inline-block;text-align:end;">
+			<tr>
+				<td>类型名称</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:300px;" name="typeName" autoComplete="off" value="$!{tjscScoreConfig.typeName}"  class="easyui-validatebox" style="width:400px" type="text" data-options="required:true">
+				</td>
+			</tr>
+			<tr>
+				<td>类型</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:300px;" name="type" autoComplete="off" value="$!{tjscScoreConfig.type}"  class="easyui-validatebox" style="width:400px" type="text" data-options="required:true">
+				</td>
+			</tr>
+			<tr>
+				<td>积分比例（请填写小数）</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:300px;" name="scoreRatio" autoComplete="off" value="$!{tjscScoreConfig.scoreRatio}"  class="easyui-validatebox" style="width:400px" type="text" data-options="required:true">
+				</td>
+			</tr>
+		
+		</table>
+	</form>
+	<div style="text-align:center;margin-top: 40px;">
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveClassify()">提交</a>
+	</div>
+</div>
+
+<script>
+
+function saveClassify(){
+	$.messager.progress();
+	$('#coreConfigClassifyInfoForm').form('submit',{
+		url:"/tjsc/score/config/save",
+		onSubmit: function(){			
+			var isValid = $(this).form('validate');
+			if (!isValid){
+				$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+			}
+			return isValid;	// 返回false终止表单提交
+		},
+		success : function(data) {
+			if(data=="success"){
+			parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+			parent.$( '#$!{parentDivId}' ).window('close');
+			}else{
+				alert(data);
+			}
+			$.messager.progress('close');
+		},
+		error : function(resp){
+			$.messager.progress('close');
+			alert(resp)
+		} 
+	});
+}
+
+</script>
+
+</body>
+</html>

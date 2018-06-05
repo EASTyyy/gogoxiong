@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>导出订单</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="$!{staticRoot}/zTree/js/jquery.ztree.core-3.5.js"></script>
+	<script type="text/javascript" src="$!{staticRoot}/zTree/js/jquery.ztree.excheck-3.5.js"></script>
+	<link rel="stylesheet" type="text/css" href="$!{staticRoot}/zTree/css/zTreeStyle/zTreeStyle.css"></link>
+	
+</head>
+</body>	
+<div style="padding: 10px 0 10px 60px" style="width:950px; height:400px; padding: 10px;">
+		<form id="orderPropertyForm" method="post" enctype="multipart/form-data" >
+			<input name="orderPropertyIds" id="orderPropertyIds" type="hidden" />
+		
+			<table>
+				<tr>
+					<td>注意事项：</td>
+					<td>
+					1，导出订单只支持<span style="color:red">.xls</span>表格文件。</br>
+					2，<span style="color:red">导出订单非常消耗系统资源，请勿频繁执行本操作</span></td>
+				</tr>
+				<!-- <tr>
+					<td>选择导出的<span style="color:red">.xls</span>位置</td>
+					<td><select name="filePath">
+					<option value="C:/xlcl.xls">C盘根目录下</option>	
+					<option value="D:/xlcl.xls">D盘根目录下</option>		
+					<option value="E:/xlcl.xls">E盘根目录下</option>	
+					</select></td>
+				</tr> -->
+				<tr>
+					<td>勾选需要导出订单属性：</td>
+					<td><!--<ul id="xlclorderPropertyTree" class="ztree" ></ul>-->
+					 <table id="xlclorderPropertyTable"></table>
+					</td>
+				</tr>
+				<tr>
+					<td>订单状态</td>
+					<td>
+						<select id="orderStatus" name="orderStatus" class="easyui-combobox"  style="width:100px;"> 
+							<option value="90911">全部</option>  
+				            <option value="0">待付款</option>
+						    <option value="1">已付款</option> 
+						    <option value="2">已发货</option>  
+						    <option value="3">已退款</option>
+						    <option value="4">已取消</option>
+						    <option value="5">已收货</option>
+						</select> 
+					</td>
+				</tr>
+				<tr>
+					<td>订单创建时间：</td>
+					<td>
+					    <!--<input type="text" style="border:1px solid #95B8E7" name="createTimeStart" autoComplete="off"  class="easyui-datebox" style="width:200px" type="text" data-options="required:true">
+						   至<input type="text" style="border:1px solid #95B8E7" name="createTimeEnd" autoComplete="off"  class="easyui-datebox" style="width:200px" type="text" data-options="required:true">-->
+						   <input id="createTimeStart" class="easyui-datebox" name="createTimeStart" style="width: 100px;" data-options="required:true" editable="false">
+						           至：<input id="createTimeEnd" class="easyui-datebox" name="createTimeEnd" style="width: 100px;" data-options="required:true" editable="false">
+					     
+					</td>
+				</tr>				
+				<tr>
+					<td></td>
+	            	<td>
+						<center>
+						
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitOutData()">确认导出</a>
+						</center>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<script>
+	//console.info($!{propertys});
+		$('#xlclorderPropertyTable').datagrid({   
+		url:'/xlcl/excel/getOrderPropertys',
+		//toolbar: '#shopSearchFormToolbar',
+		//queryParams:{"userType":2,"isDeleted":2},
+		//pagination:true,
+		singleSelect:false,
+		//rownumbers:true,
+		autoRowHeight:true,
+		//data:"$!{propertys}",
+		columns:[[   
+				{field:'id',title:'',checkbox:true},
+				{field:'name',title:'订单属性',width:200}
+		]]
+		});
+	
+	//提交导出数据
+	function submitOutData(){
+
+			var orderPropertyIds="";
+		var allCheckedRows=$('#xlclorderPropertyTable').datagrid("getChecked");
+		for(var i=0;i<allCheckedRows.length;i++){
+			orderPropertyIds+=allCheckedRows[i].id+",";
+		}
+		if(allCheckedRows==null||allCheckedRows.length==0||orderPropertyIds==""){
+			alert("至少选择一个订单属性。");
+			return;
+		}
+		orderPropertyIds = orderPropertyIds.substring(0,orderPropertyIds.length-1);
+		//console.info(orderPropertyIds);
+		$("#orderPropertyIds").val(orderPropertyIds);
+		//console.info($("#orderPropertyIds").val());
+		//console.info($("#outFile").val()==""||$("#outFile").val()==null);
+		/*if($("#outFile").val()==""||$("#outFile").val()==null){
+			alert("请选择导出的文件。");
+			return;
+		}*/
+		$.messager.progress();
+		$('#orderPropertyForm').form('submit',{
+					url:"/xlcl/excel/outExcelOrder",
+					success : function(data) {
+						$.messager.progress("close");
+						if (data != 'fail') {
+							//console.info(data);
+							//var aTag = "<a id='down'>"+点击下载导出文件+"</a>"
+							//$("#downloadUrlTd")
+							//window.open(data);
+							parent.$('#excelorder_clerk_order_div').window('close');
+							parent.$('#xlcl_excelorder_clerk_table').datagrid('reload');
+						} else {
+							jQuery.messager.alert('Info', data, 'info');
+						}
+					}
+				});
+	}
+	
+	$(function() {
+		var strDate = formatterDate(new Date());
+		$('#createTimeStart').datebox("setValue", strDate);
+		$('#createTimeEnd').datebox("setValue", strDate);
+	});
+		
+    formatterDate = function(date) {
+		var day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
+		var month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : "0" + (date.getMonth() + 1);
+		return date.getFullYear() + '-' + month + '-' + day;
+	};
+	
+	</script>
+</body>
+</html>

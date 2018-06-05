@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>配置订货单</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>	
+
+<div id="configOrder_toolbar" style="padding: 15px">
+	<a href="#" onclick="addProduct(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">添加<span style="color: red;">畅销</span>商品</a>
+	<a href="#" onclick="addProduct(1)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true" style="margin-right: 20px;">添加<span style="color: red;">特价</span>商品</a>
+	备注： <input id='note' placeholder="请简要描述，尽量在20字以内" maxlength="22"  class="easyui-textbox" style="width:300px;" />
+	<a href="#" onclick="saveOrder()" class="easyui-linkbutton"
+	iconCls="icon-save" plain="true" style="margin-left: 20px;">提交订货单</a>
+</div>
+
+
+<table id="member_order_table" style="heigth: auto;"></table>
+
+<!-- 新增商品到订货单 -->
+<div id="add_order_product_div" class="easyui-window" title="新增商品到订货单"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:900px; height:500px; padding: 10px;">
+	<iframe src="#" id="add_order_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+
+$('#member_order_table').datagrid(
+		{
+			url : '/tjsc/salesmanOrder/salesmanOrderList',
+			toolbar : '#configOrder_toolbar',
+			queryParams:{"memberId":'$!{memberId}'},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			onClickCell: onClickConfigOrderCell,
+			columns : [ [
+						{
+							field : 'warehouseName',
+							title : '仓库'
+						},
+						{
+							field : 'productName',
+							title : '商品名称'
+						},
+						{
+							field : 'productNo',
+							title : '商品货号'
+						},
+						{
+							field : 'packageNum',
+							title : '装箱数量',
+						},
+						{
+							field : 'productStandard',
+							title : '产品规格'
+						},
+						{
+							field : 'boxStandard',
+							title : '外箱体积',
+						},
+						{
+							field : 'color',
+							title : '颜色',
+						},
+						{
+							field : 'wholeBoxSurplusStockStr',
+							title : '整箱剩余库存*箱',
+						},
+						{
+							field : 'mixFightSurplusStock',
+							title : '混拼剩余库存*个',
+						},
+						{
+							field : 'stockWholeBoxPrice',
+							title : '整拼单价',
+						},
+						{
+							field : 'stockMixFightPrice',
+							title : '混拼单价',
+						},
+						{
+							field : 'factoryPrice',
+							title : '出厂单价',
+						},
+						{
+							field : 'isMixFightStr',
+							title : '是否可混拼',
+						},
+						{
+							field : 'mixFightNumThreshold',
+							title : '混拼起拼量*个',
+						},
+						{
+							field : 'isPurchaseStr',
+							title : '是否限购',
+						},
+						{
+							field : 'everyOnePurchase',
+							title : '每人限购量*个',
+						},
+						{
+							field : 'isBaoLongSeriesStr',
+							title : '暴龙',
+						},
+						{
+							field : 'activityType',
+							title : '活动分类',
+						},
+						{
+							field : 'wholeboxBuyNumStr',
+							title : '整拼购买量*箱',
+							editor: 'numberbox'
+						},
+						{
+							field : 'mixFightBuyNum',
+							title : '混拼购买量*个',
+							editor: 'numberbox'
+						}, 
+						{
+							field : 'operate',
+							title : '操作',
+							formatter : function(value, row, index) {
+								return outPutFunction("removeOrderProduct", row.id,"删除") ;
+							}
+						}
+					] ]
+});
+
+//新增商品
+function addProduct(module) {
+	var parentDivId = "add_order_product_div";
+	var parentTableId = "member_order_table";
+	var activityType;
+	if(module == 0) {
+		activityType = "changxiao";
+	} else {
+		activityType = "fightOrder";
+	}
+	var url = "/tjsc/salesmanOrder/openProductList?memberId=" + $!{memberId} + "&activityType=" + activityType + "&url=/tjsc/salesmanOrder/saveProduct"
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#add_order_product_div_ifr").attr('src', url);
+	$('#add_order_product_div').window('open');
+}
+
+//删除
+function removeOrderProduct(rid) {
+ 	$.messager.confirm('配置订货单', "确定要删除吗?", function(r) {
+ 		if (r) {
+ 			jQuery.post("/tjsc/salesmanOrder/delete", {
+ 				"salesmanOrderId" : rid,
+ 			}, function(data) {
+ 				if (data == 'success') {
+ 					$("#member_order_table").datagrid('reload');
+ 				} else {
+ 					$.messager.alert('Info', data, 'info');
+ 				}
+ 			});
+ 		}
+ 	});
+}
+ 
+//提交
+function saveOrder() {
+	var note = $('#note').val();
+	if(!note){
+		$.messager.alert('Info','请填写备注信息！！！', 'info');
+		return;
+	}
+ 	$.messager.confirm('配置订货单', "确定要将这些商品加入客户订货单吗?", function(r) {
+ 		if (r) {
+ 			$.messager.progress();
+ 			var tableData = getTableData();
+ 			var note = $('#note').val();
+//   			console.log(tableData)
+//   			return
+ 			jQuery.post("/tjsc/salesmanOrder/orderPush", {
+				"remark": note,
+ 				"ids" : tableData.id,
+ 				"wholeBoxBuyNumStrArr" : tableData.wholeboxBuyNumStr,
+ 				"mixFightBuyNumArr" : tableData.mixFightBuyNum,
+ 				"memberId":'$!{memberId}'
+ 			}, function(data) {
+ 				$.messager.progress("close");
+ 				if (data == 'success') {
+ 					parent.$("#$!{parentTableId}").datagrid('reload'); 
+					parent.$("#$!{parentDivId}").window('close');
+ 				} else {
+ 					$.messager.alert('Info', data, 'info');
+ 				}
+ 			});
+ 		}
+ 	});
+}
+
+//获取表格信息
+function getTableData(){
+	var rows = $('#member_order_table').datagrid('getRows');
+	var result = {};
+	result.id = '';
+	result.wholeboxBuyNumStr = '';
+	result.mixFightBuyNum = '';
+	rows.forEach(function(e){
+		result.id+=e.id+',';
+		if(!e.wholeboxBuyNumStr){
+			result.wholeboxBuyNumStr+='0,';
+		}
+		else{
+			result.wholeboxBuyNumStr+=e.wholeboxBuyNumStr+',';
+		}
+		
+		if(!e.mixFightBuyNum){
+			result.mixFightBuyNum+='0,';
+		}
+		else{
+			result.mixFightBuyNum+=e.mixFightBuyNum+',';
+		}
+	});
+	result.id = result.id.substring(0,result.id.length-1);
+	result.wholeboxBuyNumStr = result.wholeboxBuyNumStr.substring(0,result.wholeboxBuyNumStr.length-1);
+	result.mixFightBuyNum = result.mixFightBuyNum.substring(0,result.mixFightBuyNum.length-1);
+	return result;
+}	
+
+
+//编辑单元格部分
+
+var configOrderEditIndex = undefined;
+
+$.extend($.fn.datagrid.methods, {
+    editCell : function(jq, param) {
+        return jq.each(function() {
+            var opts = $(this).datagrid('options');
+            var fields = $(this).datagrid('getColumnFields', true).concat(
+                    $(this).datagrid('getColumnFields'));
+            for ( var i = 0; i < fields.length; i++) {
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor1 = col.editor;
+                if (fields[i] != param.field) {
+                    col.editor = null;
+                }
+            }
+            $(this).datagrid('beginEdit', param.index);
+            for ( var i = 0; i < fields.length; i++) {
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor = col.editor1;
+            }
+        });
+    }
+});
+
+function configOrderEndEditing() {
+    if (configOrderEditIndex == undefined) {
+        return true
+    }
+    if ($('#member_order_table').datagrid('validateRow', configOrderEditIndex)) {
+        $('#member_order_table').datagrid('endEdit', configOrderEditIndex);
+        configOrderEditIndex = undefined;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//单击单元格 
+function onClickConfigOrderCell(index,field,value) {
+	var rows = $('#member_order_table').datagrid('getRows');
+	var row = rows[index];
+	
+	if(value!=null){
+		if (configOrderEndEditing()) {
+	        $('#member_order_table').datagrid('selectRow', index).datagrid('editCell', {
+	            index : index,
+	            field : field
+	        });
+	        configOrderEditIndex = index;  
+	    }
+	} 
+}
+
+</script>
+</body>
+</html>

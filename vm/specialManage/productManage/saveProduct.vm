@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>商品管理</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>
+<div style="width:950px; height:400px; padding: 10px;">
+		<form id="productInfoForm" method="post" enctype="multipart/form-data">
+			<!-- <input name="type" value="$!{productDTO.type}" type="hidden" />  -->
+			<input name="id" type="hidden" value="$!{productDTO.id}"/>
+			<table>
+				<tr>
+					<td>商品名称</td>
+					<td><input type="text" style="border:1px solid #95B8E7;width:300px;" name="name" autoComplete="off" value="$!{productDTO.name}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>所属分类</td> 
+					<td><input class="easyui-combobox" value="$!{productDTO.categoryId}"  name="categoryId"  data-options="valueField:'id',textField:'name',url:'/tjsc/productCategory/getCategoryTree',required:true,editable:false" style="width:300px;"/>
+				  </td>
+				</tr>
+				<tr>
+					<td>商品货号</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:300px;" name="productNo" autoComplete="off" value="$!{productDTO.productNo}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>装箱数量</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:300px;" name="packageNum" autoComplete="off" value="$!{productDTO.packageNum}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>包装尺寸</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:300px;" name="productStandard" autoComplete="off" value="$!{productDTO.productStandard}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>外箱体积</td> 
+					<td><input id="boxStandard" type="text" style="border:1px solid #95B8E7;width:300px;" name="boxStandard" autoComplete="off" value="$!{productDTO.boxStandard}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				<tr>
+					<td>颜色</td> 
+					<td><input onchange="javascript:changeDouHao(this);" type="text" style="border:1px solid #95B8E7;width:300px;" name="color" autoComplete="off" value="$!{productDTO.color}" class="easyui-validatebox" data-options="required:true"></td>
+				</tr>
+				
+				<tr>
+					<td>产品视频</td> 
+					<td>
+<!-- 						<input name="videoFile"  type="file"  style="width:150px" /> -->
+						<input type="text" id="video" style="border:1px solid #95B8E7;width:300px;" name="videoUrl" autoComplete="off" value="$!{productDTO.videoUrl}" class="easyui-validatebox" data-options="required:false">
+						#if($!{productDTO.videoUrl})
+						<a href="$!{productDTO.videoUrl}" target="_blank">[点击查看商品视频]</a>
+						<a href="javascript:void(0)" onclick="deleteVideo('$!{productDTO.id}',this)">[删除商品视频]</a>
+						#end
+					</td>
+				</tr>
+				<tr>
+					<td>轮播图</td> 
+					<td>
+<!-- 						<input   type="button"  value="新增轮播图片" style="width:150px" onclick="addRollImage()" /> -->
+						<table id="RollImagesTable">
+							#foreach($rollImage in ${productDTO.cyclePictureList})
+							<tr>
+								<td>
+									#if($!{rollImage.picture}&&$!{rollImage.picture}!="")
+									<img width="120" src="$!{rollImage.picture}"/>
+									#else
+									<img src='${staticRoot}/jquery-easyui/images/ggx.png'/>
+									#end
+								</td>
+								<td style='width: 85px;'>排序<input class="easyui-validatebox" name='cyclePictureSequence' value="$!{rollImage.sequence}"  type='text'  style='width:50px' data-options="required:true"/></td>
+								<td>
+									#if($!{rollImage.picture}&&$!{rollImage.picture}!="")
+									<a href="$!{rollImage.picture}" target="_blank">[点击查看图片]</a>
+									#end
+									<a href="javascript:void(0)" onclick="deleteCyclePicture(this,$!{rollImage.id})">删除商品图
+								</td>
+								<td>
+									<input name="cyclePictureFiles"  type="file"  style="width:150px" />
+								</td>
+							</tr>
+							#end
+							<tr>
+								<td>
+									<input name='cyclePictureSequence' type="hidden"  style='width:50px'/>
+									批量上传<input name="cyclePictureFiles" type="file" multiple style="width:150px" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>产品详情</td> 
+					<td>
+						<!-- <input   type="button"  value="新产品详情图片" style="width:150px" onclick="addProductImage()" /> -->
+						<table id="productImagesTable">
+							#foreach($rollImage in ${productDTO.pictures})
+							<tr>
+								<td>
+									#if($!{rollImage.picture}&&$!{rollImage.picture}!="")
+									<img width="120" src="$!{rollImage.picture}"/>
+									#else
+									<img src='${staticRoot}/jquery-easyui/images/ggx.png'/>
+									#end
+								</td>
+								<td style='width: 85px;'>排序<input class="easyui-validatebox" name=rollPictureSecquence value="$!{rollImage.sequence}" type='text'  style='width:50px' data-options="required:true"/></td>
+								<td>
+									#if($!{rollImage.picture}&&$!{rollImage.picture}!="")
+									<a href="$!{rollImage.picture}" target="_blank">[点击查看图片]</a>
+									#end
+									<a href="javascript:void(0)" onclick="deleteProductPicture(this,$!{rollImage.id})">删除商品图
+								</td>
+								<td>
+									<input name="rollPictureFiles"  type="file"  style="width:150px" />
+								</td>
+							</tr>
+							#end
+							<tr>
+								<td>
+									<input name='rollPictureSecquence'  type="hidden"  style='width:50px'/>
+									批量上传<input name="rollPictureFiles" type="file" multiple style="width:150px" />
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				
+				
+				<tr>
+					<td>产品缩略图</td> 
+					<td>
+						<input name="mainPictureFile"  type="file"  style="width:150px" />
+						#if($!{productDTO.mainPicture})
+							<a href="$!{productDTO.mainPicture}" target="_blank">[点击查看商品缩略图]</a>
+							<a href="javascript:void(0)" onclick="deleteLogo('$!{productDTO.id}',this)">[删除商品缩略图]</a>
+						#end
+					</td>
+				</tr>
+				
+				<tr>
+					<td>商品标签</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:300px;" name="productTag" autoComplete="off" value="$!{productDTO.productTag}" oninput="javascript:changeDouHao(this);" class="easyui-validatebox" data-options="required:false"></td>
+				</tr>
+				<tr>
+					<td></td>
+	            	<td>
+						<center>
+							<a class="easyui-linkbutton" onclick="doSubmit()">确定</a>
+						</center>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<script>
+	$('#productInfoForm').form('load',{'stockIsMixFight':'$!{productDTO.stockIsMixFight}'});
+	
+	boxStandardFilter();
+	/* 过滤外箱体积小数点后多位 */
+	function boxStandardFilter(){
+		if(!'$!{productDTO.boxStandard}'){return}
+		$('#boxStandard').val( parseFloat('$!{productDTO.boxStandard}').toFixed(2) );
+	}
+	
+	/* 中文逗号转英文 */
+	function changeDouHao(target){
+		var value = target.value;
+		value=value.replace(/，/ig,',');
+		$(target).attr('value',value);
+	} 
+	
+	//添加商品图片
+	function addProductImage(){
+		var tr ="<tr>";
+		tr +="<td><img src='${staticRoot}/jquery-easyui/images/ggx.png'/></td>";
+		tr +="<td style='width: 85px;'>排序<input class='easyui-validatebox' data-options='required:true' name='rollPictureSecquence'  type='text'  style='width:50px'/></td>";
+		tr +="<td><a href='javascript:void(0)' onclick='deleteProductPicture(this,0)'>删除商品图</a></td>";
+		tr +="<td><input name='rollPictureFiles'  type='file'  style='width:150px'/></td>";
+		tr +="</tr>";
+		$("#productImagesTable").append(tr);
+
+	}
+	
+	//添加轮播图片
+	function addRollImage(){
+		var tr ="<tr>";
+		tr +="<td><img src='${staticRoot}/jquery-easyui/images/ggx.png'/></td>";
+		tr +="<td style='width: 85px;'>排序<input class='easyui-validatebox' data-options='required:true' name='cyclePictureSequence'  type='text'  style='width:50px'/></td>";
+		tr +="<td><a href='javascript:void(0)' onclick='deleteCyclePicture(this,0)'>删除商品图</a></td>";
+		tr +="<td><input name='cyclePictureFiles'  type='file' multiple style='width:150px'/></td>";
+		tr +="</tr>";
+		$("#RollImagesTable").append(tr);
+
+	}
+	
+	
+	//删除商品图片
+	function deleteProductPicture(t1,id){
+			if(id==0){
+				$(t1).parent().parent().remove();	
+			}else{
+				$.post("/tjsc/product/deleteRollPicture",{"rollPictureId":id},
+				function (data){
+					if(data=="success"){
+						$(t1).parent().parent().remove();
+					}else{
+						alert(data);
+					}
+				})	
+			}
+	}
+	
+	//删除详情图片
+	function deleteCyclePicture(t1,id){
+			if(id==0){
+				$(t1).parent().parent().remove();	
+			}else{
+				$.post("/tjsc/product/deleteCyclePicture",{"cyclePictureId":id},
+				function (data){
+					if(data=="success"){
+						$(t1).parent().parent().remove();
+					}else{
+						alert(data);
+					}
+				})	
+			}
+	}
+	
+	
+	function doSubmit(){
+		$.messager.progress();
+		$('#productInfoForm').form('submit',{
+			url:"/tjsc/product/save",
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+				}
+				return isValid;	// 返回false终止表单提交
+			},
+			success : function(data) {
+				$.messager.progress('close');
+				if (data == 'success') {
+					parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+					parent.$( '#$!{parentDivId}' ).window('close');		
+				} else {
+					jQuery.messager.alert('Info', data, 'info');
+				}
+			}
+		});
+		
+	}
+	function deleteVideo(id,obj){
+		$.post("/tjsc/product/deleteVideo",{"productId":id},
+			function (data){
+				if(data=="success"){
+					$("#video").val('');
+					$(obj).parent().find("a").remove();	
+				}else{
+					alert(data);
+				}
+		})	
+	}
+	
+	function deleteLogo(id,obj){
+		$.post("/tjsc/product/deleteMainPicture",{"productId":id},
+				function (data){
+					if(data=="success"){
+						$(obj).parent().find("a").remove();	
+					}else{
+						alert(data);
+					}
+			})
+	}
+	</script>
+</body>
+</html>

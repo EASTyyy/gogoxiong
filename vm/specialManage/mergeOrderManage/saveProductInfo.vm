@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>编辑商品</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+	<style type="text/css">
+	</style>
+</head>
+<body>	
+
+<div style="padding: 5px; height: auto;">
+	<form id="specialMergeProductInfoForm" style="text-align: center;" method="post" enctype="multipart/form-data">
+	<input name="id" value="$!{tjscFightOrderProduct.id}" type="hidden" />
+	<input name="productId" value="$!{tjscFightOrderProduct.productId}" type="hidden" />
+		<table style="display: inline-block;text-align:left;">
+			<tr>
+				<td style="text-align: end;">商品名称</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:150px;" name="productName" autoComplete="off" value="$!{tjscFightOrderProduct.productName}"  class="easyui-validatebox" readonly="readonly" data-options="required:true">
+				</td>
+			</tr>
+			<tr id="productType">
+				<td style="text-align: end;">活动分类</td> 
+				<td>
+					#foreach($activityTypes in $!{fightOrderCategoryList})
+						<input type="checkbox" name="fightOrderProductType" value="$!{activityTypes.id}"> $!{activityTypes.name}
+					#end
+<!-- 					<input type="checkbox" name="fightOrderProductType" value="1"> 特价玩具 -->
+<!-- 					<input type="checkbox" name="fightOrderProductType" value="2"> 每日上新 -->
+<!-- 					<input type="checkbox" name="fightOrderProductType" value="4"> n元专区 -->
+<!-- 					<input type="checkbox" name="fightOrderProductType" value="3"> 混拼专场 -->
+			  	</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">是否包邮 </td>
+				<td style="text-align: left;">
+					<input type="radio" name="isFreePost" value="0">是
+					<input type="radio" name="isFreePost" value="1" style="margin-left: 20px;">否
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">混拼与整拼 </td>
+				<td style="text-align: left;">
+					<input type="radio" name="isMixFight" value="0" onclick="radioClick(this)">只能整拼
+					<input type="radio" name="isMixFight" value="1" onclick="radioClick(this)" style="margin-left: 20px;">允许混拼
+					<input type="radio" name="isMixFight" value="2" onclick="radioClick(this)" style="margin-left: 20px;">只能混拼
+				</td>
+			</tr>
+			<tr id="mixedPrice" style="display: none">
+				<td style="text-align: end;">混拼单价</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="mixFightPrice" autoComplete="off" value="$!{tjscFightOrderProduct.mixFightPrice}"  class="easyui-validatebox"type="text" data-options="required:true"> 元 <span style="color:red;margin-left: 10px;">$!{tjscFightOrderProduct.stockMixFightPrice}元</span>
+				</td>
+			</tr>
+			<tr id="wholePrice" style="display: none">
+				<td style="text-align: end;">整拼单价</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="wholeBoxPrice" autoComplete="off" value="$!{tjscFightOrderProduct.wholeBoxPrice}"  class="easyui-validatebox"type="text" data-options="required:true"> 元
+				  <span style="color:red;margin-left: 10px;">$!{tjscFightOrderProduct.stockWholeBoxPrice}元</span>（备注：整批单价为整箱购买时单个的价格）
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">混拼起拼数量</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="mixFightNumThreshold" autoComplete="off" value="$!{tjscFightOrderProduct.mixFightNumThreshold}"  class="easyui-validatebox"type="text" data-options="required:true"> 个
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">积分门槛</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="scoreThreshold" autoComplete="off" value="$!{tjscFightOrderProduct.scoreThreshold}"  class="easyui-validatebox"type="text" data-options="required:true"> 分
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">排序</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="sequence" autoComplete="off" value="$!{tjscFightOrderProduct.sequence}"  class="easyui-validatebox"type="text" data-options="required:true">
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;">限购数量</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:80px;" name="everyOnePurchase" autoComplete="off" value="$!{tjscFightOrderProduct.everyOnePurchase}"  class="easyui-validatebox"type="text" data-options="required:true">个（备注：装箱量为$!{tjscFightOrderProduct.packageNum}请填写装箱量的整数倍，单位为个）
+				</td>
+			</tr>
+			<tr>
+				<td style="text-align: end;color:red;">注：</td>
+				<td style="color:red;">包邮商品不支持混拼</td>
+			</tr>
+		</table>
+	</form>
+	<div style="text-align:center;margin-top: 40px;">
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveMergeProductInfo()">提交</a>
+	</div>
+</div>
+
+<script>
+
+$('#specialMergeProductInfoForm').form('load',{'isFreePost':'$!{tjscFightOrderProduct.isFreePost}','isMixFight':'$!{tjscFightOrderProduct.isMixFight}','fightOrderProductType':'$!{tjscFightOrderProduct.fightOrderProductType}'});
+
+var fightOrderProductType = '$!{tjscFightOrderProduct.fightOrderProductType}';
+
+var fightOrderProductTypeArr = fightOrderProductType.split(',');
+
+if(fightOrderProductTypeArr){
+	fightOrderProductTypeArr.forEach(function(e){
+		$("#productType input[value="+ e +"]").attr('checked',true)
+	});
+}
+
+if('$!{tjscFightOrderProduct.isMixFight}' == 0){
+	$("#wholePrice").css('display','table-row');
+}
+if('$!{tjscFightOrderProduct.isMixFight}' == 1){
+	$("#wholePrice").css('display','table-row');
+	$("#mixedPrice").css('display','table-row');
+}
+if('$!{tjscFightOrderProduct.isMixFight}' == 2){
+	$("#mixedPrice").css('display','table-row');
+}
+
+
+
+function radioClick(target){
+	var val = $(target).val();
+	if( val==0 ){
+		$("#mixedPrice").css('display','none');
+		$("#wholePrice").css('display','table-row');
+	}
+	else if( val==2 ){
+		$("#wholePrice").css('display','none');
+		$("#mixedPrice").css('display','table-row');
+	}
+	else{
+		$("#wholePrice").css('display','table-row');
+		$("#mixedPrice").css('display','table-row');
+	}
+}
+
+function saveMergeProductInfo(){
+	$.messager.progress();
+	$('#specialMergeProductInfoForm').form('submit',{
+		url:"/tjsc/fightOrderProduct/save?packageNum="+"$!{tjscFightOrderProduct.packageNum}",
+		onSubmit: function(){			
+			var isValid = $(this).form('validate');
+			if (!isValid){
+				$.messager.progress('close');	
+			}
+			return isValid;
+		},
+		success : function(data) {
+			$.messager.progress('close');
+			if(data=='success'){
+				parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+				parent.$( '#$!{parentDivId}' ).window('close');
+			}
+			else{
+				alert(data);
+			}
+			
+		},
+		error : function(resp){
+			$.messager.progress('close');
+			alert(resp)
+		} 
+	});
+}
+
+</script>
+
+
+
+</body>
+</html>

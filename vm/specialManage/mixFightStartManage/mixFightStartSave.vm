@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>修改混拼起拼金额</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+	<style type="text/css">
+	</style>
+</head>
+<body>	
+
+<div style="padding: 5px; height: auto;">
+	<form id="mixFightStartInfoForm" style="text-align: center;" method="post" enctype="multipart/form-data">
+		<input name="id" type="hidden" value="$!{tjscMixFightCash.id}"/>
+		<table style="display: inline-block;text-align:left;">
+			<tr>
+				<td style="text-align: end;">混拼起拼金额</td>
+				<td>
+					<input type="text" style="border:1px solid #95B8E7;width:200px;" name="mixFightCash" autoComplete="off" value="$!{tjscMixFightCash.mixFightCash}"  class="easyui-validatebox" type="text" data-options="required:true">
+				</td>
+			</tr>
+		</table>
+	</form>
+	<div style="text-align:center;margin-top: 40px;">
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveMixFightStart()">提交</a>
+	</div>
+</div>
+
+<script>
+
+function saveMixFightStart(){
+	$.messager.progress();
+	$('#mixFightStartInfoForm').form('submit',{
+		url:"/tjsc/mixFightCash/update",
+		onSubmit: function(){			
+			var isValid = $(this).form('validate');
+			if (!isValid){
+				$.messager.progress('close');	
+			}
+			return isValid;
+		},
+		success : function(data) {
+			$.messager.progress('close');
+			if(data == 'success'){
+				parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+				parent.$( '#$!{parentDivId}' ).window('close');
+			}
+			else{
+				alert(data)
+			}
+			
+		},
+		error : function(resp){
+			$.messager.progress('close');
+			alert(resp)
+		} 
+	});
+}
+
+</script>
+
+
+
+</body>
+</html>

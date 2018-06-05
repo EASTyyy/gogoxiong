@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html data-options='fit:true' style="width:100%;height:100%;">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>批量修改</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	
+</head>
+<body style="width:100%;height:100%;">	
+	<div id="select_order_muilt_toolbar">
+		<div style="margin-bottom:5px">
+			<a href="#" onclick="confirmChoose()" class="easyui-linkbutton" iconCls="icon-add" plain="true">确认选择</a>
+		</div>
+		<div>
+			收货人：<input id="receivingName" class="easyui-validatebox" name="productNo" style="width:100px;">
+			电话：<input id="phone" class="easyui-validatebox" name="name" style="width:100px;">
+			<a href="javascript:searchOrder();" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+		</div>
+	</div>
+	<table id="select_order_muilt_form_table" style="heigth:auto;"></table>
+	
+	<!--发货-->
+	<div id="special_order_muilt_send_div" class="easyui-window" title="发货"
+		data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+		style="width:400px; height:600px; padding: 10px;">
+		<iframe src="#" id="special_order_muilt_send_div_ifr" marginwidth="0"
+			marginheight="0" width="100%" height="100%" frameborder="0"
+			scrolling="false" allowtransparency="true"></iframe>
+	</div>
+
+	<script type="text/javascript">
+	//打开库
+	$('#select_order_muilt_form_table').datagrid({   
+		url:'/tjsc/order/sendOutOrderList',
+		toolbar: '#select_order_muilt_toolbar',
+// 		queryParams:{"seckillId":$!{seckillId}},
+		pagination:true,
+		muiltSelect:false,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		columns:[[
+			{field:'id',checkbox:true},
+			{field:'createTime',title:'创建时间',sortable:true},
+			{field:'payTime',title:'付款时间',sortable:true},
+			{field:'orderNo',title:'订单编号'},
+			{field:'totalAmount',title:'订单金额',
+				formatter: function(value,row,index){
+					return "<span style='color:red'>"+value+" 元"+"</span>";
+				}
+			},
+			{field:'name',title:'收货人'},
+			{field:'phone',title:'联系电话'},
+			{field:'address',title:'收货地址'	},
+			{field:'orderStatusStr',title:'订单状态'}
+				
+		]]
+	});
+	
+	//确认选择
+	function confirmChoose(){
+		var selectRows= $("#select_order_muilt_form_table").datagrid("getChecked");
+		if(selectRows==null||selectRows.length<2||typeof(selectRows)=="undefined"){
+    			alert("你TM得选2个以上订单！！！");
+    			return;
+    		}
+	    var selectOrders = "";
+	    for(var i=0;i<selectRows.length;i++){
+	    	var selectRow = selectRows[i];
+	   		selectOrders+=selectRow.id+",";
+	    }
+	    selectOrders=selectOrders.substring(0,selectOrders.length-1);
+	    
+	    $.ajax({
+			        type: "GET",
+			        url: "/tjsc/order/checkUpdateSelectOrders?orderIds="+selectOrders,
+			        async:false,
+			        dataType:'text',
+			        success: function(data){
+			           	if(data == "success"){
+			           		sendOut(selectOrders);
+			           	}
+			           	else{
+			           			$.messager.alert('Info', data, 'info');
+			            }
+			        },
+							error: function(data){
+								$.messager.alert('Info', data, 'info');
+					    }
+			        
+			});
+
+	    
+	    
+	}
+	
+	//发货
+	function sendOut(id){
+		var parentDivId = "special_order_muilt_send_div";
+		var parentTableId = "select_order_muilt_form_table";
+		var url = "/tjsc/order/inputUpdateCombineOrder?orderIds=" + id
+				+ "&parentDivId=" + parentDivId + "&parentTableId="
+				+ parentTableId;
+		$("#special_order_muilt_send_div_ifr").attr('src', url);
+		$("#special_order_muilt_send_div").window("open");
+		
+	}
+	
+	function searchOrder() {
+		$("#select_order_muilt_form_table").datagrid(
+				'reload',
+				{
+					"name" : $("#receivingName").val(),
+					"phone" : $("#phone").val()
+				}
+		);
+	}
+	</script>
+</body>
+</html>

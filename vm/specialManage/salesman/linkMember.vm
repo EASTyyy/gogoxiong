@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>关联会员</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>	
+
+<div id="salesman_linkMember_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="salesmanLinkAddMember(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增关联会员</a>
+			
+	<div>
+		<form>
+			会员ID：<input id="memberId" class="easyui-validatebox" name="memberId" style="width:100px;">
+<!-- 			会员名称：<input id="salesmanLinkMemberName" class="easyui-validatebox" name="name" style="width:100px;">
+			会员电话：<input id="salesmanLinkMemberNo" class="easyui-validatebox" name="phone" style="width:100px;"> -->
+			
+			<a href="javascript:searchSalableProduct();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+	
+</div>
+
+
+<table id="salesman_linkMember_table" style="heigth: auto;"></table>
+
+<!-- 新增关联会员 -->
+<div id="add_salable_product_div" class="easyui-window" title="新增关联会员"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:900px; height:400px; padding: 10px;">
+	<iframe src="#" id="add_salable_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<script>
+
+$('#salesman_linkMember_table').datagrid(
+		{
+			url : '/tjsc/memberRelationForSalesman/memberList',
+			toolbar : '#salesman_linkMember_toolbar',
+			queryParams:{"userId":'$!{userId}',"type":0},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			//remoteSort:true,
+			columns : [ [
+						{
+							field : 'memberId',
+							title : '会员ID'
+						},
+						{
+							field : 'name',
+							title : '用户昵称'
+						},
+						{
+							field : 'phone',
+							title : '联系电话'
+						},
+						{
+							field : 'phoneName',
+							title : '联系人'
+						},
+						{
+							field : 'fullAddress',
+							title : '联系地址'
+						},
+						{
+							field : 'discountsRatio',
+							title : '后台设置优惠比例'
+						},
+						{
+							field : 'baoLongPermissionsStr',
+							title : '是否为暴龙用户'
+						},
+						{
+							field : 'warehouseName',
+							title : '仓库权限'
+						},
+						{
+							field : 'remark',
+							title : '客户名称'
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							formatter : function(value, row, index) {
+								return outPutFunction("specialRemoveMergeOrderProduct", row.id,"删除") ;
+							}
+						}
+					] ]
+});
+
+//新增商品
+function salesmanLinkAddMember(id) {
+	var parentDivId = "add_salable_product_div";
+	var parentTableId = "salesman_linkMember_table";
+	var url = "/tjsc/memberRelationForSalesman/openAddConfigurationMember?userId=" + $!{userId} +"&url=/tjsc/memberRelationForSalesman/save"
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#add_salable_product_div_ifr").attr('src', url);
+	$('#add_salable_product_div').window('open');
+}
+
+//搜索
+function searchSalableProduct() {
+	$("#salesman_linkMember_table").datagrid(
+			'reload',
+			{
+				"memberId" : $("#memberId").val(),
+			/* 	"name" : $("#salesmanLinkMemberName").val(),
+				"phone":$("#salesmanLinkMemberNo").val(), */
+				"userId":'$!{userId}',
+				"type" : 0
+	});
+}
+
+ //删除
+ function specialRemoveMergeOrderProduct(rid) {
+ 	$.messager.confirm('关联会员', "确定要删除吗?", function(r) {
+ 		if (r) {
+ 			jQuery.post("/tjsc/memberRelationForSalesman/delete", {
+ 				"id" : rid,
+ 			}, function(data) {
+ 				if (data == 'success') {
+ 					$("#salesman_linkMember_table").datagrid('reload');
+ 				} else {
+ 					$.messager.alert('Info', data, 'info');
+ 				}
+ 			});
+ 		}
+ 	});
+ }
+	
+	
+	
+</script>
+</body>
+</html>

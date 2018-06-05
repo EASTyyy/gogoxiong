@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<link rel="stylesheet" type="text/css" href="/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="/kindeditor-4.1.7/lang/zh_CN.js"></script>
+	<style>
+	
+	</style>
+</head>
+<body style="padding-top: 0;padding-bottom: 0;">
+
+<div style="width: 850px;height: 350px;margin-bottom: 30px;">
+	<table id="memberOrderTableOrg" style="heigth: auto;"></table>
+</div>	
+
+<div style="width: 850px;height: 350px;">
+	<table id="memberOrderTableDeal" style="heigth: auto;"></table>
+</div>
+
+<div style="text-align:center;padding: 15px">
+	<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="saveOrderSplit()">提交</a>
+</div>
+
+<script>
+$('#memberOrderTableOrg').datagrid({
+	url:'/tjsc/order/getOrderProducts',
+	//toolbar : '#order_split_toolbar',
+	//pageSize:20,
+	pagination : false,
+	singleSelect : true,
+	rownumbers : true,
+	autoRowHeight : true,
+	fitColumns:true,
+	fit:true,
+	queryParams:{"orderId":'$!{orderId}'},
+	onClickCell: onClickConfigOrderCell,
+	onAfterEdit: onAfterEdit,
+	columns : [ [
+		{field:'productName',title:'商品名称',width:160},
+		{field:'productPrice',title:'商品售价',width:80},
+		{field:'productNo',title:'商品编号',width:80},
+		{field:'color',title:'颜色',width:80},
+		{field:'packageNum',title:'装箱量',width:100},
+		{field:'mixFightBuyNum',title:'混拼购买数量*(个)',width:110,editor: 'numberbox'},
+		{field:'havaBuyBox',title:'整箱购买数量*(箱)',width:110,editor: 'numberbox'},
+		{field:'logisticsInformation',title:'指定物流',width:150},
+		{field:'placeOfDispatch',title:'发货地',width:150},
+		{field:'typeOfProductStr',title:'商品所属活动类型',width:150}
+		] ]
+});
+
+$('#memberOrderTableDeal').datagrid({
+	url:'/tjsc/order/separateOrder',
+	//toolbar : '#configOrderSearchFromToolbar',
+	//pageSize:20,
+	pagination : false,
+	singleSelect : true,
+	rownumbers : true,
+	autoRowHeight : true,
+	fitColumns:true,
+	fit:true,
+	//queryParams:{"type":1},
+	columns : [ [
+		{field:'productName',title:'商品名称',width:160},
+		{field:'productPrice',title:'商品售价',width:80},
+		{field:'productNo',title:'商品编号',width:80},
+		{field:'color',title:'颜色',width:80},
+		{field:'packageNum',title:'装箱量',width:100},
+		{field:'mixFightBuyNum',title:'混拼购买数量*(个)',width:110},
+		{field:'havaBuyBox',title:'整箱购买数量*(箱)',width:110},
+		{field:'logisticsInformation',title:'指定物流',width:150},
+		{field:'placeOfDispatch',title:'发货地',width:150},
+		{field:'typeOfProductStr',title:'商品所属活动类型',width:150}
+		] ]
+});
+
+
+//编辑单元格部分
+
+var configOrderEditIndex = undefined;
+
+$.extend($.fn.datagrid.methods, {
+    editCell : function(jq, param) {
+        return jq.each(function() {
+            var opts = $(this).datagrid('options');
+            var fields = $(this).datagrid('getColumnFields', true).concat(
+                    $(this).datagrid('getColumnFields'));
+            for ( var i = 0; i < fields.length; i++) {
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor1 = col.editor;
+                if (fields[i] != param.field) {
+                    col.editor = null;
+                }
+            }
+            $(this).datagrid('beginEdit', param.index);
+            for ( var i = 0; i < fields.length; i++) {
+                var col = $(this).datagrid('getColumnOption', fields[i]);
+                col.editor = col.editor1;
+            }
+        });
+    }
+});
+
+function configOrderEndEditing() {
+    if (configOrderEditIndex == undefined) {
+        return true
+    }
+    if ($('#memberOrderTableOrg').datagrid('validateRow', configOrderEditIndex)) {
+        $('#memberOrderTableOrg').datagrid('endEdit', configOrderEditIndex);
+        configOrderEditIndex = undefined;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//单击单元格 
+function onClickConfigOrderCell(index,field,value) {
+	var rows = $('#memberOrderTableOrg').datagrid('getRows');
+	var row = rows[index];
+	
+	if (configOrderEndEditing()) {
+        $('#memberOrderTableOrg').datagrid('selectRow', index).datagrid('editCell', {
+            index : index,
+            field : field
+        });
+        configOrderEditIndex = index;  
+    }
+}
+
+function onAfterEdit(index, row, changes){
+	var isEmpty = jQuery.isEmptyObject(changes);
+	if(isEmpty){return}
+	//console.log(row)
+	
+	//return;
+	var tableData = getTableData();
+	$.messager.progress();
+	jQuery.post("/tjsc/order/checkSeparate", {
+		"orderProductIds" : tableData.id,
+		"wholeBoxBuyNumStrArr":tableData.havaBuyBox,
+		"mixFightBuyNumArr" : tableData.mixFightBuyNum,
+		"orderId":'$!{orderId}'
+	}, function(data) {
+		$.messager.progress("close");
+		if (data == 'success') {
+			var queryParams = $('#memberOrderTableDeal').datagrid('options').queryParams;  
+	        queryParams.orderProductIds = tableData.id;  
+	        queryParams.wholeBoxBuyNumStrArr = tableData.havaBuyBox;  
+	        queryParams.mixFightBuyNumArr = tableData.mixFightBuyNum;  
+	        queryParams.orderId = '$!{orderId}'; 
+			$("#memberOrderTableDeal").datagrid('reload');
+		} else {
+			$.messager.alert('Info', data, 'info');
+		}
+	});
+}
+
+//提交
+function saveOrderSplit() {
+ 	$.messager.confirm('订单管理', "确定要拆分订单吗?", function(r) {
+ 		if (r) {
+ 			$.messager.progress();
+ 			var tableData = getTableData();
+ 			jQuery.post("/tjsc/order/saveSeparateOrder", {
+ 				"orderProductIds" : tableData.id,
+ 				"wholeBoxBuyNumStrArr":tableData.havaBuyBox,
+ 				"mixFightBuyNumArr" : tableData.mixFightBuyNum,
+ 				"orderId":'$!{orderId}'
+ 			}, function(data) {
+ 				$.messager.progress("close");
+ 				if (data == 'success') {
+ 					parent.$("#$!{parentTableId}").datagrid('reload'); 
+					parent.$("#$!{parentDivId}").window('close');
+ 				} else {
+ 					$.messager.alert('Info', data, 'info');
+ 				}
+ 			});
+ 		}
+ 	});
+}
+
+//获取表格信息
+function getTableData(){
+	var rows = $('#memberOrderTableOrg').datagrid('getRows');
+	var result = {};
+	result.id = '';
+	result.havaBuyBox = '';
+	result.mixFightBuyNum = '';
+	rows.forEach(function(e){
+		result.id+=e.id+',';
+		if(!e.havaBuyBox) {
+			result.havaBuyBox+='null,';
+		} else {
+			result.havaBuyBox+=e.havaBuyBox+',';
+		}
+		if(!e.mixFightBuyNum) {
+			result.mixFightBuyNum+="null,"
+		} else {
+			result.mixFightBuyNum+=e.mixFightBuyNum+',';
+		}
+		
+	});
+	result.id = result.id.substring(0,result.id.length-1);
+	result.havaBuyBox = result.havaBuyBox.substring(0,result.havaBuyBox.length-1);
+	result.mixFightBuyNum = result.mixFightBuyNum.substring(0,result.mixFightBuyNum.length-1);
+	return result;
+}
+
+
+</script>
+
+</body>
+</html>

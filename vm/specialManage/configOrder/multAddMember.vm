@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html data-options='fit:true' style="width:100%;height:100%;">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>选择客户</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	
+</head>
+<body data-options='fit:true' style="width:100%;height:100%;">	
+	<div id="select_member_muilt_toolbar" style="padding:10px;height:auto">
+		<div>
+			<a href="#" style="margin-bottom:10px;" onclick="confirmChoose()" class="easyui-linkbutton" iconCls="icon-add" plain="true">确认选择</a>
+			<form>
+			<!-- 	客户名称：<input id="realName" class="easyui-validatebox" name="name" style="width:100px;">
+				用户昵称：<input id="name" class="easyui-validatebox" name="productNo" style="width:100px;"> -->
+				用户ID：<input id="memberId" class="easyui-validatebox" name="name" style="width:100px;">
+				<a href="javascript:searchMember();" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+			</form>
+		</div>
+	</div>
+	<table id="select_member_muilt_form_table" style="heigth:auto;"></table>
+	
+	<script type="text/javascript">
+	
+	//打开用户库
+	$('#select_member_muilt_form_table').datagrid({   
+		url:'/tjsc/salesmanBatchOrder/memberList',   
+		toolbar: '#select_member_muilt_toolbar',
+		// queryParams:{"activityType":'$!{activityType}', "memberId" : '$!{memberId}',"fightOrderModel":"whole"}, 
+		pagination:true,
+		muiltSelect:false,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		pageList: [20,50,100,200,500,1000],
+		columns:[[   
+			{
+				field : 'id',
+				checkbox:true
+			},
+			{
+				field : 'memberId',
+				title : '会员ID'
+			},
+			{
+				field : 'remark',
+				title : '客户名称'
+			},
+			{
+				field : 'name',
+				title : '用户昵称'
+			},
+			{
+				field : 'phone',
+				title : '联系电话'
+			},
+			{
+				field : 'phoneName',
+				title : '联系人'
+			},
+			{
+				field : 'fullAddress',
+				title : '联系地址'
+			},
+			{
+				field : 'discountsRatio',
+				title : '后台设置优惠比例'
+			},
+			{
+				field : 'baoLongPermissionsStr',
+				title : '是否为暴龙用户'
+			},
+			{
+				field : 'warehouseName',
+				title : '仓库权限'
+			}
+			
+		]]
+	});
+	
+	 function confirmChoose(){
+		 var ids = "";
+		 var selectRows= $("#select_member_muilt_form_table").datagrid("getChecked");
+		 if(selectRows==null||selectRows.length==0||typeof(selectRows)=="undefined"){
+    			alert("至少选择一个用户");
+    			return;
+    	 }
+		 
+		 $.messager.confirm('配置订货单', "确定要添加这些用户吗?", function(r) {
+	 		if (r) {
+	 			for(var i=0;i<selectRows.length;i++){
+	 		    	var selectRow = selectRows[i];
+	 		   		ids+=selectRow.id+",";
+	 		    }
+	 		    
+	 		    ids=ids.substring(0,ids.length-1);
+	 		    	$.post("$!{url}",{"memberRelationForSalesmanIdList" : ids},function(data){
+	 		   	 		if(data!='success'){
+	 		   	 			alert(data);
+	 		   	 		}else{
+	 		   	 			parent.$("#$!{parentTableId}").datagrid('reload'); 
+	 						parent.$("#$!{parentDivId}").window('close');						
+	 		   	 		}
+	 		   	 },'text')
+	 		}
+	 	});
+	    
+	    
+	} 
+	
+	function searchMember() {
+		$("#select_member_muilt_form_table").datagrid(
+				'reload',
+				{
+					"memberId": $("#memberId").val()
+					
+		});
+	}
+	</script>
+</body>
+</html>

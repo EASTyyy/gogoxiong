@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>配置商品</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>	
+
+<div id="salable_config_product_toolbar" style="margin-bottom: 5px">
+	<a href="#" onclick="salableAddProduct(0)" class="easyui-linkbutton"
+		iconCls="icon-add" plain="true">新增商品</a>
+			
+	<div>
+		<form id="salableProductForm">
+			商品分类：<select id="salableProductClassify" name="categoryId"
+				class="easyui-combobox" style="width: 150px;"
+				data-options="	valueField:'id',
+								textField:'name',
+								url:'/tjsc/productCategory/getCategoryTree',required:false"></select>
+			商品名称：<input id="salableProductName" class="easyui-validatebox" name="name" style="width:100px;">
+			商品货号：<input id="salableProductNo" class="easyui-validatebox" name="productNo" style="width:100px;">
+			
+			<a href="javascript:searchSalableProduct();" class="easyui-linkbutton"
+				iconCls="icon-search">搜索</a>
+		</form>
+	</div>
+	
+</div>
+
+
+<table id="salable_product_table" style="heigth: auto;"></table>
+
+<!-- 新增商品 -->
+<div id="add_salable_product_div" class="easyui-window" title="新增商品"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:true"
+	style="width:900px; height:400px; padding: 10px;">
+	<iframe src="#" id="add_salable_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 编辑排序-->
+<div id="salable_product_sort_div" class="easyui-window" title="编辑排序"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:600px; height:400px; padding: 10px;">
+	<iframe src="#" id="salable_product_sort_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+
+<!-- 分仓管理-->
+<div id="salable_warehouse_product_div" class="easyui-window" title="分仓管理"
+	data-options="modal:true,closed:true,collapsible:false,minimizable:false,maximizable:false"
+	style="width:1100px; height:600px; padding: 10px;">
+	<iframe src="#" id="salable_warehouse_product_div_ifr" marginwidth="0"
+		marginheight="0" width="100%" height="100%" frameborder="0"
+		scrolling="false" allowtransparency="true"></iframe>
+</div>
+<script>
+
+$('#salable_product_table').datagrid(
+		{
+			url : '/tjsc/cxProduct/list',
+			toolbar : '#salable_config_product_toolbar',
+			queryParams:{"tjscCXActivityId":$!{tjscCXActivityId}},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			remoteSort:true,
+			columns : [ [
+						{
+							field : 'name',
+							title : '商品名称'
+						},
+						{
+							field : 'productNo',
+							title : '商品货号',
+							sortable : true
+						},
+						{field:'categoryName',title:'所属分类',sortable : true},
+						{field:'packageNum',title:'装箱数量',sortable : true},
+						{field:'productStandard',title:'包装尺寸',sortable : true},
+						{field:'productTag',title:'商品标签',sortable : true},
+						{
+							field : 'cxProductSequence',
+							title : '排序',
+							sortable : true
+						},
+						{
+							field : 'operate',
+							title : '操作',
+							formatter : function(value, row, index) {
+								return outPutFunction("salableSaveProduct", row.id,"配置信息") + outPutFunction("salableWarehouseManage",row.id, "分仓管理");
+							}
+						}
+					] ]
+});
+
+//新增商品
+function salableAddProduct(id) {
+	var parentDivId = "add_salable_product_div";
+	var parentTableId = "salable_product_table";
+	var url = "/tjsc/cxProduct/openAdd?tjscCXActivityId=" + $!{tjscCXActivityId} +"&url=/tjsc/cxProduct/cxProduct/save"
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#add_salable_product_div_ifr").attr('src', url);
+	$('#add_salable_product_div').window('open');
+}
+
+//编辑排序
+function salableSaveProduct(productId) {
+	var parentDivId = "salable_product_sort_div";
+	var parentTableId = "salable_product_table";
+	var url = "/tjsc/cxProduct/inputSequence?productId=" + productId +"&tjscCXActivityId=" + $!{tjscCXActivityId}
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#salable_product_sort_div_ifr").attr('src', url);
+	$('#salable_product_sort_div').window('open');
+}
+
+//分仓管理
+function salableWarehouseManage(productId) {
+	var parentDivId = "salable_warehouse_product_div";
+	var parentTableId = "salable_product_table";
+	var url = "/tjsc/cxProduct/accordingWarehouseManage?productId=" + productId +"&tjscCXActivityId=" + $!{tjscCXActivityId}
+			+ "&parentDivId=" + parentDivId + "&parentTableId="
+			+ parentTableId;
+	$("#salable_warehouse_product_div_ifr").attr('src', url);
+	$('#salable_warehouse_product_div').window('open');
+}
+
+//搜索
+function searchSalableProduct() {
+	$("#salable_product_table").datagrid(
+			'reload',
+			{
+				"categoryId" : $("#salableProductClassify").combotree("getValue"),
+				"name" : $("#salableProductName").val(),
+				"productNo":$("#salableProductNo").val(),
+				"tjscCXActivityId":'$!{tjscCXActivityId}'
+	});
+}
+
+// //删除
+// function specialRemoveMergeOrderProduct(rid) {
+// 	$.messager.confirm('商品管理3', "确定要删除吗?", function(r) {
+// 		if (r) {
+// 			jQuery.post("/tjsc/fightOrderProduct/delete", {
+// 				"tjscFightOrderProductId" : rid,
+// 				"fightOrderId" : $!{fightOrderId}
+// 			}, function(data) {
+// 				if (data == 'success') {
+// 					$("#salable_product_table").datagrid('reload');
+// 				} else {
+// 					$.messager.alert('Info', data, 'info');
+// 				}
+// 			});
+// 		}
+// 	});
+// }
+	
+	
+	
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>商品管理</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>
+<div>
+		<form id="productInfoForm" method="post" enctype="multipart/form-data">
+			<input name="warehouseProductId" type="hidden" value="$!{warehouseProductId}"/>
+			<table>
+				<tr>
+					<td>整拼库存</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:100px;" value="0" name="wholeBoxNum" autoComplete="off"  class="easyui-validatebox" data-options="required:true">箱 <span style="color:red;">(例：6代表增加6；-6代表减少6)</span></td>
+				</tr>
+				<tr>
+					<td>混拼库存</td> 
+					<td><input type="text" style="border:1px solid #95B8E7;width:100px;" value="0" name="mixFightNum" autoComplete="off"  class="easyui-validatebox" data-options="required:true">个 <span style="color:red;">(例：6代表增加6；-6代表减少6)</span></td>
+				</tr>
+				<tr>
+					<td></td>
+	            	<td>
+						<center>
+							<a href="javascript:void(0)" class="easyui-linkbutton" onclick="doSubmit()">确定</a>
+						</center>
+	           		</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<script>
+	
+	function doSubmit(){
+		$.messager.progress();
+		$('#productInfoForm').form('submit',{
+			url:"/tjsc/wareHouseProduct/addOrSubtractionInventory",
+			onSubmit: function(){
+				var isValid = $(this).form('validate');
+				if (!isValid){
+					$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+				}
+				return isValid;	// 返回false终止表单提交
+			},
+			success : function(data) {
+				$.messager.progress('close');
+				if (data == 'success') {
+					parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+					parent.$( '#$!{parentDivId}' ).window('close');		
+				} else {
+					jQuery.messager.alert('Info', data, 'info');
+				}
+			}
+		});
+		
+	}
+	
+	</script>
+</body>
+</html>

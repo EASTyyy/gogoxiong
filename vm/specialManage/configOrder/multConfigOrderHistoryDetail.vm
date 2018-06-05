@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>批量配置订货单</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body style="padding-top: 0;padding-bottom: 0;">	
+
+<div style="width: 100%;height: 350px;margin-bottom: 10px;margin-top: 15px;">
+	<table id="member_order_table" style="heigth: auto;"></table>
+</div>
+
+<div style="width: 100%;height: 350px;">
+	<table id="member_table" style="heigth: auto;"></table>
+</div>
+
+<script>
+
+$('#member_order_table').datagrid(
+		{
+			url : '/tjsc/salesmanBatchOrderHistory/productDetailList',
+			//toolbar : '#multiple_configOrder_toolbar',
+			queryParams:{"id":'$!{historyId}'},
+			pagination : false,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			columns : [ [
+						{
+							field : 'warehouseName',
+							title : '仓库'
+						},
+						{
+							field : 'productName',
+							title : '商品名称'
+						},
+						{
+							field : 'productNo',
+							title : '商品货号'
+						},
+						{
+							field : 'packageNum',
+							title : '装箱数量',
+						},
+						{
+							field : 'productStandard',
+							title : '产品规格'
+						},
+						{
+							field : 'boxStandard',
+							title : '外箱体积',
+						},
+						{
+							field : 'color',
+							title : '颜色',
+						},
+						{
+							field : 'stockWholeBoxPrice',
+							title : '整拼单价',
+						},
+						{
+							field : 'stockMixFightPrice',
+							title : '混拼单价',
+						},
+						{
+							field : 'isMixFightStr',
+							title : '是否可混拼',
+						},
+						{
+							field : 'mixFightNumThreshold',
+							title : '混拼起拼量*个',
+						},
+						{
+							field : 'isPurchaseStr',
+							title : '是否限购',
+						},
+						{
+							field : 'everyOnePurchase',
+							title : '每人限购量*个',
+						},
+						{
+							field : 'isBaoLongSeriesStr',
+							title : '暴龙',
+						},
+						{
+							field : 'activityType',
+							title : '活动分类',
+						},
+						{
+							field : 'totalWholeBoxHaveBuyNumStr',
+							title : '整拼购买总量*箱'
+						},
+						{
+							field : 'everyOneWholeBoxHaveBuyNumStr',
+							title : '整拼购买单量*箱'
+						},
+						{
+							field : 'mixFightHaveBuyNum',
+							title : '混拼购买总量*个'
+						},
+						{
+							field : 'evertOneMixHaveBuyNumStr',
+							title : '混拼购买单量*个'
+						},
+					] ]
+});
+
+$('#member_table').datagrid(
+		{
+			url : '/tjsc/salesmanBatchOrderHistory/memberDetailList',
+			//toolbar : '#multiple_configOrder_toolbar',
+			queryParams:{"id":'$!{historyId}'},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			columns : [ [
+						{
+							field : 'memberId',
+							title : '会员ID'
+						},
+						{
+							field : 'remark',
+							title : '客户名称'
+						},
+						{
+							field : 'name',
+							title : '用户昵称'
+						},
+						{
+							field : 'phone',
+							title : '联系电话'
+						},
+						{
+							field : 'phoneName',
+							title : '联系人'
+						},
+						{
+							field : 'fullAddress',
+							title : '联系地址'
+						},
+						{
+							field : 'discountsRatio',
+							title : '后台设置优惠比例'
+						},
+						{
+							field : 'baoLongPermissionsStr',
+							title : '是否为暴龙用户'
+						},
+						{
+							field : 'warehouseName',
+							title : '仓库权限'
+						}
+					] ]
+});
+
+
+</script>
+</body>
+</html>

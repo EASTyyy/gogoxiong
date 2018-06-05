@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>仓库</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+	<style type="text/css">
+		.submit{
+			font-size:14px;
+			border: 1px solid black;
+			padding: 10px 20px;
+		}
+		.submit:hover{
+			color:red;
+			cursor:pointer;
+		}
+		#Form td{
+			margin-right: 5px;
+    		display: initial;
+		}
+	</style>
+</head>
+<body>	
+
+<div style="padding: 5px; height: auto;">
+	<form id="Form" style="text-align: center;" method="post" enctype="multipart/form-data">
+ 	<input name="memberId" type="hidden" value="$!{memberConfiguration.id}"/> 
+		<table style="display: inline-block;text-align:end;">
+			<tr>
+				<tr class="warehouse">
+				#foreach($!{warehouse} in $!{warehouseList})
+				<td>
+					<input type="checkbox" name="warehouseIds" value="$!{warehouse.id}">$!{warehouse.name}
+				</td>
+				#end
+				</tr>
+				<tr style="text-align: center;">
+					<td>所享折扣：</td>
+					<td><input type="text" style="border:1px solid #95B8E7;width:100px;" name="discountsRatio" autoComplete="off" value="$!{memberConfiguration.discountsRatio}" class="easyui-validatebox" data-options="required:true">(如：0.8即享8折优惠)</td>
+				</tr>
+				<tr style="text-align: left;">
+					<td>
+						是否为暴龙用户:  是<input type="radio" value="0" name="baoLongPermissions">  否<input type="radio" checked="checked" value="1" name="baoLongPermissions">
+					</td>
+				</tr>
+			</tr>
+		</table>
+	</form>
+	<div style="text-align:center;margin-top: 40px;">
+		<a class="easyui-linkbutton" data-options="iconCls:'icon-save'" onclick="save()">提交</a>
+	</div>
+</div>
+
+<script>
+
+ var arr = '$!{memberWarehousePermissionsList}';
+
+eval('warehouseArr = ' + arr);
+$('#Form').form('load',{'baoLongPermissions':'$!{memberConfiguration.baoLongPermissions}'});
+checkWarehouse();
+
+function checkWarehouse(){
+	warehouseArr.forEach(function(e){
+		$('#Form .warehouse input[value='+ e +']').attr('checked','checked');
+	})
+}
+
+function save(){
+	$.messager.progress();
+	$('#Form').form('submit',{
+		url:"/xlcl/member/saveMemberWarehousePermissions",
+		onSubmit: function(){			
+			var isValid = $(this).form('validate');
+			if (!isValid){
+				$.messager.progress('close');	// 如果表单是无效的则隐藏进度条
+			}
+			return isValid;	// 返回false终止表单提交
+		},
+		success : function(data) {
+			$.messager.progress('close');
+			parent.$( '#$!{parentTableId}' ).datagrid('reload'); 
+			parent.$( '#$!{parentDivId}' ).window('close');
+		},
+		error : function(resp){
+			$.messager.progress('close');
+			alert(resp)
+		} 
+	});
+}
+
+</script>
+
+</body>
+</html>

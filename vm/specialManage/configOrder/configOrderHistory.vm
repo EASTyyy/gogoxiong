@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>配置订货单</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	<link rel="stylesheet" href="${staticRoot}/kindeditor-4.1.7/themes/default/default.css" />
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/kindeditor-min.js"></script>
+	<script charset="utf-8" src="${staticRoot}/kindeditor-4.1.7/lang/zh_CN.js"></script>
+</head>
+<body>	
+
+<div id="order_history_toolbar" style="padding: 15px">历史记录</div>
+
+<table id="member_order_history_table" style="heigth: auto;"></table>
+
+<script>
+
+$('#member_order_history_table').datagrid(
+		{
+			url : '/tjsc/salesmanOrder/history',
+			toolbar : '#order_history_toolbar',
+			queryParams:{"memberId":'$!{memberId}'},
+			pagination : true,
+			singleSelect : true,
+			rownumbers : true,
+			autoRowHeight : true,
+			fitColumns:true,
+			fit:true,
+			columns : [ [
+						{
+							field : 'warehouseName',
+							title : '仓库'
+						},
+						{
+							field : 'productName',
+							title : '商品名称'
+						},
+						{
+							field : 'productNo',
+							title : '商品货号'
+						},
+						{
+							field : 'packageNum',
+							title : '装箱数量',
+						},
+						{
+							field : 'productStandard',
+							title : '产品规格'
+						},
+						{
+							field : 'boxStandard',
+							title : '外箱体积',
+						},
+						{
+							field : 'color',
+							title : '颜色',
+						},
+						{
+							field : 'stockWholeBoxPrice',
+							title : '整拼单价',
+						},
+						{
+							field : 'stockMixFightPrice',
+							title : '混拼单价',
+						},
+						{
+							field : 'factoryPrice',
+							title : '出厂单价',
+						},
+						{
+							field : 'wholeboxBuyNumStr',
+							title : '整拼购买量*箱',
+						},
+						{
+							field : 'mixFightBuyNum',
+							title : '混拼购买量*个',
+						},
+						{
+							field : 'activityType',
+							title : '活动分类',
+						},
+						{
+							field : 'createTime',
+							title : '创建时间',
+						}
+					] ]
+});
+
+</script>
+</body>
+</html>

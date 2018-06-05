@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html data-options='fit:true' style="width:100%;height:100%;">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="pragma" Content="no-cache">
+	<meta http-equiv="Cache-Control" Content="no-cache, must-revalidate,no-store">
+	<meta http-equiv="Expires" Content="0">
+	<title>选择商品</title>
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="${staticRoot}/jquery-easyui/demo/demo.css">
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/myself-easyui-tools.js"></script>
+	<script type="text/javascript" src="${staticRoot}/jquery-easyui/locale/easyui-lang-zh_CN.js"></script>
+	
+</head>
+<body data-options='fit:true' style="width:100%;height:100%;">	
+	<div id="select_product_muilt_toolbar" style="padding:5px;height:auto">
+		<div style="margin-bottom:5px">
+			添加至<select id="addType" class="easyui-combobox" name="productTag" style="width: 100px;">
+<!-- 				<option value="1">特价玩具</option> -->
+<!-- 				<option value="2">每日上新</option> -->
+<!-- 				<option value="4">5元专区</option> -->
+				#foreach($activityTypes in $!{fightOrderCategoryList})
+					<option value="$!{activityTypes.id}">$!{activityTypes.name}</option>
+				#end
+			</select>
+			<a href="#" onclick="confirmChoose()" class="easyui-linkbutton" iconCls="icon-add" plain="true">确认选择</a>
+		</div> 
+		<div>
+			<form id="select_product_muilt_toolbar_queryForm">
+				商品分类：<select id="productClassify" name="categoryId"
+				class="easyui-combobox" style="width: 100px;"
+				data-options="	valueField:'id',
+								textField:'name',
+								url:'/tjsc/productCategory/getCategoryTree',required:false"></select>
+				商品标签：<input id="productTag" class="easyui-validatebox" name="productTag" style="width:100px;">
+				商品名称：<input id="productName" class="easyui-validatebox" name="name" style="width:100px;">
+				商品货号：<input id="productNo" class="easyui-validatebox" name="productNo" style="width:100px;">
+				<a href="javascript:searchProduct();" class="easyui-linkbutton" iconCls="icon-search">搜索</a>
+			</form>
+		</div>
+	</div>
+	<table id="select_product_muilt_form_table" style="heigth:auto;"></table>
+	
+	<script type="text/javascript">
+	
+	//打开商品库
+	$('#select_product_muilt_form_table').datagrid({   
+		url:'/tjsc/fightOrderProduct/addFightOrderProduct/list',   
+		toolbar: '#select_product_muilt_toolbar',
+		queryParams:{"fightOrderId":$!{fightOrderId}},
+		pagination:true,
+		muiltSelect:false,
+		//checkbox:true,
+		rownumbers:true,
+		autoRowHeight:true,
+		fitColumns:true,
+		fit:true,
+		columns:[[   
+		        {field:'id',checkbox:true},
+				{field:'name',title:'商品名称',sortable : true,width:200},
+				{field:'categoryName',title:'所属分类',sortable : true,width:100},
+				{field:'productNo',title:'产品货号',sortable : true,width:100},
+				{field:'packageNum',title:'装箱数量',sortable : true,width:100},
+				{field:'productStandard',title:'包装尺寸',sortable : true,width:100},
+				{field:'productTag',title:'商品标签',sortable : true,width:100},
+				{field:'totalWholeBoxSurplusStockNumStr',title:'整拼剩余库存*箱',width:130},
+				{field:'totalMixFightSurplusStockNum',title:'混拼剩余库存*个',width:130}
+		]]
+	});
+	
+	
+	function confirmChoose(){
+		
+		var selectRows= $("#select_product_muilt_form_table").datagrid("getChecked");
+		if(selectRows==null||selectRows.length==0||typeof(selectRows)=="undefined"){
+    			alert("至少选择一个商品");
+    			return;
+    		}
+	    var productIds = "";
+	    var addType = $("#addType").combotree("getValue");
+	    for(var i=0;i<selectRows.length;i++){
+	    	var selectRow = selectRows[i];
+	   		productIds+=selectRow.id+",";
+	    }
+	    
+	    productIds=productIds.substring(0,productIds.length-1);
+		$.post("$!{url}",{"productIds":productIds,"fightOrderId":$!{fightOrderId},"fightOrderProductType":addType},function(data){
+	   	 		if(data!='success'){
+	   	 			alert(data);
+	   	 		}else{
+	   	 			parent.$("#$!{parentTableId}").datagrid('reload'); 
+					parent.$("#$!{parentDivId}").window('close');						
+	   	 		}
+	   	 },'text')
+	}
+	
+	function searchProduct() {
+		$("#select_product_muilt_form_table").datagrid(
+				'reload',
+				{
+					"categoryId" : $("#productClassify").combotree("getValue"),
+					"productTag" : $("#productTag").val(),
+					"name" : $("#productName").val(),
+					"productNo":$("#productNo").val(),
+					"fightOrderId":'$!{fightOrderId}'
+		});
+	}
+	</script>
+</body>
+</html>
