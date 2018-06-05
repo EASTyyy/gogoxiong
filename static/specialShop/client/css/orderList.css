@@ -1,0 +1,176 @@
+
+/* 顶部tab */
+#topTab{
+	width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: white;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+}
+
+#topTab>div{
+	float: left;
+    width: 25%;
+    text-align: center;
+    position: relative;
+}
+
+#topTab>div.avtive{
+    border-bottom: 2px solid #00A29A;
+}
+
+#topTab>div:last-child>span{
+	border-right: none;
+}
+
+#topTab>div>span{
+	display: inline-block;
+    margin: 8px 0;
+    line-height: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    border-right: 1px solid #EEEEEE;
+}
+
+#topTab>div>em{
+	display: block;
+	font-style: normal;
+    font-size: 12px;
+    position: absolute;
+    background: red;
+    color: white;
+    padding: 0 4px;
+    border-radius: 10px;
+    line-height: 16px;
+    top: 2px;
+    left: 70%;
+    min-width: 8px;
+}
+
+/* 订单列表 */
+#orderList{
+	margin-top: 52px;
+}
+
+#orderList>li{
+	width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: white;
+    margin-top: 10px;
+    padding: 0 24px;
+    padding-bottom: 10px;
+}
+
+#orderList>li>p{
+	border-bottom: 1px solid #EEEEEE;
+    line-height: 35px;
+    font-size: 12px;
+}
+
+#orderList>li>p>span{
+	float: right;
+    color: #00A29A;
+}
+
+#orderList>li .productList{
+	width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    border-bottom: 1px solid #EEEEEE;
+    position: relative;
+    margin-top: 15px;
+    padding-bottom: 15px;
+}
+
+#orderList>li .productList:last-child{
+    border-bottom: none;
+}
+
+#orderList>li .productList .productImg{
+    width: 60px;
+    height: 60px;
+    border: 1px solid #00A29A;
+    float: left;
+    overflow: hidden;
+    box-sizing: border-box;
+    margin-top: 11px;
+    position: relative;
+}
+
+#orderList>li .productList .productImg img{
+	height: 58px;
+	position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -webkit-transform: translate(-50%,-50%);
+}
+
+#orderList>li .productList .productInfo{
+	float: left;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+#orderList>li .productList .productInfo>h3{
+	font-weight: 200;
+    font-size: 13px;
+}
+
+#orderList>li .productList .productInfo>p{
+	color: #898989;
+}
+
+#orderList>li .productList .rightNumber{
+    text-align: right;
+    color: #c30e23;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+#orderList>li .productList .rightNumber h3{
+    font-weight: 200;
+    font-size: 14px;
+}
+
+#orderList>li .productList .rightNumber p{
+	font-size: 12px;
+}
+
+#orderList>li .totalInfo{
+	text-align: right;
+}
+
+#orderList>li .totalInfo>p{
+	line-height: 30px;
+   	font-size: 12px;	
+}
+
+#orderList>li .totalInfo>p .createTime{
+	float: left;
+}
+
+#orderList>li .totalInfo .btnContainer{
+    padding-right: 0;
+}
+
+#orderList>li .totalInfo .btnContainer>a{
+	display: inline-block;
+    background: #00A29A;
+    color: white;
+    padding: 5px 12px;
+    font-size: 12px;
+    margin-left: 5px;
+}
+
+#orderList>li .totalInfo .btnContainer>a.delet{
+    background: white;
+    color: #a7a09d;
+    padding: 4px 11px;
+    border: 1px solid #a7a09d;
+}
+

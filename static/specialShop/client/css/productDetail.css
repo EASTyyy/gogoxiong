@@ -1,0 +1,607 @@
+/* 杞挱鍥� */
+#slider li img{
+	width: 100%;
+}
+
+#slider .swiper-pagination .swiper-pagination-bullet{
+	width: 0.14rem;
+	height: 0.14rem;
+}
+
+#slider .swiper-pagination .swiper-pagination-bullet-active{
+	width: 0.14rem;
+	height: 0.14rem;
+	background: #0ba29b;
+}
+
+/* 鍟嗗搧鍒嗙被鏍囩 */
+.tag{
+	overflow: hidden;
+    height: 32px;
+    line-height: 32px;
+    color: white;
+}
+
+.tag .left{
+	float: left;
+    height: inherit;
+    font-size: 14px;
+    margin-left: 0.26rem;
+}
+
+.tag .right{
+	float: right;
+    height: inherit;
+    font-size: 12px;
+    margin-right: 0.26rem;
+}
+
+#zhongchou{
+	background: #c30d23;
+	
+}
+
+#tejia{
+	background: #0ba29b;
+}
+
+#xinpin{
+	background: #e98979;
+}
+
+#zhuanchang{
+	background: #eb5312;
+}
+
+
+
+#miaosha{
+	background: #8ec21f;
+}
+
+/* 浠锋牸鍙婂簱瀛� */
+#priceBox{
+	overflow: hidden;
+    padding: 8px 0;
+    background: white;
+    margin-top: 9px;
+    position: relative;
+}
+
+#priceBox .left{
+	float: left;
+    width: 70%;
+    box-sizing: border-box;
+    padding-left: 0.30rem;
+    border-right: 1px solid #b8b8b8;
+}
+
+#priceBox .left>h3{
+	font-weight: normal;
+    font-size: 18px;
+    margin-top: 8px;
+}
+
+#priceBox .left>p{
+	font-size: 31px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#priceBox .left>p>b{
+	font-size: 18px;
+	position: relative;
+    /* top: -7px; */
+}
+
+#priceBox .left>p>i{
+	font-style: normal;
+}
+
+#priceBox .left>p>span{
+    font-size: 12px;
+    font-weight: normal;
+    color: #4a4a4a;
+    margin-left: 9px;
+    position: relative;
+    top: -3px;
+}
+
+#priceBox .right{
+    width: 30%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 12px;
+    color: #4a4a4a;
+    line-height: 20px;
+    padding-left: 10px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#priceBox .right>div{
+    overflow: hidden;
+}
+
+#priceBox .right>div .type{
+    float: left;
+}
+
+#priceBox .right>div .priceBox{
+    overflow: hidden;
+    text-align: left;
+}
+
+#priceBox .right p{
+    display: inline;
+}
+
+#priceBox .right p>span{
+	color: #04a595;
+}
+
+/* 鍟嗗搧鏍囩 */
+#flag{
+	overflow: hidden;
+    background: white;
+    margin-top: 4px;
+    padding: 5px 0;
+    font-size: 12px;
+    color: #505050;
+    padding-left: 0.25rem;
+}
+
+#flag>div{
+	float: left;
+    padding: 0 6px;
+    border-right: 1px solid #505050;
+    background: #0ba29b;
+    color: white;
+    border-radius: 3px;
+}
+
+#flag>div:last-child{
+	border-right: none;
+}
+
+/* 鍟嗗搧淇℃伅 */
+#productInfo{
+	overflow: hidden;
+    background: white;
+    margin-top: 4px;
+    padding: 10px 0;
+}
+
+#productInfo .left{
+	padding-left: 0.3rem;
+}
+
+#productInfo>div{
+	float: left;
+    width: 50%;
+    font-size: 12px;
+    line-height: 24px;
+    box-sizing: border-box;
+}
+
+#productInfo>div>p>.color{
+    color: #07a1a1;
+    font-weight: bold;
+}
+
+/* 鎻愮ず璇� */
+#tips{
+	font-size: 12px;
+    line-height: 20px;
+    background: white;
+    margin-top: 9px;
+    padding: 0.12rem 0.30rem;
+}
+
+#tips li{
+	font-weight: bold;
+}
+
+/* 鍟嗗搧浠嬬粛銆佹嫾鍗曡褰曘�佸鏈嶄腑蹇� tab  */
+#tab{
+	overflow: hidden;
+    background: #0ba29b;
+    color: white;
+    font-size: 14px;
+    line-height: 34px;
+    padding: 2px;
+    margin-top: 9px;
+    margin-bottom: 2px;
+}
+
+#tab div{
+	float: left;
+    width: 33.3%;
+    text-align: center;
+}
+#tab div.active{
+	background: white;
+    color: #0ba29b;
+}
+
+/* tab鍐呭閮ㄥ垎 */
+#tabContentContainer{
+	width: 100%;
+    overflow: hidden;
+    padding-bottom: 60px;
+}
+
+#tabContentContainer .productDescription{
+    width: 100%;
+    overflow: hidden;
+    background: white;
+}
+
+#tabContentContainer .productDescription img{
+	width: 100%;
+	vertical-align: top;
+	margin-bottom: 6px;
+}
+
+#tabContentContainer .recording{
+	overflow: hidden;
+    width: 100%;
+    padding: 0 25px;
+    background: white;
+    box-sizing: border-box;
+}
+
+#tabContentContainer .recording li{
+	overflow: hidden;
+    font-size: 12px;
+    color: #7e7e7e;
+    line-height: 30px;
+    border-bottom: 1px solid #dadada;
+    position: relative;
+}
+
+#tabContentContainer .recording li:last-child{
+	border-bottom: none;
+}
+
+#tabContentContainer .recording li div{
+	float: left;
+}
+
+#tabContentContainer .recording li div:last-child{
+	float: right;
+}
+
+#tabContentContainer .recording li .center{
+	position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+/* 搴曢儴鎸夐挳 */
+#bottom{
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    height: 50px;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+}
+
+#bottom>a{
+	float: left;
+	height: 100%;
+    width: 13.33%;
+    background: white;
+    font-size: 12px;
+    color: #4a4a4a;
+    box-sizing: border-box;
+    border-right: 1px solid #e3e3e3;
+}
+
+#bottom>a>img{
+    width: 23px;
+    margin-top: 8px;
+}
+
+#bottom>div{
+    float: right;
+    height: 100%;
+    width: 60%;
+    line-height: 50px;
+    color: white;
+    font-size: 18px;
+}
+
+#bottom>div.addCar{
+	background: #0ba29b;
+}
+
+#bottom>div.buyNow{
+	background: #c30d23;
+}
+
+#bottom>div.gray{
+	background: #9f9f9f;
+}
+
+/* 搴曢儴寮瑰嚭妗� */
+#confirmBox{
+	display: none;
+	width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    z-index: 99;
+}
+
+#confirmBox .mask{
+	width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: black;
+    opacity: 0.5;
+}
+
+#confirmBox .container{
+	position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f2f2f2;
+    font-size: 14px;
+}
+
+#confirmBox .top{
+    /* height: 95px; */
+    background: white;
+    text-align: center;
+}
+
+#confirmBox .top>img{
+	width: 1.62rem;
+    height: 1.20rem;
+    margin-top: -0.60rem;
+    display: inline-block;
+}
+
+#confirmBox .top .right{
+    margin-top: 20px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 0.1rem;
+    margin-bottom: 6px;
+    max-width: 60%;
+}
+
+#confirmBox .top .right>h3{
+    font-size: 18px;
+    font-weight: 200;
+    word-wrap: break-word;
+}
+
+#confirmBox .top .right .priceBox{
+	
+}
+
+#confirmBox .top .right .priceBox span{
+	font-size: 10px;
+}
+
+#confirmBox .top .right .priceBox .icon{
+	font-style: normal;
+    font-weight: 200;
+    position: relative;
+    top: -6px;
+}
+
+#confirmBox #nowPrice{
+	font-size: 0.26rem;
+    font-weight: bold;
+    margin-right: 0.05rem;
+}
+
+#confirmBox .skuBox{
+	padding: 0 0.36rem;
+    margin: 10px 0;
+    margin-bottom: 0;
+    background: white;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#confirmBox .skuBox>span{
+    font-size: 14px;
+    margin-top: 7px;
+    line-height: 32px;
+    display: inline-block;
+}
+
+#confirmBox .skuBox .buyType{
+    width: 100%;
+    overflow: hidden;
+}
+
+#confirmBox .skuBox .buyType.warehouse{
+	
+}
+
+#confirmBox .skuBox .buyType.warehouse>div{
+    margin-bottom: 10px;
+}
+
+#confirmBox .skuBox .buyType>div{
+	display: inline-block;
+    line-height: 27px;
+    border: 1px solid #2c7c6f;
+    padding: 0 0.16rem;
+    position: relative;
+}
+
+#confirmBox .skuBox .buyType>div.gray{
+    border: 1px solid darkgrey;
+    background: #9f9f9f;
+    color: whitesmoke;
+}
+
+#confirmBox .skuBox .buyType>div>img{
+    width: 16px;
+    height: 16px;
+    display: none;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#confirmBox .skuBox .buyType>div.active>img{
+	display: initial;
+}
+
+#confirmBox .skuBox .color{
+	display: inline-block;
+    border: 1px solid #2c7c6f;
+    padding: 0 16px;
+    position: relative;
+    line-height: 27px;
+}
+
+#confirmBox .skuBox .color>img{
+	width: 16px;
+    height: 16px;
+    display: none;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+#confirmBox .skuBox .color.active>img{
+	display: initial;
+}
+
+#confirmBox .skuBox #single{
+	float: right;
+}
+
+
+
+#confirmBox .numberBox{
+	width: 100%;
+    overflow: hidden;
+    background: white;
+    height: 40px;
+    text-align: right;
+    line-height: 40px;
+    box-sizing: border-box;
+    padding-right: 18px;
+    margin-bottom: 10px;
+}
+
+#confirmBox .numberBox>div{
+    display: inline-block;
+    height: 24px;
+    border: 1px solid #4b9284;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+#confirmBox .numberBox>div>span{
+	display: inline-block;
+    width: 23px;
+    height: 100%;
+    line-height: 24px;
+    vertical-align: top;
+    text-align: center;
+    background: #add7d5;
+}
+
+#confirmBox .numberBox>div>input{
+    vertical-align: top;
+    height: 100%;
+    text-align: center;
+    width: 30px;
+    line-height: 24px;
+}
+
+#confirmBox .numberBox .limit{
+	float: left;
+    height: initial;
+    border: none;
+    margin-left: 0.36rem;
+}
+
+
+
+#confirmBox .bottomButton{
+	width: 100%;
+    height: 50px;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-size: 17px;
+}
+
+#confirmBox .bottomButton>div{
+    float: left;
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    text-align: center;
+}
+
+#confirmBox .bottomButton .cancel{
+	width: 20%;
+	background: white;
+    color: black;
+    font-size: 14px;
+}
+
+#confirmBox .bottomButton .sure{
+	width: 80%;
+	background: #0ba299;
+}
+
+#confirmBox .bottomButton .sure.gray{
+	background: gray;
+}
+
+
+
+
+
+/* 閫傞厤灏忓睆鎵嬫満 */
+@media all and (max-width: 320px) {
+	#priceBox .left>p {
+	    font-size: 22px;
+	}
+	
+	#priceBox .left>p>b {
+	    font-size: 16px;
+	    top: -4px;
+	}
+	
+	#priceBox .left>h3 {
+	    font-size: 15px;
+	}
+	
+	#priceBox .right {
+	    padding-left: 5px;
+	    font-size: 10px;
+	}
+	
+	#confirmBox .top .right{
+	    margin-left: 0;
+	}
+	
+	#confirmBox .container {
+	    font-size: 10px;
+	}
+}

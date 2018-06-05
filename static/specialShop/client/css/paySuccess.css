@@ -1,0 +1,106 @@
+
+/*支付成功*/
+#wrap{
+	width: 100%;			
+}
+
+/*付款成功显示*/
+#wrap #pay{
+	width: 100%;
+	background: #FFFFFF;
+	padding-bottom:20px;
+	padding: 0px 10px 20px;
+	box-sizing: border-box;
+}
+
+#wrap #pay #p1 {
+	font-size: 28px;
+	text-align: center;
+	color: #10c705;
+	padding-top:50px;
+}
+
+#wrap #pay #p1 img{
+	vertical-align:middle;
+}
+
+#wrap #pay #p1 span{
+	margin-left:10px;
+}
+
+#wrap #pay #p2{
+	color: #797979;
+	text-align: center;
+	margin: 20px  0 50px;
+	margin-bottom: 16px;
+}
+
+/*去首页逛逛*/
+#wrap #pay a{
+	width:100%;
+	height: 40px;
+	background: #00a29a;
+	display: block;	
+	border-radius: 3px;
+	color: #FFFFFF;
+	font-size: 20px;	
+	line-height: 40px;	
+	text-align: center;
+}
+
+/*支付成功其他信息*/
+#wrap ul{
+	width: 100%;	
+	background: #FFFFFF;
+	margin-top: 10px;
+	padding-left: 10px;
+	box-sizing: border-box;	
+}
+
+#wrap ul li{
+	width: 100%;
+	height: 50px;
+	border-bottom: 2px solid #eeeeee;
+	text-align: left;
+	line-height: 50px;	
+	padding-right: 10px;
+	box-sizing: border-box;	
+	overflow: hidden;
+}
+
+#wrap ul li>span{
+	float: left;	
+}
+
+#wrap ul li b{
+	float: right;
+    font-weight: normal;
+    max-width: 80%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: right;
+}
+
+#wrap ul li b span{
+	max-width: 90%;
+    display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-align: right;
+}
+
+#wrap ul li b img{
+	margin-left: 5px;
+    margin-top: 17px;
+}
+
+
+@media all and (max-width: 320px) {
+	
+}
+
+
+
+

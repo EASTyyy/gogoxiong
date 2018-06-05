@@ -1,0 +1,55 @@
+.list {
+    width: 100%;
+    max-width: 640px;
+    padding-top:50px;
+    padding-bottom:0px;
+    z-index:100;
+    position:relative;
+}
+#payment_1{
+	width:100%;
+	height:147px;
+	background:url('../image/zhifu_02.png') no-repeat left top;
+	background-size:100% 100%;
+	border-top:1px solid transparent;
+}
+#payment_1>.zon{
+	height:49px;
+	width:100%;
+	position:relative;
+	margin-top:44px;
+	text-align:center;
+}
+#payment_1>.zon>.duigou{
+	display:inline-block;
+	height:49px;
+	width:49px;
+	background:url('../image/zhif_03.png') no-repeat center center;
+	background-size:49px 49px;
+}
+#payment_1>.zon>.bottom{
+	display:inline-block;
+	height:49px;
+	line-height:49px;
+	font-size:24px;
+	color:#fff;
+	vertical-align:top;
+}
+#payment_1>.zon>.bottom>#qian_1{
+	color:#ff4965;
+}
+#chakanyue_1{
+	width:94.67777%;
+    height:44px;
+    margin:0 auto;
+    margin-top:110px;
+    background:#f8b62c;
+    border-radius:22px;
+}
+#chakanyue_1>a{
+	color:#fff;
+    text-align:center;
+    display:block;
+    line-height:44px;
+    font-size:16px;
+}

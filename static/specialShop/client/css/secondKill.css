@@ -1,0 +1,357 @@
+#preview{
+    /* margin-top: 24px; */
+    background: white;
+    text-align: center;
+}
+
+#preview>p{
+	font-size: 18px;
+    color: white;
+    background: #8ec21f;
+    line-height: 37px;
+    font-weight: bold;
+}
+
+#preview>ul{
+	overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    padding-top: 0;
+    position: relative;
+}
+
+#preview ul li{
+    float: left;
+    width: 32%;
+    margin-right: 2%;
+}
+
+#preview ul li:last-child{
+	margin-right: 0;
+}
+
+#preview ul li h3{
+	font-size: 12px;
+    font-weight: 100;
+    line-height: 20px;
+    margin-top: 5px;
+}
+
+#preview ul li .imgContainer{
+    height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+#preview ul li .imgContainer img{
+	height: 100px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+#preview>ul>span{
+	width: 9px;
+    height: 9px;
+    display: block;
+    position: absolute;
+    top: 10px;
+}
+
+#preview .leftArrow{
+	background:url('../image/miaosha-leftArrow.png') no-repeat center center;
+	background-size: contain;
+	left: 14px;
+}
+
+#preview .rightArrow{
+	background:url('../image/miaosha-rightArrow.png') no-repeat center center;
+	background-size: contain;
+	right: 14px;
+}
+
+.secondKillTitle{
+	font-size: 21px;
+    text-align: center;
+    line-height: 45px;
+    background: white;
+    color: #93cc1d;
+    margin-top: 8px;
+    margin-bottom: 5px;
+}
+
+/* 绌哄満娆� */
+#emptyActivity{
+	display: none;
+	overflow: hidden;
+	position: relative;
+    height: 220px;
+    background: white;
+}
+
+#emptyActivity img{
+	width: 218px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+/* 绉掓潃鍦烘 */
+#secondKillList{
+	overflow: hidden;
+    width: 100%;
+    margin-bottom: 50px;
+}
+
+#secondKillList>li{
+	margin-bottom: 6px;
+}
+
+#secondKillList>li .topTime{
+	display: block;
+	overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 14px;
+    line-height: 40px;
+    color: white;
+    margin-bottom: 3px;
+}
+
+#secondKillList>li.end .topTime>div{
+	background: #9fa1a0;
+}
+
+#secondKillList>li.noStart .topTime>div{
+	background: #26533e;
+}
+
+#secondKillList>li .topTime>div{
+	float: left;
+	width: 40%;
+	box-sizing: border-box;
+	background: #8ec21f;
+}
+
+#secondKillList>li .topTime .state{
+	width: 20%;
+	border-left: 0.06rem solid #efefef;
+}
+
+#secondKillList>li .productList{
+	overflow: hidden;
+    width: 100%;
+}
+
+#secondKillList>li .productList>li{
+	overflow: hidden;
+    width: 100%;
+    margin-bottom: 5px;
+    position: relative;
+    background: white;
+}
+
+#secondKillList>li .productList>li .imgContainer{
+	float: left;
+    width: 56%;
+    height: 160px;
+    position: relative;
+}
+
+#secondKillList>li .productList>li .imgContainer img{
+	height: 160px;
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
+
+#secondKillList>li .productList>li .imgContainer .selled{
+	position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
+#secondKillList>li .productList>li .info{
+	width: 43%;
+    background: white;
+    box-sizing: border-box;
+    position: absolute;
+    height: 100%;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#secondKillList>li .productList>li .infoContainer{
+	position: absolute;
+    width: 100%;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+#secondKillList>li .productList>li .info h3{
+	font-size: 13px;
+    font-weight: bold;
+    padding-left: 0.15rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#secondKillList>li .productList>li .info .infoContainer>p{
+	font-size: 12px;
+    overflow: hidden;
+    padding-left: 0.15rem;
+}
+
+#secondKillList>li .productList>li .info p span{
+	display: block;
+    float: left;
+    /* width: 45%; */
+    box-sizing: border-box;
+}
+
+#secondKillList>li .productList>li .info p span:nth-child(1){
+	/* width: 55%; */
+}
+
+#secondKillList>li .productList>li .info h2{
+	font-size: 30px;
+    padding-left: 0.15rem;
+}
+
+#secondKillList>li .productList>li .info h2 span{
+	font-size: 18px;
+    position: relative;
+    /* top: -5px; */
+}
+
+#secondKillList>li .productList>li .info h2 .decimal{
+	font-style: normal;
+	font-size: 14px;
+}
+
+#secondKillList>li .productList>li .info a{
+	display: block;
+    font-size: 12px;
+    color: white;
+    background: #8ec21f;
+    width: 86%;
+    margin-left: 7%;
+    line-height: 18px;
+    text-align: center;
+    margin-bottom: 5px;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: 1px solid #8ec21f;
+}
+
+#secondKillList>li.end .productList>li .info a{
+	background: #9fa1a0;
+	border: 1px solid #9fa1a0;
+}
+
+#secondKillList>li .productList>li.soldOut .info a{
+	background: #9fa1a0;
+	border: 1px solid #9fa1a0;
+}
+
+#secondKillList>li.noStart .productList>li .info a{
+	background: #26533e;
+	border: 1px solid #26533e;
+}
+
+#secondKillList>li .productList>li .info .inventory{
+	display: block;
+    font-size: 12px;
+    width: 86%;
+    margin-left: 7%;
+    line-height: 18px;
+    text-align: center;
+    color: #8ec21f;
+    border: 1px solid #8ec21f;
+    background: white;
+    position: relative;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+#secondKillList>li.end .productList>li .info .inventory{
+	border: 1px solid #b2b2b2;
+    background: #e5e7e6;
+    color: #4d4d4d;
+}
+
+#secondKillList>li .productList>li.soldOut .info .inventory{
+	border: 1px solid #b2b2b2;
+    background: #e5e7e6;
+    color: #4d4d4d;
+}
+
+#secondKillList>li.noStart .productList>li .info .inventory{
+	border: 1px solid #26533e;
+    background: white;
+    color: #26533e;
+}
+
+#secondKillList>li .productList>li .info .inventory p{
+	position: relative;
+    z-index: 9;
+}
+
+#secondKillList>li .productList>li .info .inventory span{
+	display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: #dae4c1;
+}
+
+@media all and (max-width: 320px) {
+	
+/* 	#secondKillList>li .productList>li .info{ */
+/* 		width: 64%; */
+/* 	} */
+	
+/* 	#secondKillList>li .productList>li .imgContainer { */
+/* 	    width: 36%; */
+/* 	} */
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

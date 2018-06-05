@@ -1,0 +1,279 @@
+
+/* 顶部排序方式tab */
+#sortTab{
+	overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+    text-align: center;
+    font-size: 15px;
+    line-height: 40px;
+    border-bottom: 1px solid #ebecf0;
+    position: fixed;
+    top: 0;
+    z-index: 99;
+}
+
+#sortTab>li{
+	float: left;
+    width: 50%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#sortTab>li.active>div{
+	color: #cc2541;
+    border-bottom: 1px solid #cc2541;
+}
+
+#sortTab>li>div{
+	display: inline-block;
+    padding: 0 10px;
+}
+
+/* 商品列表 */
+#productList{
+	padding: 9px;
+    overflow: hidden;
+    padding-bottom: 0;
+    padding-top: 51px;
+}
+
+#productList>li{
+	float: left;
+    width: 49%;
+    position: relative;
+    background: white;
+    padding-bottom: 11px;
+    margin-right: 2%;
+    margin-bottom: 9px;
+    text-align: center;
+    overflow: hidden;
+}
+
+#productList>li:nth-child(even){
+	margin-right: 0;
+}
+
+#productList>li .tag{
+    overflow: hidden;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    z-index: 9;
+}
+
+#productList>li .tag>span{
+	font-size: 12px;
+    line-height: 18px;
+    display: block;
+    float: left;
+    /* width: 23.5%; */
+    text-align: center;
+    color: white;
+    background: #c30d23;
+    margin-right: 2%;
+    padding: 0 0.05rem;
+    margin-bottom: 2px;
+}
+
+#productList>li.red .tag>span{
+    background: #c30d23;
+}
+
+#productList>li.green .tag>span{
+    background: #0ba29b;
+}
+
+#productList>li.pink .tag>span{
+    background: #e98a78;
+}
+
+#productList>li.orange .tag>span{
+    background: #e95412;
+}
+
+#productList>li .tag>span:last-child{
+	margin-right: 0;
+}
+
+#productList>li .imgContainer{
+	height: 150px;
+    position: relative;
+}
+
+#productList>li .imgContainer>img{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+
+#productList>li >.noStart{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    font-size: 17px;
+    color: white;
+    z-index: 9;
+}
+
+#productList>li>h3{
+	font-size: 14px;
+    padding-left: 0.14rem;
+    text-align: left;
+    margin-top: 4px;
+    font-weight: 200;
+    color: #666;
+    min-height: 38px;
+}
+
+#productList>li .price{
+	font-size: 20px;
+	color: #c30d23;
+	margin-top: 0;
+}
+
+#productList>li.red .price{
+	color: #c30d23;
+	font-weight: bold;
+}
+
+#productList>li.green .price{
+	color: #0ba29b;
+}
+
+#productList>li.pink .price{
+	color: #e98a78;
+}
+
+#productList>li.orange .price{
+	color: #e95412;
+}
+
+#productList>li>p{
+	font-size: 10px;
+    padding-left: 0.14rem;
+    text-align: left;
+    margin-top: 5px;
+    color: #777;
+}
+
+#productList>li>p>span{
+	color: #c30d23;
+    font-weight: bold;
+    margin: 0 3px;
+}
+
+#productList>li>p>span.money{
+    margin: 0;
+    font-size: 12px;
+    font-weight: 100;
+}
+
+#productList>li.red>p>span{
+	color:#c30d23;
+}
+
+#productList>li.green>p>span{
+	color:#0ba29b;
+}
+
+#productList>li.pink>p>span{
+	color:#e98a78;
+}
+
+#productList>li.orange>p>span{
+	color:#e95412;
+}
+
+#productList>li .price>del{
+    font-size: 10px;
+    margin-left: 7px;
+    color: #999;
+    font-weight: 200;
+}
+
+#productList>li>p>span.decimal{
+	font-weight: normal;
+    font-size: 12px;
+    margin: 0;
+}
+
+#productList>li>a{
+	display: block;
+    width: 0.4rem;
+    height: 0.4rem;
+    position: absolute;
+    bottom: 0.08rem;
+    right: 0.08rem;
+    font-size: 12px;
+    text-align: center;
+    background: #c30d23;
+    color: white;
+    padding: 0.04rem;
+    padding-top: 0.04rem;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+#productList>li.red>a{
+    background: #c30d23;
+}
+
+#productList>li.green>a{
+    background: #0ba29b;
+}
+
+#productList>li.pink>a{
+    background: #e98a78;
+}
+
+#productList>li.orange>a{
+    background: #e95412;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media all and (max-width: 320px) {
+	#productList>li>p{
+	    padding-left: 5px;
+	}
+	#productList>li>h3 {
+	    padding-left: 5px;
+	}
+}
