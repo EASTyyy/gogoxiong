@@ -1,0 +1,241 @@
+<html>
+<head>
+<meta charset="utf-8">
+<link href="/favicon.ico" rel="icon" type="image/x-icon">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+<title>地址管理</title>
+<link rel="stylesheet"  type="text/css" href="$!{static}/specialShop/client/css/gougouxiong.css">
+<script type="text/javascript" src="/xlcl/weixin/js/jquery.js"></script>
+<style>
+ #xinzeng{
+ 	width: 95%;
+ 	height: 36px;
+    position: relative;
+    background: #01a29a;
+    line-height: 36px;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0 auto;
+    border-radius: 5px;
+    font-size: 12px;
+    color: white;
+ } 
+ #shizi{
+ 	display:inline-block;
+ 	vertical-align: sub;
+ }
+ #shizi>img{
+	width: 16px;
+    display: block;
+ }
+ #wen_1{
+ 	display:inline-block;
+ 	height:100%;
+ 	font-size:14px;
+ 	vertical-align: top;
+ }
+ @media screen and (max-width:350px){
+	#wen_1{
+ 	display:inline-block;
+ 	height:100%;
+ 	font-size:16px;
+ }
+}
+ .AddressList .addList ul li a{
+ 	border:0;
+ }
+ .list{
+ 	background:none;
+ }
+ .AddressList .addList ul li{
+ 	
+ }
+ .AddressList .addList ul li a{
+ 	border-bottom:1px solid #ddd;
+ 	margin:0;
+ 	padding-left:7%;
+ }
+ .AddressList .addList ul li .hd .operate span{
+ 	border:0;
+ }
+ #kong_1{
+		width:74.93%;
+		position:absolute;
+		top:40%;
+		left:13%;
+	}
+	#kong_2{
+		width:36.09%;
+		margin:0 auto;
+		margin-bottom:20px;
+	}
+	#kong_2>img{
+		width:100%;
+		display:block;
+	}
+	#kong_3{
+		width:100%;
+		margin-bottom:20px;
+		text-align:center;
+	}
+	#kong_3>p{
+		font-size:12px;
+	}
+	#kong_4{
+		width:53.01%;
+		margin:0 auto;
+	}
+	#kong_4>.waikuang{
+		border:1px solid #ffcc33;
+		border-radius:15px;
+		width:100%;
+		text-align:center;
+	}
+	#kong_4>.waikuang>a{
+		display:inline-block;
+		padding:6px 0;
+		color:#ffcc33;
+	}
+	.beij_1>img{
+		display:block;
+	}
+	#sanjiao{
+	width:0;
+	height:0;
+	border:5px solid transparent;
+	border-bottom:5px solid #000;
+	opacity:0.8;
+	position:fixed;
+	right:5%;
+	top:45px;
+	z-index:3000;
+}
+
+</style>
+</head>
+<body style="background-color:#f0f0f0;">
+<div class="list">
+    <div id="kong_1">
+    	<div id="kong_2">
+    		<img src="/xlcl/weixin2/img/kong_03.png">
+    	</div>
+    	<div id="kong_3">
+    		<p>没有收货地址</p>
+    	</div>
+    	<div id="kong_4">
+    		<div class="waikuang">
+    			<a href="#" onClick="addAddress()">新增地址</a>
+    		</div>
+    	</div>
+    </div>
+    
+
+    <div class="AddressList">
+        <div class="loginWrapper">
+            <div class="addList">
+                <ul id="addListUl">
+                 #foreach(${address} in ${addresses})
+	                 #if(${address.isDefault}==1)
+	                 <li class="Selected">
+	                 #else
+	                 <li>
+	                 #end
+                        <a href="/tjsc/weixin/cart/index?addressId=$!{address.id}" value="$!{address.id}">
+                            <div class="Info"><span class="name">${address.name}</span><span class="tel">${address.phone}</span></div>
+                            <div class="detail">${address.fullAddress}</div>
+                             
+                        </a>
+                        <div class="hd">
+                            <div class="default" onClick="setDefault(${address.id},this)">设为默认地址</div>
+                            <div class="operate"><span class="edit" onClick="editAddress(${address.id})">编辑</span><span class="delete" onClick="deleteAddress(${address.id},this)">删除</span></div>
+                        </div>
+                   	</li>
+               	#end	
+               </ul>
+               <div id="xinzeng" onClick="addAddress()">
+		    		<div id="shizi">
+		    			<img src="$!{static}/specialShop/client/image/addr-add.png">
+		    		</div>
+		    		<div id="wen_1">
+		    			新增收货地址
+		    		</div>
+		   	   </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function addAddress(){
+    window.location='/tjsc/weixin/address/openSave?addressId=0';
+}
+
+function editAddress(addressId){
+     var url ='/tjsc/weixin/address/openSave?addressId='+addressId;
+     window.location=url;
+}
+    //设置默认
+function setDefault(addressId,t){
+	if($(t).parent().parent().attr("class")=="Selected") {
+	  alert("已经是默认地址");
+	      return;
+	}
+
+	if(confirm("是否要设置为默认收货地址？")){
+		$.ajax({
+		     url: "/tjsc/weixin/address/setDefault",
+		     type: "post",
+		     data: {"addressId":addressId},
+		     success: function(data){
+		         if(data=="success"){
+		            window.location.reload()
+		         }else{
+		             alert(data);
+		         }
+		     }
+		 });
+	}
+}
+
+//删除地址
+function deleteAddress(addressId,t){
+    if(confirm("是否要删除收货地址？")){
+	$.ajax({
+	        url: "/tjsc/weixin/address/delete",
+	        type: "post",
+	        async:false,
+	        data: {"addressId":addressId},
+	        dataType:"text",
+	        success: function(data){
+	            if(data=="success"){
+	               $(t).parent().parent().parent().remove();
+	               
+	            }else{
+	                alert(data);
+	            }
+	        }
+    });
+    }
+}
+
+     var ee=$('#wen_1').height();
+     $('#wen_1').css('line-height',ee+'px');
+     var aa = $("#kong_2").width()*0.8776;
+    $("#kong_2").css('height',aa);
+    var ab = $("#kong_4").width()*0.3214;
+    $("#kong_4").css('height',ab);
+	  if($('.AddressList .addList ul li').length>0){
+   		$("#kong_1").css('display','none');
+	  }else{
+	  	$('#xinzeng').css('display','none');
+	  }
+	  
+     
+</script>
+
+</body>
+</html>
